@@ -8,7 +8,7 @@ namespace Polly
     /// <summary>
     /// Fluent API for defining a Circuit Breaker <see cref="Policy"/>. 
     /// </summary>
-    public static class TimesliceCircuitBreakerSyntaxAsync
+    public static class AdvancedCircuitBreakerSyntaxAsync
     {
         /// <summary>
         /// <para> Builds a <see cref="Policy"/> that will function like a Circuit Breaker.</para>
@@ -29,12 +29,12 @@ namespace Polly
         /// <returns>The policy instance.</returns>
         /// <remarks>(see "Release It!" by Michael T. Nygard fi)</remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">exceptionsAllowedBeforeBreaking;Value must be greater than zero.</exception>
-        public static CircuitBreakerPolicy TimesliceCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak)
+        public static CircuitBreakerPolicy AdvancedCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak)
         {
             Action<Exception, TimeSpan> doNothingOnBreak = (_, __) => { };
             Action doNothingOnReset = () => { };
 
-            return policyBuilder.TimesliceCircuitBreakerAsync(
+            return policyBuilder.AdvancedCircuitBreakerAsync(
                failureThreshold, timesliceDuration, minimumThroughput, 
                durationOfBreak,
                doNothingOnBreak,
@@ -65,9 +65,9 @@ namespace Polly
         /// <exception cref="System.ArgumentOutOfRangeException">exceptionsAllowedBeforeBreaking;Value must be greater than zero.</exception>
         /// <exception cref="ArgumentNullException">onBreak</exception>
         /// <exception cref="ArgumentNullException">onReset</exception>
-        public static CircuitBreakerPolicy TimesliceCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan> onBreak, Action onReset)
+        public static CircuitBreakerPolicy AdvancedCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan> onBreak, Action onReset)
         {
-            return policyBuilder.TimesliceCircuitBreakerAsync(
+            return policyBuilder.AdvancedCircuitBreakerAsync(
                 failureThreshold, timesliceDuration, minimumThroughput, 
                 durationOfBreak,
                 (exception, timespan, context) => onBreak(exception, timespan),
@@ -98,10 +98,10 @@ namespace Polly
         /// <exception cref="System.ArgumentOutOfRangeException">exceptionsAllowedBeforeBreaking;Value must be greater than zero.</exception>
         /// <exception cref="ArgumentNullException">onBreak</exception>
         /// <exception cref="ArgumentNullException">onReset</exception>
-        public static CircuitBreakerPolicy TimesliceCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan, Context> onBreak, Action<Context> onReset)
+        public static CircuitBreakerPolicy AdvancedCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan, Context> onBreak, Action<Context> onReset)
         {
             Action doNothingOnHalfOpen = () => { };
-            return policyBuilder.TimesliceCircuitBreakerAsync(
+            return policyBuilder.AdvancedCircuitBreakerAsync(
                 failureThreshold, timesliceDuration, minimumThroughput, 
                 durationOfBreak, 
                 onBreak, 
@@ -134,9 +134,9 @@ namespace Polly
         /// <exception cref="System.ArgumentOutOfRangeException">exceptionsAllowedBeforeBreaking;Value must be greater than zero.</exception>
         /// <exception cref="ArgumentNullException">onBreak</exception>
         /// <exception cref="ArgumentNullException">onReset</exception>
-        public static CircuitBreakerPolicy TimesliceCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan> onBreak, Action onReset, Action onHalfOpen)
+        public static CircuitBreakerPolicy AdvancedCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan> onBreak, Action onReset, Action onHalfOpen)
         {
-            return policyBuilder.TimesliceCircuitBreakerAsync(
+            return policyBuilder.AdvancedCircuitBreakerAsync(
                 failureThreshold, timesliceDuration, minimumThroughput, 
                 durationOfBreak,
                 (exception, timespan, context) => onBreak(exception, timespan),
@@ -170,9 +170,9 @@ namespace Polly
         /// <exception cref="ArgumentNullException">onBreak</exception>
         /// <exception cref="ArgumentNullException">onReset</exception>
         /// <exception cref="ArgumentNullException">onHalfOpen</exception>
-        public static CircuitBreakerPolicy TimesliceCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan, Context> onBreak, Action<Context> onReset, Action onHalfOpen)
+        public static CircuitBreakerPolicy AdvancedCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan timesliceDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan, Context> onBreak, Action<Context> onReset, Action onHalfOpen)
         {
-            var resolutionOfCircuit = TimeSpan.FromTicks(TimesliceCircuitController.ResolutionOfCircuitTimer);
+            var resolutionOfCircuit = TimeSpan.FromTicks(AdvancedCircuitController.ResolutionOfCircuitTimer);
 
             if (failureThreshold <= 0) throw new ArgumentOutOfRangeException("failureThreshold", "Value must be greater than zero.");
             if (failureThreshold > 1) throw new ArgumentOutOfRangeException("failureThreshold", "Value must be less than or equal to one.");
@@ -184,7 +184,7 @@ namespace Polly
             if (onReset == null) throw new ArgumentNullException("onReset");
             if (onHalfOpen == null) throw new ArgumentNullException("onHalfOpen");
 
-            var breakerController = new TimesliceCircuitController(failureThreshold, timesliceDuration, minimumThroughput, durationOfBreak, onBreak, onReset, onHalfOpen);
+            var breakerController = new AdvancedCircuitController(failureThreshold, timesliceDuration, minimumThroughput, durationOfBreak, onBreak, onReset, onHalfOpen);
             return new CircuitBreakerPolicy(
                 (action, context, cancellationToken, continueOnCapturedContext) => CircuitBreakerEngine.ImplementationAsync(action, context, policyBuilder.ExceptionPredicates, breakerController, cancellationToken, continueOnCapturedContext),
                 policyBuilder.ExceptionPredicates,

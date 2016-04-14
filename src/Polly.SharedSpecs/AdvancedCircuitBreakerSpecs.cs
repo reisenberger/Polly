@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Polly.Specs
 {
-    public class TimesliceCircuitBreakerSpecs : IDisposable
+    public class AdvancedCircuitBreakerSpecs : IDisposable
     {
         #region Configuration tests
 
@@ -17,7 +17,7 @@ namespace Polly.Specs
         {
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.MaxValue);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.MaxValue);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -28,7 +28,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(0, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
 
             action.ShouldThrow<ArgumentOutOfRangeException>()
                 .And.ParamName.Should()
@@ -40,7 +40,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(-0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(-0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
 
             action.ShouldThrow<ArgumentOutOfRangeException>()
                 .And.ParamName.Should()
@@ -52,7 +52,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(1.0, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(1.0, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
 
             action.ShouldNotThrow();
         }
@@ -62,7 +62,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(1.01, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(1.01, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
 
             action.ShouldThrow<ArgumentOutOfRangeException>()
                 .And.ParamName.Should()
@@ -74,7 +74,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     0.5, 
                     TimeSpan.FromMilliseconds(20).Add(TimeSpan.FromTicks(-1)), 
                     4, 
@@ -90,7 +90,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromMilliseconds(20), 4, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromMilliseconds(20), 4, TimeSpan.FromSeconds(30));
 
             action.ShouldNotThrow<ArgumentOutOfRangeException>();
         }
@@ -100,7 +100,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 0, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 0, TimeSpan.FromSeconds(30));
 
             action.ShouldThrow<ArgumentOutOfRangeException>()
                 .And.ParamName.Should()
@@ -112,7 +112,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), -1, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), -1, TimeSpan.FromSeconds(30));
 
             action.ShouldThrow<ArgumentOutOfRangeException>()
                 .And.ParamName.Should()
@@ -124,7 +124,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, -TimeSpan.FromSeconds(1));
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, -TimeSpan.FromSeconds(1));
 
             action.ShouldThrow<ArgumentOutOfRangeException>()
                 .And.ParamName.Should()
@@ -136,7 +136,7 @@ namespace Polly.Specs
         {
             Action action = () => Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.Zero);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.Zero);
 
             action.ShouldNotThrow();
         }
@@ -146,7 +146,7 @@ namespace Polly.Specs
         {
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
 
             breaker.CircuitState.Should().Be(CircuitState.Closed);
         }
@@ -157,7 +157,7 @@ namespace Polly.Specs
 
         #region Tests that are independent from health metrics implementation
 
-        // Tests on the TimesliceCircuitBreaker operation typically use a breaker: 
+        // Tests on the AdvancedCircuitBreaker operation typically use a breaker: 
         // - with a failure threshold of >=50%, 
         // - and a throughput threshold of 4
         // - across a ten-second period.
@@ -171,7 +171,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -208,7 +208,7 @@ namespace Polly.Specs
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
                 .Or<ArgumentOutOfRangeException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -237,7 +237,7 @@ namespace Polly.Specs
 
         #region With sample duration higher than 199 ms so that multiple windows are used
 
-        // Tests on the TimesliceCircuitBreaker operation typically use a breaker: 
+        // Tests on the AdvancedCircuitBreaker operation typically use a breaker: 
         // - with a failure threshold of >=50%, 
         // - and a throughput threshold of 4
         // - across a ten-second period.
@@ -251,7 +251,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -295,7 +295,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -340,7 +340,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -383,7 +383,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -428,7 +428,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -471,7 +471,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -518,7 +518,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -557,7 +557,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -596,7 +596,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -640,7 +640,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -683,7 +683,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -713,7 +713,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -749,7 +749,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -800,7 +800,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -848,7 +848,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -889,7 +889,7 @@ namespace Polly.Specs
 
         #region With sample duration at 199 ms so that only a single window is used
 
-        // These tests on TimesliceCircuitBreaker operation typically use a breaker: 
+        // These tests on AdvancedCircuitBreaker operation typically use a breaker: 
         // - with a failure threshold of >=50%, 
         // - and a throughput threshold of 4
         // - across a 199ms period.
@@ -903,7 +903,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromMilliseconds(199),
                     minimumThroughput: 4,
@@ -945,7 +945,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromMilliseconds(199),
                     minimumThroughput: 4,
@@ -986,7 +986,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromMilliseconds(199),
                     minimumThroughput: 4,
@@ -1029,7 +1029,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -1068,7 +1068,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -1107,7 +1107,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -1150,7 +1150,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromMilliseconds(199),
                     minimumThroughput: 4,
@@ -1180,7 +1180,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromMilliseconds(199),
                     minimumThroughput: 4,
@@ -1216,7 +1216,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -1272,7 +1272,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1316,7 +1316,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: timesliceDuration,
                     minimumThroughput: 4,
@@ -1370,7 +1370,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1419,7 +1419,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1463,7 +1463,7 @@ namespace Polly.Specs
         {
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, TimeSpan.FromSeconds(30));
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // manually break circuit
@@ -1485,7 +1485,7 @@ namespace Polly.Specs
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             breaker.Isolate();
@@ -1506,7 +1506,7 @@ namespace Polly.Specs
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             breaker.Isolate();
@@ -1529,7 +1529,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1574,7 +1574,7 @@ namespace Polly.Specs
             var durationOfBreak = TimeSpan.FromSeconds(30);
             Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
 
             onResetCalled.Should().BeFalse();
         }
@@ -1591,7 +1591,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1632,7 +1632,7 @@ namespace Polly.Specs
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
 
             onBreakCalled.Should().BeFalse();
 
@@ -1653,7 +1653,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1709,7 +1709,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1762,7 +1762,7 @@ namespace Polly.Specs
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
 
             onResetCalled.Should().BeFalse();
 
@@ -1792,7 +1792,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1854,7 +1854,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1908,7 +1908,7 @@ namespace Polly.Specs
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
+                .AdvancedCircuitBreaker(0.5, TimeSpan.FromSeconds(10), 4, durationOfBreak, onBreak, onReset);
 
             onBreakCalled.Should().Be(0);
             breaker.Isolate();
@@ -1941,7 +1941,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -1988,7 +1988,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -2041,7 +2041,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
@@ -2088,7 +2088,7 @@ namespace Polly.Specs
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
-                .TimesliceCircuitBreaker(
+                .AdvancedCircuitBreaker(
                     failureThreshold: 0.5,
                     timesliceDuration: TimeSpan.FromSeconds(10),
                     minimumThroughput: 4,
