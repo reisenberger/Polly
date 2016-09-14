@@ -69,6 +69,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryPolicyStateWithSleepDurationProviderAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvancedCircuitBreakerSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvancedCircuitBreakerSyntaxAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThrottleSyntax.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThrottleSyntaxAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThrottleTResultSyntax.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThrottleTResultSyntaxAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Throttle\SemaphoreRejectedException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Throttle\ThrottleEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Throttle\ThrottleEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Throttle\ThrottlePolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Throttle\ThrottlePolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\EmptyStruct.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ReadOnlyDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SystemClock.cs" />
