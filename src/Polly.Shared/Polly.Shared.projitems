@@ -69,11 +69,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryPolicyStateWithSleepDurationProviderAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvancedCircuitBreakerSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvancedCircuitBreakerSyntaxAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Isolation\SemaphoreRejectedException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Isolation\BulkheadEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Isolation\BulkheadEngineAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Isolation\BulkheadPolicy.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Isolation\BulkheadPolicyAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\SemaphoreRejectedException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadPolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BulkheadSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BulkheadSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BulkheadTResultSyntax.cs" />
