@@ -43,6 +43,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)AdvancedCircuitBreakerAsyncSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RetryTResultSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RetryTResultSpecsAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BulkheadAsyncSpecs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BulkheadSpecs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BulkheadTResultAsyncSpecs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BulkheadTResultSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WaitAndRetryAsyncSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WaitAndRetryForeverAsyncSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WaitAndRetrySpecs.cs" />
