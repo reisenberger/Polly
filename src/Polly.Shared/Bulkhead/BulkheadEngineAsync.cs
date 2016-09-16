@@ -27,11 +27,10 @@ namespace Polly.Bulkhead
             CancellationToken cancellationToken, 
             bool continueOnCapturedContext)
         {
-            cancellationToken.ThrowIfCancellationRequested();
 #if NET40
-            if (!maxQueuedActionsSemaphore.Wait(TimeSpan.Zero, cancellationToken)) throw new SemaphoreRejectedException();
+            if (!maxQueuedActionsSemaphore.Wait(TimeSpan.Zero, cancellationToken)) { throw new SemaphoreRejectedException(); }
 #else
-            if (!(await maxQueuedActionsSemaphore.WaitAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(continueOnCapturedContext))) throw new SemaphoreRejectedException();
+            if (!await maxQueuedActionsSemaphore.WaitAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(continueOnCapturedContext)) { throw new SemaphoreRejectedException(); }
 #endif
             try
             {
@@ -42,9 +41,7 @@ namespace Polly.Bulkhead
 #endif
                 try 
                 {
-                    DelegateResult<TResult> delegateOutcome = new DelegateResult<TResult>(await action(cancellationToken).ConfigureAwait(continueOnCapturedContext));
-                    cancellationToken.ThrowIfCancellationRequested();
-                    return delegateOutcome.Result;
+                    return await action(cancellationToken).ConfigureAwait(continueOnCapturedContext);
                 }
                 finally
                 {

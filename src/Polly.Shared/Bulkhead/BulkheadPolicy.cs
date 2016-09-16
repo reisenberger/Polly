@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Polly.Utilities;
 
 namespace Polly.Bulkhead
 {
@@ -15,7 +16,7 @@ namespace Polly.Bulkhead
         /// </summary>
         /// <param name="exceptionPolicy"></param>
         internal BulkheadPolicy(
-             Action<Action<CancellationToken>, Context, CancellationToken> exceptionPolicy) : base(exceptionPolicy, Enumerable.Empty<ExceptionPredicate>())
+             Action<Action<CancellationToken>, Context, CancellationToken> exceptionPolicy) : base(exceptionPolicy, PredicateHelper.EmptyExceptionPredicates)
         {
 
         }
@@ -33,7 +34,7 @@ namespace Polly.Bulkhead
         /// <param name="executionPolicy"></param>
         internal BulkheadPolicy(
             Func<Func<CancellationToken, TResult>, Context, CancellationToken, TResult> executionPolicy
-            ) : base(executionPolicy, Enumerable.Empty<ExceptionPredicate>(), Enumerable.Empty<ResultPredicate<TResult>>())
+            ) : base(executionPolicy, PredicateHelper.EmptyExceptionPredicates, PredicateHelper<TResult>.EmptyResultPredicates)
         {
         }
     }

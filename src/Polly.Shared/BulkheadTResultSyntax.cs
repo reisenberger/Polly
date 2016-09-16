@@ -12,33 +12,43 @@ namespace Polly
     public partial class Policy
     {
         /// <summary>
-        /// 
+        /// <para>Builds a bulkhead isolation <see cref="Policy"/>, which limits the maximum concurrency of actions executed through the policy.  Imposing a maximum concurrency limits the potential of governed actions, when faulting, to bring down the system.</para>
+        /// <para>When an execution would cause the number of actions executing concurrently through the policy to exceed <paramref name="maxParallelization"/>, the action is not executed and a <see cref="SemaphoreRejectedException"/> is thrown.</para>
         /// </summary>
-        /// <returns></returns>
-        public static BulkheadPolicy<TResult> Bulkhead<TResult>()
+        /// <param name="maxParallelization">The maximum number of concurrent actions that may be executing through the policy.</param>
+        /// <returns>The policy instance.</returns>
+      
+        public static BulkheadPolicy<TResult> Bulkhead<TResult>(int maxParallelization)
         {
-            return Bulkhead<TResult>(Environment.ProcessorCount);
+            return Bulkhead<TResult>(maxParallelization, 0);
         }
 
         /// <summary>
-        /// 
+        /// Builds a bulkhead isolation <see cref="Policy" />, which limits the maximum concurrency of actions executed through the policy.  Imposing a maximum concurrency limits the potential of governed actions, when faulting, to bring down the system.
+        /// <para>When an execution would cause the number of actions executing concurrently through the policy to exceed <paramref name="maxParallelization" />, the policy allows a further <paramref name="maxQueuingActions" /> executions to queue, waiting for an execution slot.  When an execution would cause the number of queuing actions to exceed <paramref name="maxQueuingActions" />, a <see cref="SemaphoreRejectedException" /> is thrown.</para>
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="maxParallelization"></param>
-        /// <param name="maxQueuedActions"></param>
-        /// <returns></returns>
-        public static BulkheadPolicy<TResult> Bulkhead<TResult>(int maxParallelization, int maxQueuedActions = int.MaxValue)
+        /// <param name="maxParallelization">The maximum number of concurrent actions that may be executing through the policy.</param>
+        /// <param name="maxQueuingActions">The maxmimum number of actions that may be queuing, waiting for an execution slot.</param>
+        /// <returns>The policy instance.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">maxParallelization;Value must be greater than zero.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">maxQueuingActions;Value must be greater than or equal to zero.</exception>
+        public static BulkheadPolicy<TResult> Bulkhead<TResult>(int maxParallelization, int maxQueuingActions)
         {
-            if (maxParallelization <= 0) throw new ArgumentOutOfRangeException(nameof(maxParallelization));
-            if (maxQueuedActions < 0) throw new ArgumentOutOfRangeException(nameof(maxQueuedActions));
-            if (maxQueuedActions != 0 && maxQueuedActions < maxParallelization) throw new ArgumentOutOfRangeException(nameof(maxQueuedActions));
-            var maxParallelizationSemaphore = new SemaphoreSlim(maxParallelization);
-            if ((long)maxParallelization + (long)maxQueuedActions > (long)int.MaxValue)
+            if (maxParallelization <= 0) throw new ArgumentOutOfRangeException(nameof(maxParallelization), "Value must be greater than zero.");
+            if (maxQueuingActions < 0) throw new ArgumentOutOfRangeException(nameof(maxQueuingActions), "Value must be greater than or equal to zero.");
+
+            SemaphoreSlim maxParallelizationSemaphore = new SemaphoreSlim(maxParallelization, maxParallelization);
+
+            if (int.MaxValue - maxParallelization < maxQueuingActions)
             {
-                maxQueuedActions = int.MaxValue;
+                maxQueuingActions = int.MaxValue;
             }
-            else maxQueuedActions += maxParallelization;
-            var maxQueuedActionsSemaphore = new SemaphoreSlim(maxQueuedActions, maxQueuedActions);
+            else
+            {
+                maxQueuingActions += maxParallelization;
+            }
+            SemaphoreSlim maxQueuedActionsSemaphore = new SemaphoreSlim(maxQueuingActions, maxQueuingActions);
+
             return new BulkheadPolicy<TResult>(
                (action, context, cancellationToken) => BulkheadEngine.Implementation(
                    action,
@@ -48,6 +58,6 @@ namespace Polly
                )
            );
         }
-        
+
     }
 }

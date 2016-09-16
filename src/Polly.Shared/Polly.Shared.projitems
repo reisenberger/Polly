@@ -79,6 +79,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BulkheadTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BulkheadTResultSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\EmptyStruct.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\PredicateHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ReadOnlyDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SystemClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\TaskHelper.cs" />

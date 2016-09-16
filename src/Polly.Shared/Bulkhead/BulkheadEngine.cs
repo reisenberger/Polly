@@ -24,17 +24,14 @@ namespace Polly.Bulkhead
             SemaphoreSlim maxQueuedActionsSemaphore,
             CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!maxQueuedActionsSemaphore.Wait(TimeSpan.Zero, cancellationToken)) throw new SemaphoreRejectedException();
+            if (!maxQueuedActionsSemaphore.Wait(TimeSpan.Zero, cancellationToken)) { throw new SemaphoreRejectedException(); }
             
             try
             {
                 maxParallelizationSemaphore.Wait(cancellationToken);
                 try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    DelegateResult<TResult> delegateOutcome = new DelegateResult<TResult>(action(cancellationToken));
-                    return delegateOutcome.Result;
+                    return action(cancellationToken);
                 }
                 finally
                 {

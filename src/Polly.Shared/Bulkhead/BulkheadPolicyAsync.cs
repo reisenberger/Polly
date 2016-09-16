@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly.Utilities;
 
 namespace Polly.Bulkhead
 {
@@ -10,12 +10,8 @@ namespace Polly.Bulkhead
     /// </summary>
     public partial class BulkheadPolicy
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="asyncExceptionPolicy"></param>
         internal BulkheadPolicy(Func<Func<CancellationToken, Task>, Context, CancellationToken, bool, Task> asyncExceptionPolicy)
-           : base(asyncExceptionPolicy, Enumerable.Empty<ExceptionPredicate>())
+           : base(asyncExceptionPolicy, PredicateHelper.EmptyExceptionPredicates)
         {
         }
     }
@@ -25,13 +21,9 @@ namespace Polly.Bulkhead
     /// </summary>
     public partial class BulkheadPolicy<TResult>
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="asyncExecutionPolicy"></param>
         internal BulkheadPolicy(
             Func<Func<CancellationToken, Task<TResult>>, Context, CancellationToken, bool, Task<TResult>> asyncExecutionPolicy
-            ) : base(asyncExecutionPolicy, Enumerable.Empty<ExceptionPredicate>(), Enumerable.Empty<ResultPredicate<TResult>>())
+            ) : base(asyncExecutionPolicy, PredicateHelper.EmptyExceptionPredicates, PredicateHelper<TResult>.EmptyResultPredicates)
         {
         }
     }

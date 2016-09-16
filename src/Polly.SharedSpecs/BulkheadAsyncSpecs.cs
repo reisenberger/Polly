@@ -26,40 +26,17 @@ namespace Polly.Specs
         
 
         [Fact]
-        public void Should_throw_when_maxqueuedactions_less_than_zero()
+        public void Should_throw_when_maxQueuingActions_less_than_zero()
         {
             Action policy = () => Policy
                                       .BulkheadAsync(1, -1);
 
             policy.ShouldThrow<ArgumentOutOfRangeException>().And
-                  .ParamName.Should().Be("maxQueuedActions");
+                  .ParamName.Should().Be("maxQueuingActions");
         }
-
-        [Fact]
-        public void Should_throw_when_maxqueuedactions_more_than_maxParallelization()
-        {
-            Action policy = () => Policy
-                                      .BulkheadAsync(2, 1);
-
-            policy.ShouldThrow<ArgumentOutOfRangeException>().And
-                  .ParamName.Should().Be("maxQueuedActions");
-        }
-
-
-
-
-        [Fact]
-        public void Should_initial_Bulkhead_with_processor_count_on_empty_parameters_syntax()
-        {
-            Policy policy = Policy
-                                      .BulkheadAsync();
-
-            var type = policy.GetType();
-            type.Name.Should().Be("BulkheadPolicy");
-        }
-
+        
         //[Fact]
-        public void Should_throw_when_exeeding_maxQueuedActions()
+        public void Should_throw_when_exeeding_maxQueuingActions()
         {
             count = 0;
             _indexCount = 0;
