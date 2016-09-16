@@ -7,7 +7,8 @@
 - Add CancellationToken support to synchronous executions (to support TimeoutPolicy).  Thanks to [@brunolauze](https://github.com/brunolauze) and [@reisenberger](https://github.com/reisenberger)
 - Add PolicyWrap. Thanks to [@reisenberger](https://github.com/reisenberger)
 - Add Fallback policy. Thanks to [@reisenberger](https://github.com/reisenberger)
-
+- Add Bulkhead policy. Thanks to [@reisenberger](https://github.com/reisenberger) and [@brunolauze](https://github.com/brunolauze).
+- 
 ## 4.3.0
 
 - Added ability for policies to handle returned results.  Optimised circuit-breaker hot path.  Fixed circuit-breaker threshold bug.  Thanks to [@reisenberger](https://github.com/reisenberger), [@christopherbahr](https://github.com/christopherbahr) and [@Finity](https://github.com/Finity) respectively.
