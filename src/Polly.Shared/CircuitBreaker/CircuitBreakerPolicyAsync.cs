@@ -16,6 +16,8 @@ namespace Polly.CircuitBreaker
             ) : base(asyncExceptionPolicy, exceptionPredicates)
         {
             _breakerController = breakerController;
+            _breakerController.EventSubject = this._eventSubject;
+
         }
     }
 
@@ -29,6 +31,7 @@ namespace Polly.CircuitBreaker
             ) : base(asyncExecutionPolicy, exceptionPredicates, resultPredicates)
         {
             _breakerController = breakerController;
+            _breakerController.EventSubject = this._eventSubject;
         }
     }
 }

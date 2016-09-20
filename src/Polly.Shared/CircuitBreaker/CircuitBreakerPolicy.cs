@@ -19,6 +19,7 @@ namespace Polly.CircuitBreaker
             ) : base(exceptionPolicy, exceptionPredicates)
         {
             _breakerController = breakerController;
+            _breakerController.EventSubject = this._eventSubject;
         }
 
         /// <summary>
@@ -26,7 +27,7 @@ namespace Polly.CircuitBreaker
         /// </summary>
         public CircuitState CircuitState
         {
-            get { return _breakerController.CircuitState; }
+            get { return _breakerController.GetCircuitState(Context.Empty); }
         }
 
         /// <summary>
@@ -69,6 +70,7 @@ namespace Polly.CircuitBreaker
             ) : base(executionPolicy, exceptionPredicates, resultPredicates)
         {
             _breakerController = breakerController;
+            _breakerController.EventSubject = this._eventSubject;
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Polly.CircuitBreaker
         /// </summary>
         public CircuitState CircuitState
         {
-            get { return _breakerController.CircuitState; }
+            get { return _breakerController.GetCircuitState(Context.Empty); }
         }
 
         /// <summary>

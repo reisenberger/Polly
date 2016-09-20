@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reactive.Subjects;
+using Polly.Events;
 using Polly.Utilities;
 
 namespace Polly.CircuitBreaker
@@ -13,6 +15,7 @@ namespace Polly.CircuitBreaker
         protected readonly Action<Context> _onReset;
         protected readonly Action _onHalfOpen;
         protected readonly object _lock = new object();
+        protected ISubject<PolicyEvent> _eventSubject;
 
         protected CircuitStateController(
             TimeSpan durationOfBreak, 
@@ -24,29 +27,26 @@ namespace Polly.CircuitBreaker
             _onBreak = onBreak;
             _onReset = onReset;
             _onHalfOpen = onHalfOpen;
-
             _circuitState = CircuitState.Closed;
             Reset();
         }
 
-        public CircuitState CircuitState
+        public CircuitState GetCircuitState(Context context)
         {
-            get
+            if (_circuitState != CircuitState.Open)
             {
-                if (_circuitState != CircuitState.Open)
-                {
-                    return _circuitState;
-                }
+                return _circuitState;
+            }
 
-                using (TimedLock.Lock(_lock))
+            using (TimedLock.Lock(_lock))
+            {
+                if (_circuitState == CircuitState.Open && !IsInAutomatedBreak_NeedsLock)
                 {
-                    if (_circuitState == CircuitState.Open && !IsInAutomatedBreak_NeedsLock)
-                    {
-                        _circuitState = CircuitState.HalfOpen;
-                        _onHalfOpen();
-                    }
-                    return _circuitState;
+                    _circuitState = CircuitState.HalfOpen;
+                    EventSubject.OnNext(new PolicyEvent(CircuitBreakerEvent.CircuitHalfOpened, context));
+                    _onHalfOpen();
                 }
+                return _circuitState;
             }
         }
 
@@ -103,6 +103,7 @@ namespace Polly.CircuitBreaker
                 : SystemClock.UtcNow() + durationOfBreak;
             _circuitState = CircuitState.Open;
 
+            EventSubject.OnNext(new PolicyEvent(CircuitBreakerEvent.CircuitOpened, context));
             _onBreak(_lastOutcome, durationOfBreak, context ?? Context.Empty);
         }
 
@@ -120,13 +121,14 @@ namespace Polly.CircuitBreaker
             _circuitState = CircuitState.Closed;
             if (priorState != CircuitState.Closed)
             {
-                _onReset(context ?? Context.Empty);
+                EventSubject.OnNext(new PolicyEvent(CircuitBreakerEvent.CircuitClosed, context));
+                _onReset(context);
             }
         }
 
-        public void OnActionPreExecute()
+        public void OnActionPreExecute(Context context)
         {
-            switch (CircuitState)
+            switch (GetCircuitState(context))
             {
                 case CircuitState.Closed:
                 case CircuitState.HalfOpen:
@@ -147,6 +149,16 @@ namespace Polly.CircuitBreaker
         public abstract void OnActionFailure(DelegateResult<TResult> outcome, Context context);
 
         public abstract void OnCircuitReset(Context context);
+
+        public ISubject<PolicyEvent> EventSubject
+        {
+            get { return _eventSubject; }
+            set
+            {
+                if (_eventSubject != null) throw new ArgumentException("ICircuitController<TResult>.EventSubject should only be initialised once.");
+                _eventSubject = value;
+            }
+        }
     }
 }
 

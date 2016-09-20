@@ -17,7 +17,7 @@ namespace Polly.CircuitBreaker
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            breakerController.OnActionPreExecute();
+            breakerController.OnActionPreExecute(context);
 
             try
             {

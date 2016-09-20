@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Polly.Utilities;
 
 namespace Polly
 {
@@ -19,7 +18,7 @@ namespace Polly
             if (asyncExceptionPolicy == null) throw new ArgumentNullException("asyncExceptionPolicy");
 
             _asyncExceptionPolicy = asyncExceptionPolicy;
-            _exceptionPredicates = exceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
+            _exceptionPredicates = exceptionPredicates ?? Enumerable.Empty<ExceptionPredicate>();
         }
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Task> action)
         {
-            return ExecuteAsync(action, Context.Empty, false);
+            return ExecuteAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -51,7 +50,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Task> action, bool continueOnCapturedContext)
         {
-            return ExecuteAsync(ct => action(), Context.Empty, CancellationToken.None, continueOnCapturedContext);
+            return ExecuteAsync(ct => action(), new Context(), CancellationToken.None, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken)
         {
-            return ExecuteAsync(action, Context.Empty, cancellationToken, false);
+            return ExecuteAsync(action, new Context(), cancellationToken, false);
         }
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsync(action, Context.Empty, cancellationToken, continueOnCapturedContext);
+            return ExecuteAsync(action, new Context(), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -116,6 +115,8 @@ namespace Polly
             if (_asyncExceptionPolicy == null) throw new InvalidOperationException
                 ("Please use the asynchronous RetryAsync, RetryForeverAsync, WaitAndRetryAsync or CircuitBreakerAsync methods when calling the asynchronous Execute method.");
 
+            context.SetPolicyContext(this);
+
             await _asyncExceptionPolicy(action, context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
         }
 
@@ -127,7 +128,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult> ExecuteAndCaptureAsync(Func<Task> action)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, false);
+            return ExecuteAndCaptureAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult> ExecuteAndCaptureAsync(Func<CancellationToken, Task> action)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, false);
+            return ExecuteAndCaptureAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult> ExecuteAndCaptureAsync(Func<Task> action, bool continueOnCapturedContext)
         {
-            return ExecuteAndCaptureAsync(ct => action(), Context.Empty, CancellationToken.None, continueOnCapturedContext);
+            return ExecuteAndCaptureAsync(ct => action(), new Context(), CancellationToken.None, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -199,7 +200,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult> ExecuteAndCaptureAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, cancellationToken, false);
+            return ExecuteAndCaptureAsync(action, new Context(), cancellationToken, false);
         }
 
         /// <summary>
@@ -224,7 +225,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult> ExecuteAndCaptureAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, cancellationToken, continueOnCapturedContext);
+            return ExecuteAndCaptureAsync(action, new Context(), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -238,12 +239,9 @@ namespace Polly
         [DebuggerStepThrough]
         internal async Task<PolicyResult> ExecuteAndCaptureAsync(Func<CancellationToken, Task> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            if (_asyncExceptionPolicy == null) throw new InvalidOperationException
-                ("Please use the asynchronous RetryAsync, RetryForeverAsync, WaitAndRetryAsync or CircuitBreakerAsync methods when calling the asynchronous Execute method.");
-
             try
             {
-                await _asyncExceptionPolicy(action, context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
+                await ExecuteAsync(action, context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
                 return PolicyResult.Successful();
             }
             catch (Exception exception)
@@ -261,7 +259,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> action)
         {
-            return ExecuteAsync(action, Context.Empty, false);
+            return ExecuteAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -300,7 +298,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
         {
-            return ExecuteAsync(action, Context.Empty, cancellationToken, false);
+            return ExecuteAsync(action, new Context(), cancellationToken, false);
         }
 
         /// <summary>
@@ -327,7 +325,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> action, bool continueOnCapturedContext)
         {
-            return ExecuteAsync(ct => action(), Context.Empty, CancellationToken.None, continueOnCapturedContext);
+            return ExecuteAsync(ct => action(), new Context(), CancellationToken.None, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -370,7 +368,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsync(action, Context.Empty, cancellationToken, continueOnCapturedContext);
+            return ExecuteAsync(action, new Context(), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -384,10 +382,12 @@ namespace Polly
         /// <returns>The value returned by the action</returns>
         /// <exception cref="System.InvalidOperationException">Please use the asynchronous RetryAsync, RetryForeverAsync, WaitAndRetryAsync or CircuitBreakerAsync methods when calling the asynchronous Execute method.</exception>
         [DebuggerStepThrough]
-        internal async Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
+        protected internal virtual async Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
             if (_asyncExceptionPolicy == null) throw new InvalidOperationException(
                 "Please use the asynchronous RetryAsync, RetryForeverAsync, WaitAndRetryAsync or CircuitBreakerAsync methods when calling the asynchronous Execute method.");
+
+            context.SetPolicyContext(this);
 
             var result = default(TResult);
             await _asyncExceptionPolicy(async ct =>
@@ -407,7 +407,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<Task<TResult>> action)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, false);
+            return ExecuteAndCaptureAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -419,7 +419,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<CancellationToken, Task<TResult>> action)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, false);
+            return ExecuteAndCaptureAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<Task<TResult>> action, bool continueOnCapturedContext)
         {
-            return ExecuteAndCaptureAsync(ct => action(), Context.Empty, CancellationToken.None, continueOnCapturedContext);
+            return ExecuteAndCaptureAsync(ct => action(), new Context(), CancellationToken.None, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -486,7 +486,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<Task<TResult>> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCaptureAsync(ct => action(), Context.Empty, cancellationToken, false);
+            return ExecuteAndCaptureAsync(ct => action(), new Context(), cancellationToken, false);
         }
 
         /// <summary>
@@ -499,7 +499,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, cancellationToken, false);
+            return ExecuteAndCaptureAsync(action, new Context(), cancellationToken, false);
         }
 
 
@@ -542,7 +542,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, cancellationToken, continueOnCapturedContext);
+            return ExecuteAndCaptureAsync(action, new Context(), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -558,19 +558,9 @@ namespace Polly
         [DebuggerStepThrough]
         internal async Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            if (_asyncExceptionPolicy == null) throw new InvalidOperationException(
-                "Please use the asynchronous RetryAsync, RetryForeverAsync, WaitAndRetryAsync or CircuitBreakerAsync methods when calling the asynchronous Execute method.");
-
             try
             {
-                var result = default(TResult);
-                await _asyncExceptionPolicy(async ct =>
-                {
-                    result = await action(ct).ConfigureAwait(continueOnCapturedContext);
-                }, context, cancellationToken, continueOnCapturedContext)
-                .ConfigureAwait(continueOnCapturedContext);
-
-                return PolicyResult<TResult>.Successful(result);
+                return PolicyResult<TResult>.Successful(await ExecuteAsync(action, context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext));
             }
             catch (Exception exception)
             {
@@ -591,8 +581,8 @@ namespace Polly
             if (asyncExecutionPolicy == null) throw new ArgumentNullException("asyncExecutionPolicy");
 
             _asyncExecutionPolicy = asyncExecutionPolicy;
-            _exceptionPredicates = exceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
-            _resultPredicates = resultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
+            _exceptionPredicates = exceptionPredicates ?? Enumerable.Empty<ExceptionPredicate>();
+            _resultPredicates = resultPredicates ?? Enumerable.Empty<ResultPredicate<TResult>>();
         }
 
         /// <summary>
@@ -603,7 +593,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync(Func<Task<TResult>> action)
         {
-            return ExecuteAsync(action, Context.Empty, false);
+            return ExecuteAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -614,7 +604,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync(Func<CancellationToken, Task<TResult>> action)
         {
-            return ExecuteAsync(action, Context.Empty, false);
+            return ExecuteAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -650,7 +640,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
         {
-            return ExecuteAsync(action, Context.Empty, cancellationToken, false);
+            return ExecuteAsync(action, new Context(), cancellationToken, false);
         }
 
         /// <summary>
@@ -675,7 +665,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync(Func<Task<TResult>> action, bool continueOnCapturedContext)
         {
-            return ExecuteAsync(ct => action(), Context.Empty, CancellationToken.None, continueOnCapturedContext);
+            return ExecuteAsync(ct => action(), new Context(), CancellationToken.None, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -687,7 +677,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync(Func<CancellationToken, Task<TResult>> action, bool continueOnCapturedContext)
         {
-            return ExecuteAsync(action, Context.Empty, CancellationToken.None, continueOnCapturedContext);
+            return ExecuteAsync(action, new Context(), CancellationToken.None, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -727,7 +717,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsync(action, Context.Empty, cancellationToken, continueOnCapturedContext);
+            return ExecuteAsync(action, new Context(), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -744,6 +734,8 @@ namespace Polly
         {
             if (_asyncExecutionPolicy == null) throw new InvalidOperationException(
                 "Please use the asynchronous RetryAsync, RetryForeverAsync, WaitAndRetryAsync or CircuitBreakerAsync methods when calling the asynchronous Execute method.");
+
+            context.SetPolicyContext(this);
 
             TResult result = await _asyncExecutionPolicy(
                 action,
@@ -762,7 +754,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<Task<TResult>> action)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, false);
+            return ExecuteAndCaptureAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -773,7 +765,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<CancellationToken, Task<TResult>> action)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, false);
+            return ExecuteAndCaptureAsync(action, new Context(), false);
         }
 
         /// <summary>
@@ -797,7 +789,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<Task<TResult>> action, bool continueOnCapturedContext)
         {
-            return ExecuteAndCaptureAsync(ct => action(), Context.Empty, CancellationToken.None, continueOnCapturedContext);
+            return ExecuteAndCaptureAsync(ct => action(), new Context(), CancellationToken.None, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -835,7 +827,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<Task<TResult>> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCaptureAsync(ct => action(), Context.Empty, cancellationToken, false);
+            return ExecuteAndCaptureAsync(ct => action(), new Context(), cancellationToken, false);
         }
 
         /// <summary>
@@ -847,7 +839,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, cancellationToken, false);
+            return ExecuteAndCaptureAsync(action, new Context(), cancellationToken, false);
         }
 
         /// <summary>
@@ -887,7 +879,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAndCaptureAsync(action, Context.Empty, cancellationToken, continueOnCapturedContext);
+            return ExecuteAndCaptureAsync(action, new Context(), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -902,17 +894,9 @@ namespace Polly
         [DebuggerStepThrough]
         internal async Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            if (_asyncExecutionPolicy == null) throw new InvalidOperationException(
-                "Please use the asynchronous RetryAsync, RetryForeverAsync, WaitAndRetryAsync or CircuitBreakerAsync methods when calling the asynchronous Execute method.");
-
             try
             {
-                TResult result = await _asyncExecutionPolicy(
-                    action,
-                    context,
-                    cancellationToken,
-                    continueOnCapturedContext)
-                .ConfigureAwait(continueOnCapturedContext);
+                TResult result = await ExecuteAsync(action, context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
 
                 if (_resultPredicates.Any(predicate => predicate(result)))
                 {

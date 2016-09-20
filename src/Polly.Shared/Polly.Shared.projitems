@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\BrokenCircuitException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\ConsecutiveCountCircuitController.cs" />
@@ -33,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Context.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextualPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextualPolicyAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\PolicyEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionPredicate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DelegateResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FallbackSyntax.cs" />
@@ -42,7 +44,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Policy.Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policy.HandleSyntax.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Policy.Key.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyBuilder.OrSyntax.cs" />
@@ -79,6 +83,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BulkheadTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BulkheadTResultSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\EmptyStruct.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\KeyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\PredicateHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ReadOnlyDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SystemClock.cs" />
@@ -86,6 +91,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\TimedLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyWrapSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrap.Key.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapEngineAsync.cs" />

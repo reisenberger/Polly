@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Polly.CircuitBreaker;
+using Polly.Events;
 using Polly.Specs.Helpers;
 using Polly.Utilities;
 using Xunit;
@@ -99,6 +102,11 @@ namespace Polly.Specs
             CircuitBreakerPolicy breaker = Policy
                             .Handle<DivideByZeroException>()
                             .CircuitBreaker(2, TimeSpan.FromMinutes(1));
+            breaker.WithPolicyKey("CustomPolicyKey");
+
+            IList<PolicyEvent> emittedEvents = new List<PolicyEvent>();
+            IObserver<PolicyEvent> eventObserver = Observer.Create<PolicyEvent>(e => emittedEvents.Add(e));
+            breaker.WithEventSubscriber(eventObserver);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                   .ShouldThrow<DivideByZeroException>();
@@ -115,6 +123,12 @@ namespace Polly.Specs
                   .WithInnerException<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Open);
             delegateExecutedWhenBroken.Should().BeFalse();
+
+            emittedEvents.Count.Should().Be(1);
+            emittedEvents.Single().Should().Match<PolicyEvent>(e => 
+                    e.Event == CircuitBreakerEvent.CircuitOpened
+                    && e.PolicyKey == "CustomPolicyKey"
+                );
         }
 
         [Fact]
