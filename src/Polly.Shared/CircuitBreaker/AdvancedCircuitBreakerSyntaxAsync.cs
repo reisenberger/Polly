@@ -195,23 +195,14 @@ namespace Polly
         /// <exception cref="ArgumentNullException">onHalfOpen</exception>
         public static CircuitBreakerPolicy AdvancedCircuitBreakerAsync(this PolicyBuilder policyBuilder, double failureThreshold, TimeSpan samplingDuration, int minimumThroughput, TimeSpan durationOfBreak, Action<Exception, TimeSpan, Context> onBreak, Action<Context> onReset, Action onHalfOpen)
         {
-            var resolutionOfCircuit = TimeSpan.FromTicks(AdvancedCircuitController<EmptyStruct>.ResolutionOfCircuitTimer);
-
-            if (failureThreshold <= 0) throw new ArgumentOutOfRangeException("failureThreshold", "Value must be greater than zero.");
-            if (failureThreshold > 1) throw new ArgumentOutOfRangeException("failureThreshold", "Value must be less than or equal to one.");
-            if (samplingDuration < resolutionOfCircuit) throw new ArgumentOutOfRangeException("samplingDuration", String.Format("Value must be equal to or greater than {0} milliseconds. This is the minimum resolution of the CircuitBreaker timer.", resolutionOfCircuit.TotalMilliseconds));
-            if (minimumThroughput <= 1) throw new ArgumentOutOfRangeException("minimumThroughput", "Value must be greater than one.");
-            if (durationOfBreak < TimeSpan.Zero) throw new ArgumentOutOfRangeException("durationOfBreak", "Value must be greater than zero.");
-
             if (onBreak == null) throw new ArgumentNullException("onBreak");
             if (onReset == null) throw new ArgumentNullException("onReset");
             if (onHalfOpen == null) throw new ArgumentNullException("onHalfOpen");
 
+            IAdvancedCircuitBreakerConfiguration configuration = new AdvancedCircuitBreakerConfiguration(failureThreshold, samplingDuration, minimumThroughput, durationOfBreak);
+
             var breakerController = new AdvancedCircuitController<EmptyStruct>(
-                failureThreshold,
-                samplingDuration,
-                minimumThroughput,
-                durationOfBreak,
+                configuration,
                 (outcome, timespan, context) => onBreak(outcome.Exception, timespan, context),
                 onReset,
                 onHalfOpen);

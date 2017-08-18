@@ -166,16 +166,15 @@ namespace Polly
         /// <exception cref="ArgumentNullException">onHalfOpen</exception>
         public static CircuitBreakerPolicy<TResult> CircuitBreaker<TResult>(this PolicyBuilder<TResult> policyBuilder, int handledEventsAllowedBeforeBreaking, TimeSpan durationOfBreak, Action<DelegateResult<TResult>, TimeSpan, Context> onBreak, Action<Context> onReset, Action onHalfOpen)
         {
-            if (handledEventsAllowedBeforeBreaking <= 0) throw new ArgumentOutOfRangeException("handledEventsAllowedBeforeBreaking", "Value must be greater than zero.");
-            if (durationOfBreak < TimeSpan.Zero) throw new ArgumentOutOfRangeException("durationOfBreak", "Value must be greater than zero.");
-
             if (onBreak == null) throw new ArgumentNullException("onBreak");
             if (onReset == null) throw new ArgumentNullException("onReset");
             if (onHalfOpen == null) throw new ArgumentNullException("onHalfOpen");
 
-            ICircuitController<TResult> breakerController = new ConsecutiveCountCircuitController<TResult>(
-                handledEventsAllowedBeforeBreaking,
-                durationOfBreak,
+            IConsecutiveCountCircuitBreakerConfiguration configuration = new ConsecutiveCountCircuitBreakerConfiguration(handledEventsAllowedBeforeBreaking, durationOfBreak);
+
+            var breakerController = new ConsecutiveCountCircuitController<TResult>(
+                configuration,
+
                 onBreak,
                 onReset,
                 onHalfOpen);

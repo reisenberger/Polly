@@ -36,7 +36,7 @@ namespace Polly.Specs.CircuitBreaker
 
             action.ShouldThrow<ArgumentOutOfRangeException>()
                   .And.ParamName.Should()
-                  .Be("handledEventsAllowedBeforeBreaking");
+                  .Be("failuresAllowedBeforeBreaking");
         }
 
         [Fact]

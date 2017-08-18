@@ -164,21 +164,20 @@ namespace Polly
         /// <returns>The policy instance.</returns>
         /// <remarks>(see "Release It!" by Michael T. Nygard fi)</remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">handledEventsAllowedBeforeBreaking;Value must be greater than zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">durationOfBreak;Value must be greater than zero</exception>
         /// <exception cref="ArgumentNullException">onBreak</exception>
         /// <exception cref="ArgumentNullException">onReset</exception>
         /// <exception cref="ArgumentNullException">onHalfOpen</exception>
         public static CircuitBreakerPolicy<TResult> CircuitBreakerAsync<TResult>(this PolicyBuilder<TResult> policyBuilder, int handledEventsAllowedBeforeBreaking, TimeSpan durationOfBreak, Action<DelegateResult<TResult>, TimeSpan, Context> onBreak, Action<Context> onReset, Action onHalfOpen)
         {
-            if (handledEventsAllowedBeforeBreaking <= 0) throw new ArgumentOutOfRangeException("handledEventsAllowedBeforeBreaking", "Value must be greater than zero.");
-            if (durationOfBreak < TimeSpan.Zero) throw new ArgumentOutOfRangeException("durationOfBreak", "Value must be greater than zero.");
-
             if (onBreak == null) throw new ArgumentNullException("onBreak");
             if (onReset == null) throw new ArgumentNullException("onReset");
             if (onHalfOpen == null) throw new ArgumentNullException("onHalfOpen");
 
+            IConsecutiveCountCircuitBreakerConfiguration configuration = new ConsecutiveCountCircuitBreakerConfiguration(handledEventsAllowedBeforeBreaking, durationOfBreak);
+
             var breakerController = new ConsecutiveCountCircuitController<TResult>(
-                handledEventsAllowedBeforeBreaking, 
-                durationOfBreak,
+                configuration,
                 onBreak,
                 onReset, 
                 onHalfOpen);

@@ -9,25 +9,21 @@ namespace Polly.CircuitBreaker
         internal static readonly long ResolutionOfCircuitTimer = TimeSpan.FromMilliseconds(20).Ticks;
 
         private readonly IHealthMetrics _metrics;
-        private readonly double _failureThreshold;
-        private readonly int _minimumThroughput;
+        private readonly IAdvancedCircuitBreakerConfiguration _configuration;
 
         public AdvancedCircuitController(
-            double failureThreshold, 
-            TimeSpan samplingDuration, 
-            int minimumThroughput, 
-            TimeSpan durationOfBreak, 
+            IAdvancedCircuitBreakerConfiguration configuration, 
             Action<DelegateResult<TResult>, TimeSpan, Context> onBreak, 
             Action<Context> onReset, 
             Action onHalfOpen
-            ) : base(durationOfBreak, onBreak, onReset, onHalfOpen)
+            ) : base(configuration, onBreak, onReset, onHalfOpen)
         {
-            _metrics = samplingDuration.Ticks < ResolutionOfCircuitTimer * NumberOfWindows
-                ? (IHealthMetrics)new SingleHealthMetrics(samplingDuration)
-                : (IHealthMetrics)new RollingHealthMetrics(samplingDuration, NumberOfWindows);
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-            _failureThreshold = failureThreshold;
-            _minimumThroughput = minimumThroughput;
+            _metrics = _configuration.SamplingDuration.Ticks < ResolutionOfCircuitTimer * NumberOfWindows
+                ? (IHealthMetrics)new SingleHealthMetrics(_configuration.SamplingDuration)
+                : (IHealthMetrics)new RollingHealthMetrics(_configuration.SamplingDuration, NumberOfWindows);
+
         }
 
         public override void OnCircuitReset(Context context)
@@ -86,7 +82,7 @@ namespace Polly.CircuitBreaker
                         var healthCount = _metrics.GetHealthCount_NeedsLock();
 
                         int throughput = healthCount.Total;
-                        if (throughput >= _minimumThroughput && ((double)healthCount.Failures) / throughput >= _failureThreshold)
+                        if (throughput >= _configuration.MinimumThroughput && ((double)healthCount.Failures) / throughput >= _configuration.FailureThreshold)
                         {
                             Break_NeedsLock(context);
                         }

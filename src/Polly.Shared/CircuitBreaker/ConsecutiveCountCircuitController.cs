@@ -5,18 +5,17 @@ namespace Polly.CircuitBreaker
 {
     internal class ConsecutiveCountCircuitController<TResult> : CircuitStateController<TResult>
     {
-        private readonly int _exceptionsAllowedBeforeBreaking;
+        private readonly IConsecutiveCountCircuitBreakerConfiguration _configuration;
         private int _consecutiveFailureCount;
 
         public ConsecutiveCountCircuitController(
-            int exceptionsAllowedBeforeBreaking, 
-            TimeSpan durationOfBreak, 
+            IConsecutiveCountCircuitBreakerConfiguration configuration, 
             Action<DelegateResult<TResult>, TimeSpan, Context> onBreak, 
             Action<Context> onReset, 
             Action onHalfOpen
-            ) : base(durationOfBreak, onBreak, onReset, onHalfOpen)
+            ) : base(configuration, onBreak, onReset, onHalfOpen)
         {
-            _exceptionsAllowedBeforeBreaking = exceptionsAllowedBeforeBreaking;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public override void OnCircuitReset(Context context)
@@ -67,7 +66,7 @@ namespace Polly.CircuitBreaker
 
                     case CircuitState.Closed:
                         _consecutiveFailureCount += 1;
-                        if (_consecutiveFailureCount >= _exceptionsAllowedBeforeBreaking)
+                        if (_consecutiveFailureCount >= _configuration.FailuresAllowedBeforeBreaking)
                         {
                             Break_NeedsLock(context);
                         }

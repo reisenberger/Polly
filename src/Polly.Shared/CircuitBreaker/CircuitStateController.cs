@@ -6,7 +6,7 @@ namespace Polly.CircuitBreaker
 {
     internal abstract class CircuitStateController<TResult> : ICircuitController<TResult>
     {
-        protected readonly TimeSpan _durationOfBreak;
+        protected readonly ICircuitBreakerConfiguration _baseConfiguration;
         protected long _blockedTill;
         protected CircuitState _circuitState;
         protected DelegateResult<TResult> _lastOutcome;
@@ -18,12 +18,13 @@ namespace Polly.CircuitBreaker
         protected readonly object _lock = new object();
 
         protected CircuitStateController(
-            TimeSpan durationOfBreak, 
+            ICircuitBreakerConfiguration configuration, 
             Action<DelegateResult<TResult>, TimeSpan, Context> onBreak, 
             Action<Context> onReset, 
             Action onHalfOpen)
         {
-            _durationOfBreak = durationOfBreak;
+            _baseConfiguration = configuration;
+
             _onBreak = onBreak;
             _onReset = onReset;
             _onHalfOpen = onHalfOpen;
@@ -96,7 +97,7 @@ namespace Polly.CircuitBreaker
 
         protected void Break_NeedsLock(Context context)
         {
-            BreakFor_NeedsLock(_durationOfBreak, context);
+            BreakFor_NeedsLock(_baseConfiguration.DurationOfBreak, context);
         }
 
         private void BreakFor_NeedsLock(TimeSpan durationOfBreak, Context context)
@@ -135,7 +136,7 @@ namespace Polly.CircuitBreaker
             {
                 // It's time to permit a / another trial call in the half-open state ...
                 // ... but to prevent race conditions/multiple calls, we have to ensure only _one_ thread wins the race to own this next call.
-                return Interlocked.CompareExchange(ref _blockedTill, SystemClock.UtcNow().Ticks + _durationOfBreak.Ticks, currentlyBlockedUntil) == currentlyBlockedUntil;
+                return Interlocked.CompareExchange(ref _blockedTill, SystemClock.UtcNow().Ticks + _baseConfiguration.DurationOfBreak.Ticks, currentlyBlockedUntil) == currentlyBlockedUntil;
             }
             return false;
         }
