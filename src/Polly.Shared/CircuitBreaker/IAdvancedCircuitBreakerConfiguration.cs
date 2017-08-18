@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Polly.CircuitBreaker
 {
     /// <summary>
-    /// Describes the configuration parameters of an advanced <see cref="CircuitBreakerPolicy"/>
+    /// Describes the configuration parameters for an advanced <see cref="CircuitBreakerPolicy"/>
     /// </summary>
 
     public interface IAdvancedCircuitBreakerConfiguration : ICircuitBreakerConfiguration

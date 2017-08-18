@@ -4,7 +4,7 @@ using System;
 namespace Polly.CircuitBreaker
 {
     /// <summary>
-    /// Describes the configuration parameters of a <see cref="CircuitBreakerPolicy"/>
+    /// Describes the configuration parameters for a <see cref="CircuitBreakerPolicy"/>
     /// </summary>
     internal class AdvancedCircuitBreakerConfiguration : CircuitBreakerConfiguration, IAdvancedCircuitBreakerConfiguration
     {

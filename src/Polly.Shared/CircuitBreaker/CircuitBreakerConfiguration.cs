@@ -5,7 +5,7 @@ using System.Text;
 namespace Polly.CircuitBreaker
 {
     /// <summary>
-    /// Describes the configuration parameters of any member of the circuit-breaker family of policies
+    /// Describes the configuration parameters for any member of the circuit-breaker family of policies
     /// </summary>
     public abstract class CircuitBreakerConfiguration : ICircuitBreakerConfiguration
     {
