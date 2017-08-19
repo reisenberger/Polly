@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerTResultSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\ICircuitBreakerPolicySpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\ICircuitBreakerPolicyTResultSpecs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\IConsecutiveCountCircuitBreakerConfigurationSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackAsyncSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackSpecs.cs" />
