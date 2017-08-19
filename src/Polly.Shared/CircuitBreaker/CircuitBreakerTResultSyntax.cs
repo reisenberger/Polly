@@ -166,11 +166,32 @@ namespace Polly
         /// <exception cref="ArgumentNullException">onHalfOpen</exception>
         public static CircuitBreakerPolicy<TResult> CircuitBreaker<TResult>(this PolicyBuilder<TResult> policyBuilder, int handledEventsAllowedBeforeBreaking, TimeSpan durationOfBreak, Action<DelegateResult<TResult>, TimeSpan, Context> onBreak, Action<Context> onReset, Action onHalfOpen)
         {
+            IConsecutiveCountCircuitBreakerConfiguration configuration = new ConsecutiveCountCircuitBreakerConfiguration(handledEventsAllowedBeforeBreaking, durationOfBreak);
+
+            return policyBuilder.CircuitBreaker(configuration, onBreak, onReset, onHalfOpen);
+        }
+
+        /// <summary>
+        /// <para> Builds a <see cref="Policy"/> that will function like a Circuit Breaker.</para>
+        /// <para>The circuit will break according to the configuration provided in the <see cref="IConsecutiveCountCircuitBreakerConfiguration"/>
+        /// </para>
+        /// </summary>
+        /// <param name="policyBuilder">The policy builder.</param>
+        /// <param name="configuration">The configuration parameters for a <see cref="CircuitBreakerPolicy"/>.</param>
+        /// <param name="onBreak">The action to call when the circuit transitions to an <see cref="CircuitState.Open"/> state.</param>
+        /// <param name="onReset">The action to call when the circuit resets to a <see cref="CircuitState.Closed"/> state.</param>
+        /// <param name="onHalfOpen">The action to call when the circuit transitions to <see cref="CircuitState.HalfOpen"/> state, ready to try action executions again. </param>
+        /// <returns>The policy instance.</returns>
+        /// <remarks>(see "Release It!" by Michael T. Nygard fi)</remarks>
+        /// <exception cref="System.ArgumentOutOfRangeException">handledEventsAllowedBeforeBreaking;Value must be greater than zero.</exception>
+        /// <exception cref="ArgumentNullException">onBreak</exception>
+        /// <exception cref="ArgumentNullException">onReset</exception>
+        /// <exception cref="ArgumentNullException">onHalfOpen</exception>
+        public static CircuitBreakerPolicy<TResult> CircuitBreaker<TResult>(this PolicyBuilder<TResult> policyBuilder, IConsecutiveCountCircuitBreakerConfiguration configuration, Action<DelegateResult<TResult>, TimeSpan, Context> onBreak, Action<Context> onReset, Action onHalfOpen)
+        {
             if (onBreak == null) throw new ArgumentNullException("onBreak");
             if (onReset == null) throw new ArgumentNullException("onReset");
             if (onHalfOpen == null) throw new ArgumentNullException("onHalfOpen");
-
-            IConsecutiveCountCircuitBreakerConfiguration configuration = new ConsecutiveCountCircuitBreakerConfiguration(handledEventsAllowedBeforeBreaking, durationOfBreak);
 
             var breakerController = new ConsecutiveCountCircuitController<TResult>(
                 configuration,
