@@ -376,7 +376,7 @@ namespace Polly.Specs.CircuitBreaker
         }
 
         [Fact]
-        public void Should_open_circuit_again_after_the_specified_duration_has_passed_if_the_next_call_raises_an_exception()
+        public void Should_open_circuit_again_from_halfopen_if_the_next_call_raises_an_exception()
         {
             var time = 1.January(2000);
             SystemClock.UtcNow = () => time;

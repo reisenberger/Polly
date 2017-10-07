@@ -222,7 +222,7 @@ namespace Polly.Specs.CircuitBreaker
         }
 
         [Fact]
-        public void Should_open_circuit_again_after_the_specified_duration_has_passed_if_the_next_call_raises_an_exception()
+        public void Should_open_circuit_again_from_halfopen_if_the_next_call_raises_an_exception()
         {
             var time = 1.January(2000);
             SystemClock.UtcNow = () => time;
@@ -260,7 +260,7 @@ namespace Polly.Specs.CircuitBreaker
         }
 
         [Fact]
-        public void Should_reset_circuit_after_the_specified_duration_has_passed_if_the_next_call_does_not_raise_an_exception()
+        public void Should_reset_circuit_from_halfopen_if_the_next_call_does_not_raise_an_exception()
         {
             var time = 1.January(2000);
             SystemClock.UtcNow = () => time;
@@ -304,6 +304,45 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                   .ShouldThrow<BrokenCircuitException>();
             breaker.CircuitState.Should().Be(CircuitState.Open);
+        }
+
+        [Fact]
+        public void Should_leave_circuit_halfopen_if_the_next_call_raises_an_unhandled_exception()
+        {
+            // Demonstrates issues discussed in: https://github.com/App-vNext/Polly/issues/311
+
+            var time = 1.January(2000);
+            SystemClock.UtcNow = () => time;
+
+            var durationOfBreak = TimeSpan.FromMinutes(1);
+
+            CircuitBreakerPolicy breaker = Policy
+                .Handle<DivideByZeroException>()
+                .CircuitBreaker(2, durationOfBreak);
+
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Closed);
+
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Open);
+
+            // 2 exception raised, circuit is now open
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<BrokenCircuitException>();
+            breaker.CircuitState.Should().Be(CircuitState.Open);
+
+            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+
+            // duration has passed, circuit now half open
+            breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
+
+            // first call after duration raises an unhandled exception
+            breaker.Invoking(x => x.RaiseException<TaskCanceledException>())
+                .ShouldThrow<TaskCanceledException>();
+            // unhandled exception should not affect state - breaker should still be halfopen
+            breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
         }
 
         [Fact]
