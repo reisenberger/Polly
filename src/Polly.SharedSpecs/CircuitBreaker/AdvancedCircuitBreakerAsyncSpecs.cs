@@ -12,6 +12,7 @@ using Scenario = Polly.Specs.Helpers.PolicyExtensionsAsync.ExceptionAndOrCancell
 
 namespace Polly.Specs.CircuitBreaker
 {
+    [Collection(Polly.Specs.Helpers.Constants.SystemClockDependentTestCollection)]
     public class AdvancedCircuitBreakerAsyncSpecs : IDisposable
     {
         #region Configuration tests

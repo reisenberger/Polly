@@ -11,6 +11,7 @@ using Xunit;
 
 namespace Polly.Specs.Caching
 {
+    [Collection(Polly.Specs.Helpers.Constants.SystemClockDependentTestCollection)]
     public class CacheTResultAsyncSpecs : IDisposable
     {
         #region Configuration
