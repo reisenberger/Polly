@@ -4,7 +4,7 @@ Polly is a .NET resilience and transient-fault-handling library that allows deve
 
 Polly targets .NET 4.0, .NET 4.5 and .NET Standard 1.1 ([coverage](https://github.com/dotnet/standard/blob/master/docs/versions.md): .NET Core, Mono, Xamarin.iOS, Xamarin.Android, UWP, WP8.1+).
 
-[<img align="right" src="https://dotnetfoundation.org/Themes/DotNetFoundation.Theme/Images/logo-small.png" width="100" />](https://www.dotnetfoundation.org/)
+[<img align="right" src="https://github.com/dotnet/swag/raw/master/logo/dotnetfoundation_v4_small.png" width="100" />](https://www.dotnetfoundation.org/)
 We are now a member of the [.NET Foundation](https://www.dotnetfoundation.org/about)!
 
 **Keep up to date with new feature announcements, tips & tricks, and other news through [www.thepollyproject.org](http://www.thepollyproject.org)**
@@ -883,6 +883,10 @@ From Polly v5.0, synchronous executions also support cancellation via `Cancellat
 
 The .NET4.0 package uses `Microsoft.Bcl.Async` to add async support.  To minimise  dependencies on the main Polly nuget package, the .NET4.0 version is available as separate Nuget packages `Polly.Net40Async` and `Polly.Net40Async-signed`.
 
+# .NET3.5 support 
+
+The last version of Polly to support .NET3.5 is [v4.3.0](https://www.nuget.org/packages/Polly/4.3.0). This includes all of the 4.x features, as it was the last version before v5.0. This package may be installed via the NuGet package manager by specifying its version: `Install-Package Polly -Version 4.3.0`.
+
 # Release notes
 
 For details of changes by release see the [change log](https://github.com/App-vNext/Polly/blob/master/CHANGELOG.md).  We also tag relevant Pull Requests and Issues with [milestones](https://github.com/App-vNext/Polly/milestones), which match to nuget package release numbers.
@@ -947,6 +951,7 @@ For details of changes by release see the [change log](https://github.com/App-vN
 * [@reisenberger](https://github.com/reisenberger) - Add new .HandleInner<TException>(...) syntax for handling inner exceptions natively.
 * [@rjongeneelen](https://github.com/rjongeneelen) and [@reisenberger](https://github.com/reisenberger) - Allow PolicyWrap configuration to configure policies via interfaces. 
 * [@reisenberger](https://github.com/reisenberger) - Performance improvements.
+* [@awarrenlove](https://github.com/awarrenlove) - Add ability to calculate cache Ttl based on item to cache.
 
 # Sample Projects
 
@@ -956,7 +961,7 @@ For details of changes by release see the [change log](https://github.com/App-vN
 
 Please check out our [Wiki](https://github.com/App-vNext/Polly/wiki/Git-Workflow) for contributing guidelines. We are following the excellent GitHub Flow process, and would like to make sure you have all of the information needed to be a world-class contributor!
 
-Since Polly is part of the .NET Foundation, we ask our contributors to abide by their [Code of Conduct](https://www.dotnetfoundation.org/code-of-conduct).  To contribute (beyond trivial typo corrections), review and sign the .Net Foundation Contributor License Agreement ([info](https://cla.dotnetfoundation.org/); [sign](https://cla2.dotnetfoundation.org/)). This ensures the community is free to use your contributions.  The registration process can be completed entirely online.
+Since Polly is part of the .NET Foundation, we ask our contributors to abide by their [Code of Conduct](https://www.dotnetfoundation.org/code-of-conduct).  To contribute (beyond trivial typo corrections), review and sign the [.Net Foundation Contributor License Agreement](https://cla.dotnetfoundation.org/). This ensures the community is free to use your contributions.  The registration process can be completed entirely online.
 
 Also, we've stood up a [Slack](http://www.pollytalk.org) channel for easier real-time discussion of ideas and the general direction of Polly as a whole. Be sure to [join the conversation](http://www.pollytalk.org) today!
 
