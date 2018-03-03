@@ -88,8 +88,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Execution\SyncPollyExecutableFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackSyntaxAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\IFallbackPolicy.cs" />
