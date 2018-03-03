@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Threading;
+using Polly.Execution;
+using Polly.Utilities;
 
 #if NET40
 using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
@@ -10,16 +11,28 @@ using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
 
 namespace Polly.Fallback
 {
-    internal static partial class FallbackEngine
+    internal class FallbackSyncImplementation<TResult> : ISyncPolicyImplementation<TResult>
     {
-        internal static TResult Implementation<TResult>(
-            Func<Context, CancellationToken, TResult> action,
-            Context context,
-            CancellationToken cancellationToken,
-            IEnumerable<ExceptionPredicate> shouldHandleExceptionPredicates,
+        private IsPolicy _policy;
+        IEnumerable<ExceptionPredicate> _shouldHandleExceptionPredicates;
+        IEnumerable<ResultPredicate<TResult>> _shouldHandleResultPredicates;
+        Action<DelegateResult<TResult>, Context> _onFallback;
+        Func<DelegateResult<TResult>, Context, CancellationToken, TResult> _fallbackAction;
+
+        internal FallbackSyncImplementation(IsPolicy policy, 
+            IEnumerable<ExceptionPredicate> shouldHandleExceptionPredicates, 
             IEnumerable<ResultPredicate<TResult>> shouldHandleResultPredicates,
             Action<DelegateResult<TResult>, Context> onFallback,
             Func<DelegateResult<TResult>, Context, CancellationToken, TResult> fallbackAction)
+        {
+            _policy = policy ?? throw new ArgumentNullException(nameof(policy));
+            _shouldHandleExceptionPredicates = shouldHandleExceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
+            _shouldHandleResultPredicates = shouldHandleResultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
+            _onFallback = onFallback ?? throw new ArgumentNullException(nameof(onFallback));
+            _fallbackAction = fallbackAction ?? throw new ArgumentNullException(nameof(fallbackAction));
+        }
+
+        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             DelegateResult<TResult> delegateOutcome;
 
@@ -27,9 +40,9 @@ namespace Polly.Fallback
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                TResult result = action(context, cancellationToken);
+                TResult result = action.Execute(context, cancellationToken);
 
-                if (!shouldHandleResultPredicates.Any(predicate => predicate(result)))
+                if (!_shouldHandleResultPredicates.Any(predicate => predicate(result)))
                 {
                     return result;
                 }
@@ -38,7 +51,7 @@ namespace Polly.Fallback
             }
             catch (Exception ex)
             {
-                Exception handledException = shouldHandleExceptionPredicates
+                Exception handledException = _shouldHandleExceptionPredicates
                     .Select(predicate => predicate(ex))
                     .FirstOrDefault(e => e != null);
                 if (handledException == null)
@@ -49,9 +62,9 @@ namespace Polly.Fallback
                 delegateOutcome = new DelegateResult<TResult>(handledException);
             }
 
-            onFallback(delegateOutcome, context);
+            _onFallback(delegateOutcome, context);
 
-            return fallbackAction(delegateOutcome, context, cancellationToken);
+            return _fallbackAction(delegateOutcome, context, cancellationToken);
         }
     }
 }

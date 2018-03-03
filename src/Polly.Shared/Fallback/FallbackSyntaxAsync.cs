@@ -98,17 +98,7 @@ namespace Polly
             if (fallbackAction == null) throw new ArgumentNullException(nameof(fallbackAction));
             if (onFallbackAsync == null) throw new ArgumentNullException(nameof(onFallbackAsync));
 
-            return new FallbackPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) => FallbackEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context,
-                    policyBuilder.ExceptionPredicates,
-                    PredicateHelper<EmptyStruct>.EmptyResultPredicates,
-                    (outcome, ctx) => onFallbackAsync(outcome.Exception, ctx),
-                    async (outcome, ctx, ct) => { await fallbackAction(outcome.Exception, ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    cancellationToken,
-                    continueOnCapturedContext),
-                policyBuilder.ExceptionPredicates);
+            return new FallbackPolicy(policyBuilder, new FallbackAsyncImplementationFactory(onFallbackAsync, fallbackAction));
         }
     }
 
@@ -255,18 +245,7 @@ namespace Polly
             if (fallbackAction == null) throw new ArgumentNullException(nameof(fallbackAction));
             if (onFallbackAsync == null) throw new ArgumentNullException(nameof(onFallbackAsync));
 
-            return new FallbackPolicy<TResult>(
-                (action, context, cancellationToken, continueOnCapturedContext) => FallbackEngine.ImplementationAsync(
-                    action,
-                    context,
-                    policyBuilder.ExceptionPredicates,
-                    policyBuilder.ResultPredicates,
-                    onFallbackAsync,
-                    fallbackAction,
-                    cancellationToken,
-                    continueOnCapturedContext),
-                policyBuilder.ExceptionPredicates,
-                policyBuilder.ResultPredicates);
+            return new FallbackPolicy<TResult>(policyBuilder, new FallbackAsyncImplementationFactory<TResult>(onFallbackAsync, fallbackAction));
         }
     }
 }
