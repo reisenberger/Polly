@@ -28,12 +28,12 @@ namespace Polly
 
         internal Exception NotConfiguredForSyncExecution()
         {
-            return new InvalidOperationException($"This {this.GetType()} policy is not configured for synchronous executions.");
+            return new InvalidOperationException($"This {this.GetType().Name} policy is not configured for synchronous executions.");
         }
 
         internal Exception NotConfiguredForAsyncExecution()
         {
-            return new InvalidOperationException($"This {this.GetType()} policy is not configured for asynchronous executions.");
+            return new InvalidOperationException($"This {this.GetType().Name} policy is not configured for asynchronous executions.");
         }
     }
 
