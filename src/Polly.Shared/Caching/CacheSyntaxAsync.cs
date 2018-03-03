@@ -79,7 +79,8 @@ namespace Polly
             onCacheError = onCacheError ?? ((_, __, ___) => { });
             Action<Context, string> emptyDelegate = (_, __) => { };
 
-            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy.GetCacheKey, emptyDelegate, emptyDelegate, emptyDelegate, onCacheError, onCacheError);
+            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy.GetCacheKey, emptyDelegate, emptyDelegate, emptyDelegate, onCacheError, onCacheError,
+                policy => new NoNonGenericCacheImplementation<object>());
         }
 
         /// <summary>
@@ -123,7 +124,8 @@ namespace Polly
             onCacheError = onCacheError ?? ((_, __, ___) => { });
             Action<Context, string> emptyDelegate = (_, __) => { };
 
-            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy, emptyDelegate, emptyDelegate, emptyDelegate, onCacheError, onCacheError);
+            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy, emptyDelegate, emptyDelegate, emptyDelegate, onCacheError, onCacheError,
+                policy => new NoNonGenericCacheImplementation<object>());
         }
 
         /// <summary>
@@ -340,7 +342,8 @@ namespace Polly
             if (onCachePutError == null) throw new ArgumentNullException(nameof(onCachePutError));
             if (onCachePutError == null) throw new ArgumentNullException(nameof(onCachePutError));
 
-            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy, onCacheGet, onCacheMiss, onCachePut, onCacheGetError, onCachePutError);
+            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy, onCacheGet, onCacheMiss, onCachePut, onCacheGetError, onCachePutError,
+                policy => new NoNonGenericCacheImplementation<object>());
         }
     }
 }

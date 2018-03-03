@@ -352,7 +352,8 @@ namespace Polly
             if (onCachePutError == null) throw new ArgumentNullException(nameof(onCachePutError));
             if (onCachePutError == null) throw new ArgumentNullException(nameof(onCachePutError));
 
-            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy, onCacheGet, onCacheMiss, onCachePut, onCacheGetError, onCachePutError);
+            return new CachePolicy(cacheProvider, ttlStrategy, cacheKeyStrategy, onCacheGet, onCacheMiss, onCachePut, onCacheGetError, onCachePutError,
+                policy => new NoNonGenericCacheImplementation<object>());
         }
     }
 }

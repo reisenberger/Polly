@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using Polly.Utilities;
 
 namespace Polly.Caching
 {
@@ -29,9 +26,9 @@ namespace Polly.Caching
             Action<Context, string> onCacheMiss,
             Action<Context, string> onCachePut,
             Action<Context, string, Exception> onCacheGetError,
-            Action<Context, string, Exception> onCachePutError)
-            : base((action, context, cancellationToken) => action(context, cancellationToken), // Pass-through/NOOP policy action, for void-returning calls through a cache policy.
-                PredicateHelper.EmptyExceptionPredicates)
+            Action<Context, string, Exception> onCachePutError,
+            Func<ISyncPolicy, ISyncPolicyImplementation<Object>> factory)
+            : base(PolicyBuilder.Empty, factory)
         {
             _syncCacheProvider = syncCacheProvider;
             _ttlStrategy = ttlStrategy;
@@ -45,31 +42,33 @@ namespace Polly.Caching
         }
 
         /// <summary>
-        /// Executes the specified action within the cache policy and returns the result.
+        /// Overrides execution of void-returning calls, for cache policies, to be a simple pass-through.
         /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="context">Execution context that is passed to the exception policy; defines the cache key to use in cache lookup.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action, or the cache.</returns>
-        [DebuggerStepThrough]
-        protected internal
-            new // override // PROBABLY WANT TO OVERRIDE IN A SIMILAR WAY, VIA THE NEW CHANNEL.
-            TResult ExecuteInternal<TResult>(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
+        internal override void ExecuteInternal<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken)
         {
-            return CacheEngine.Implementation<TResult>(
-                _syncCacheProvider.For<TResult>(), 
-                _ttlStrategy.For<TResult>(),
-                _cacheKeyStrategy, 
-                action, 
-                context, 
-                cancellationToken,
-                _onCacheGet, 
-                _onCacheMiss, 
-                _onCachePut, 
-                _onCacheGetError, 
-                _onCachePutError);
+            // Void-returning calls have no cached result to check and no result to cache; fast-path execute the call without intervention.
+            action.Execute(context, cancellationToken);
         }
+
+        /// <summary>
+        /// Overrides method-generic executions through non-generic cache policies, to execute through a fully-typed implementation of the cache policy,
+        /// to ensure that caching functionality on method-generic executions is invoked.
+        /// </summary>
+        internal override TMethodGeneric ExecuteInternal<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken)
+        {
+            return new CacheSyncImplementation<TMethodGeneric>(
+                _syncCacheProvider.For<TMethodGeneric>(),
+                _ttlStrategy.For<TMethodGeneric>(),
+                _cacheKeyStrategy,
+                _onCacheGet,
+                _onCacheMiss,
+                _onCachePut,
+                _onCacheGetError,
+                _onCachePutError
+                )
+                .Execute(func, context, cancellationToken);
+        }
+
     }
 
     /// <summary>
@@ -77,30 +76,8 @@ namespace Polly.Caching
     /// </summary>
     public partial class CachePolicy<TResult> : Policy<TResult>, ICachePolicy<TResult>
     {
-        internal CachePolicy(
-            ISyncCacheProvider<TResult> syncCacheProvider, 
-            ITtlStrategy<TResult> ttlStrategy,
-            Func<Context, string> cacheKeyStrategy,
-            Action<Context, string> onCacheGet,
-            Action<Context, string> onCacheMiss,
-            Action<Context, string> onCachePut,
-            Action<Context, string, Exception> onCacheGetError,
-            Action<Context, string, Exception> onCachePutError)
-            : base((action, context, cancellationToken) => 
-                CacheEngine.Implementation(
-                    syncCacheProvider, 
-                    ttlStrategy, 
-                    cacheKeyStrategy,
-                    action, 
-                    context, 
-                    cancellationToken,
-                    onCacheGet, 
-                    onCacheMiss, 
-                    onCachePut, 
-                    onCacheGetError, 
-                    onCachePutError),
-                PredicateHelper.EmptyExceptionPredicates,
-                Enumerable.Empty<ResultPredicate<TResult>>())
+        internal CachePolicy(Func<ISyncPolicy<TResult>, ISyncPolicyImplementation<TResult>> factory)
+            : base(PolicyBuilder<TResult>.Empty, factory)
         { }
 
     }

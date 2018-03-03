@@ -21,11 +21,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\IBulkheadPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\IBulkheadPolicyInternal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\AbsoluteTtl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheSyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CachePolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CachePolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheProviderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheSyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheTResultSyntax.cs" />
@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Caching\ISyncCacheProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\IAsyncCacheProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\ITtlStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Caching\NoNonGenericCacheImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\NonSlidingTtl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\RelativeTtl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\ResultTtl.cs" />
