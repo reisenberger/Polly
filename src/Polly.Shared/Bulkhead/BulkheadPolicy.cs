@@ -13,21 +13,25 @@ namespace Polly.Bulkhead
     /// <summary>
     /// A bulkhead-isolation policy which can be applied to delegates.
     /// </summary>
-    public partial class BulkheadPolicy : Policy, IBulkheadPolicy
+    public partial class BulkheadPolicy : Policy, IBulkheadPolicy, IBulkheadPolicyInternal
     {
         private readonly SemaphoreSlim _maxParallelizationSemaphore;
         private readonly SemaphoreSlim _maxQueuedActionsSemaphore;
         private readonly int _maxParallelization;
         private readonly int _maxQueueingActions;
 
+        private Action<Context> _onBulkheadRejected;
+
         internal BulkheadPolicy(
-            Action<Action<Context, CancellationToken>, Context, CancellationToken> exceptionPolicy, 
+            Action<Context> onBulkheadRejected, 
             int maxParallelization,
             int maxQueueingActions,
             SemaphoreSlim maxParallelizationSemaphore, 
-            SemaphoreSlim maxQueuedActionsSemaphore
-            ) : base(exceptionPolicy, PredicateHelper.EmptyExceptionPredicates)
+            SemaphoreSlim maxQueuedActionsSemaphore,
+            BulkheadSyncImplementationFactory factory
+            ) : base(PolicyBuilder.Empty, factory)
         {
+            _onBulkheadRejected = onBulkheadRejected;
             _maxParallelization = maxParallelization;
             _maxQueueingActions = maxQueueingActions;
             _maxParallelizationSemaphore = maxParallelizationSemaphore;
@@ -43,6 +47,12 @@ namespace Polly.Bulkhead
         /// Gets the number of slots currently available for queuing actions for execution through the bulkhead.
         /// </summary>
         public int QueueAvailableCount => Math.Min(_maxQueuedActionsSemaphore.CurrentCount, _maxQueueingActions);
+
+        SemaphoreSlim IBulkheadPolicyInternal.MaxParallelizationSemaphore => _maxParallelizationSemaphore;
+
+        SemaphoreSlim IBulkheadPolicyInternal.MaxQueuedActionsSemaphore => _maxQueuedActionsSemaphore;
+
+        Action<Context> IBulkheadPolicyInternal.OnBulkheadRejected => _onBulkheadRejected;
 
         /// <summary>
         /// Disposes of the <see cref="BulkheadPolicy"/>, allowing it to dispose its internal resources.  
@@ -58,21 +68,25 @@ namespace Polly.Bulkhead
     /// <summary>
     /// A bulkhead-isolation policy which can be applied to delegates returning a value of type <typeparamref name="TResult"/>.
     /// </summary>
-    public partial class BulkheadPolicy<TResult> : Policy<TResult>, IBulkheadPolicy<TResult>
+    public partial class BulkheadPolicy<TResult> : Policy<TResult>, IBulkheadPolicy<TResult>, IBulkheadPolicyInternal
     {
         private readonly SemaphoreSlim _maxParallelizationSemaphore;
         private readonly SemaphoreSlim _maxQueuedActionsSemaphore;
         private readonly int _maxParallelization;
         private readonly int _maxQueueingActions;
 
+        private Action<Context> _onBulkheadRejected;
+
         internal BulkheadPolicy(
-            Func<Func<Context, CancellationToken, TResult>, Context, CancellationToken, TResult> executionPolicy,
+            Action<Context> onBulkheadRejected,
             int maxParallelization,
             int maxQueueingActions,
             SemaphoreSlim maxParallelizationSemaphore,
-            SemaphoreSlim maxQueuedActionsSemaphore
-            ) : base(executionPolicy, PredicateHelper.EmptyExceptionPredicates, PredicateHelper<TResult>.EmptyResultPredicates)
+            SemaphoreSlim maxQueuedActionsSemaphore,
+            BulkheadSyncImplementationFactory<TResult> factory
+            ) : base(PolicyBuilder<TResult>.Empty, factory)
         {
+            _onBulkheadRejected = onBulkheadRejected;
             _maxParallelization = maxParallelization;
             _maxQueueingActions = maxQueueingActions;
             _maxParallelizationSemaphore = maxParallelizationSemaphore;
@@ -89,6 +103,12 @@ namespace Polly.Bulkhead
         /// Gets the number of slots currently available for queuing actions for execution through the bulkhead.
         /// </summary>
         public int QueueAvailableCount => Math.Min(_maxQueuedActionsSemaphore.CurrentCount, _maxQueueingActions);
+
+        SemaphoreSlim IBulkheadPolicyInternal.MaxParallelizationSemaphore => _maxParallelizationSemaphore;
+
+        SemaphoreSlim IBulkheadPolicyInternal.MaxQueuedActionsSemaphore => _maxQueuedActionsSemaphore;
+
+        Action<Context> IBulkheadPolicyInternal.OnBulkheadRejected => _onBulkheadRejected;
 
         /// <summary>
         /// Disposes of the <see cref="BulkheadPolicy"/>, allowing it to dispose its internal resources.  

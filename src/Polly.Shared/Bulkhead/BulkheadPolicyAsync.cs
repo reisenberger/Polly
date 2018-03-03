@@ -13,34 +13,47 @@ namespace Polly.Bulkhead
 {
     public partial class BulkheadPolicy : IBulkheadPolicy
     {
-        internal BulkheadPolicy(Func<Func<Context, CancellationToken, Task>, Context, CancellationToken, bool, Task> asyncExceptionPolicy,
+        private Func<Context, Task> _onBulkheadRejectedAsync;
+
+        internal BulkheadPolicy(
+            Func<Context, Task> onBulkheadRejectedAsync,
             int maxParallelization,
             int maxQueueingActions,
             SemaphoreSlim maxParallelizationSemaphore,
-            SemaphoreSlim maxQueuedActionsSemaphore)
-           : base(asyncExceptionPolicy, PredicateHelper.EmptyExceptionPredicates)
+            SemaphoreSlim maxQueuedActionsSemaphore,
+            BulkheadAsyncImplementationFactory factory
+            ) : base(PolicyBuilder.Empty, factory)
         {
+            _onBulkheadRejectedAsync = onBulkheadRejectedAsync;
             _maxParallelization = maxParallelization;
             _maxQueueingActions = maxQueueingActions;
             _maxParallelizationSemaphore = maxParallelizationSemaphore;
             _maxQueuedActionsSemaphore = maxQueuedActionsSemaphore;
         }
+
+        Func<Context, Task> IBulkheadPolicyInternal.OnBulkheadRejectedAsync => _onBulkheadRejectedAsync;
     }
 
     public partial class BulkheadPolicy<TResult> : IBulkheadPolicy<TResult>
     {
+        private Func<Context, Task> _onBulkheadRejectedAsync;
+
         internal BulkheadPolicy(
-            Func<Func<Context, CancellationToken, Task<TResult>>, Context, CancellationToken, bool, Task<TResult>> asyncExecutionPolicy,
+            Func<Context, Task> onBulkheadRejectedAsync,
             int maxParallelization,
             int maxQueueingActions,
             SemaphoreSlim maxParallelizationSemaphore,
-            SemaphoreSlim maxQueuedActionsSemaphore
-            ) : base(asyncExecutionPolicy, PredicateHelper.EmptyExceptionPredicates, PredicateHelper<TResult>.EmptyResultPredicates)
+            SemaphoreSlim maxQueuedActionsSemaphore,
+            BulkheadAsyncImplementationFactory<TResult> factory
+            ) : base(PolicyBuilder<TResult>.Empty, factory)
         {
+            _onBulkheadRejectedAsync = onBulkheadRejectedAsync;
             _maxParallelization = maxParallelization;
             _maxQueueingActions = maxQueueingActions;
             _maxParallelizationSemaphore = maxParallelizationSemaphore;
             _maxQueuedActionsSemaphore = maxQueuedActionsSemaphore;
         }
+
+        Func<Context, Task> IBulkheadPolicyInternal.OnBulkheadRejectedAsync => _onBulkheadRejectedAsync;
     }
 }

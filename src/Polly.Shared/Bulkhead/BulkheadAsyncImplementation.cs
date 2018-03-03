@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly.Execution;
 
 #if NET40
 using SemaphoreSlim = Nito.AsyncEx.AsyncSemaphore;
@@ -11,38 +12,38 @@ using SemaphoreSlim = System.Threading.SemaphoreSlim;
 
 namespace Polly.Bulkhead
 {
-   internal static partial class BulkheadEngine
+    internal class BulkheadAsyncImplementation<TResult> : IAsyncPolicyImplementation<TResult>
     {
-       internal static async Task<TResult> ImplementationAsync<TResult>(
-            Func<Context, CancellationToken, Task<TResult>> action,
-            Context context,
-            Func<Context, Task> onBulkheadRejectedAsync,
-            SemaphoreSlim maxParallelizationSemaphore,
-            SemaphoreSlim maxQueuedActionsSemaphore,
-            CancellationToken cancellationToken, 
-            bool continueOnCapturedContext)
+        private IBulkheadPolicyInternal _bulkhead;
+
+        internal BulkheadAsyncImplementation(IBulkheadPolicyInternal policy)
         {
-            if (!await maxQueuedActionsSemaphore.WaitAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(continueOnCapturedContext))
+            _bulkhead = policy ?? throw new ArgumentNullException(nameof(policy));
+        }
+
+        public async Task<TResult> ExecuteAsync<TExecutableAsync>(TExecutableAsync action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutableAsync : IAsyncPollyExecutable<TResult>
+        {
+            if (!await _bulkhead.MaxQueuedActionsSemaphore.WaitAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(continueOnCapturedContext))
             {
-                await onBulkheadRejectedAsync(context).ConfigureAwait(continueOnCapturedContext);
+                await _bulkhead.OnBulkheadRejectedAsync(context).ConfigureAwait(continueOnCapturedContext);
                 throw new BulkheadRejectedException();
             }
+
             try
             {
-                await maxParallelizationSemaphore.WaitAsync(cancellationToken).ConfigureAwait(continueOnCapturedContext);
-
-                try 
+                await _bulkhead.MaxParallelizationSemaphore.WaitAsync(cancellationToken).ConfigureAwait(continueOnCapturedContext);
+                try
                 {
-                    return await action(context, cancellationToken).ConfigureAwait(continueOnCapturedContext);
+                    return await action.ExecuteAsync(context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
                 }
                 finally
                 {
-                    maxParallelizationSemaphore.Release();
+                    _bulkhead.MaxParallelizationSemaphore.Release();
                 }
             }
             finally
             {
-                maxQueuedActionsSemaphore.Release();
+                _bulkhead.MaxQueuedActionsSemaphore.Release();
             }
         }
     }

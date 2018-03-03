@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Polly.Execution;
 
 #if NET40
 using SemaphoreSlim = Nito.AsyncEx.AsyncSemaphore;
@@ -10,37 +11,38 @@ using SemaphoreSlim = System.Threading.SemaphoreSlim;
 
 namespace Polly.Bulkhead
 {
-    internal static partial class BulkheadEngine
+    internal class BulkheadSyncImplementation<TResult> : ISyncPolicyImplementation<TResult>
     {
-        internal static TResult Implementation<TResult>(
-            Func<Context, CancellationToken, TResult> action,
-            Context context,
-            Action<Context> onBulkheadRejected,
-            SemaphoreSlim maxParallelizationSemaphore,
-            SemaphoreSlim maxQueuedActionsSemaphore,
-            CancellationToken cancellationToken)
+        private IBulkheadPolicyInternal _bulkhead;
+
+        internal BulkheadSyncImplementation(IBulkheadPolicyInternal policy)
         {
-            if (!maxQueuedActionsSemaphore.Wait(TimeSpan.Zero, cancellationToken))
+            _bulkhead = policy ?? throw new ArgumentNullException(nameof(policy));
+        }
+
+        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        {
+            if (!_bulkhead.MaxQueuedActionsSemaphore.Wait(TimeSpan.Zero, cancellationToken))
             {
-                onBulkheadRejected(context);
+                _bulkhead.OnBulkheadRejected(context);
                 throw new BulkheadRejectedException();
             }
-            
+
             try
             {
-                maxParallelizationSemaphore.Wait(cancellationToken);
+                _bulkhead.MaxParallelizationSemaphore.Wait(cancellationToken);
                 try
                 {
-                    return action(context, cancellationToken);
+                    return action.Execute(context, cancellationToken);
                 }
                 finally
                 {
-                    maxParallelizationSemaphore.Release();
+                    _bulkhead.MaxParallelizationSemaphore.Release();
                 }
             }
             finally
             {
-                maxQueuedActionsSemaphore.Release();
+                _bulkhead.MaxQueuedActionsSemaphore.Release();
             }
         }
     }

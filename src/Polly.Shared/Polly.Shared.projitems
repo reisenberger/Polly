@@ -9,16 +9,19 @@
     <Import_RootNamespace>Polly.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadAsyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadAsyncImplementationFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadSyncImplementationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadTResultSyntaxAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadSyncImplementation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadRejectedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\IBulkheadPolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\IBulkheadPolicyInternal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\AbsoluteTtl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheEngineAsync.cs" />

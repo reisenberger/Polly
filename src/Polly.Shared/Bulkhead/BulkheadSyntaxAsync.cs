@@ -80,19 +80,13 @@ namespace Polly
                 : int.MaxValue;
             SemaphoreSlim maxQueuedActionsSemaphore = SemaphoreSlimFactory.CreateSemaphoreSlim(maxQueuingCompounded);
 
-            return new BulkheadPolicy((action, context, cancellationToken, continueOnCapturedContext) =>
-                BulkheadEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context,
-                    onBulkheadRejectedAsync,
-                    maxParallelizationSemaphore,
-                    maxQueuedActionsSemaphore,
-                    cancellationToken,
-                    continueOnCapturedContext),
+            return new BulkheadPolicy(
+                onBulkheadRejectedAsync,
                 maxParallelization,
                 maxQueuingActions,
                 maxParallelizationSemaphore,
-                maxQueuedActionsSemaphore
+                maxQueuedActionsSemaphore,
+                new BulkheadAsyncImplementationFactory()
                 );
         }
     }
