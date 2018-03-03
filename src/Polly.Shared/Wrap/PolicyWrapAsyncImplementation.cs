@@ -1,115 +1,146 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly.Execution;
 
 namespace Polly.Wrap
 {
-    internal static partial class PolicyWrapEngine
+
+    internal class PolicyWrapAsyncImplementationNonGenericNonGeneric : IAsyncPolicyImplementation<Object>
     {
-        internal static async Task<TResult> ImplementationAsync<TResult>(
-           Func<Context, CancellationToken, Task<TResult>> func,
-            Context context,
-            CancellationToken cancellationToken,
-            bool continueOnCapturedContext,
-            IAsyncPolicy<TResult> outerPolicy,
-            IAsyncPolicy<TResult> innerPolicy)
+        private readonly Policy _outerPolicy;
+        private readonly Policy _innerPolicy;
+
+        internal PolicyWrapAsyncImplementationNonGenericNonGeneric(IsPolicy policy, Policy outer, IAsyncPolicy inner)
         {
-            return await outerPolicy.ExecuteAsync(
-                async (ctx, ct) => await innerPolicy.ExecuteAsync(
-                    func, 
-                    ctx, 
-                    ct, 
-                    continueOnCapturedContext
-                    ).ConfigureAwait(continueOnCapturedContext), 
-                context, 
-                cancellationToken, 
-                continueOnCapturedContext
-                ).ConfigureAwait(continueOnCapturedContext);
+            // PolicyWrap nonGenericNonGenericWrap = policy as PolicyWrap ?? throw new ArgumentNullException(nameof(policy)); // Will be used once we emit events.
+            _outerPolicy = outer ?? throw new ArgumentNullException(nameof(outer));
+            _innerPolicy = inner as Policy ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        internal static async Task<TResult> ImplementationAsync<TResult>(
-           Func<Context, CancellationToken, Task<TResult>> func,
-            Context context,
-            CancellationToken cancellationToken,
-            bool continueOnCapturedContext,
-            IAsyncPolicy<TResult> outerPolicy,
-            IAsyncPolicy innerPolicy)
+        public async Task<Object> ExecuteAsync<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<Object>
         {
-            return await outerPolicy.ExecuteAsync(
-                async (ctx, ct) => await innerPolicy.ExecuteAsync<TResult>(
-                    func,
-                    ctx,
-                    ct,
-                    continueOnCapturedContext
-                    ).ConfigureAwait(continueOnCapturedContext),
+            AsyncPollyExecutableAction<Policy, TExecutable> innerExecutionAsExecutable = new AsyncPollyExecutableAction<Policy, TExecutable>(
+                (ctx, ct, capture, policy, f) => policy.ExecuteAsyncExecutableThroughPolicy<TExecutable>(f, ctx, ct, capture),
+                _innerPolicy,
+                func);
+            await _outerPolicy.ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableAction<Policy, TExecutable>>(
+                innerExecutionAsExecutable,
                 context,
-                cancellationToken,
-                continueOnCapturedContext
-                ).ConfigureAwait(continueOnCapturedContext);
-        }
+                cancellationToken, continueOnCapturedContext);
+            return null;
 
-        internal static async Task<TResult> ImplementationAsync<TResult>(
-            Func<Context, CancellationToken, Task<TResult>> func,
-            Context context,
-            CancellationToken cancellationToken,
-            bool continueOnCapturedContext,
-            IAsyncPolicy outerPolicy,
-            IAsyncPolicy<TResult> innerPolicy)
-        {
-            return await outerPolicy.ExecuteAsync<TResult>(
-                async (ctx, ct) => await innerPolicy.ExecuteAsync(
-                    func,
-                    ctx,
-                    ct,
-                    continueOnCapturedContext
-                    ).ConfigureAwait(continueOnCapturedContext),
-                context,
-                cancellationToken,
-                continueOnCapturedContext
-                ).ConfigureAwait(continueOnCapturedContext);
+            // Equivalent to this, avoiding all closures: return _outerPolicy.Execute((ctx, ct) => _innerPolicy.Execute(func, ctx, ct), context, cancellationToken);
         }
-
-        internal static async Task<TResult> ImplementationAsync<TResult>(
-           Func<Context, CancellationToken, Task<TResult>> func,
-           Context context,
-           CancellationToken cancellationToken,
-           bool continueOnCapturedContext,
-           IAsyncPolicy outerPolicy,
-           IAsyncPolicy innerPolicy)
-        {
-            return await outerPolicy.ExecuteAsync<TResult>(
-                async (ctx, ct) => await innerPolicy.ExecuteAsync<TResult>(
-                    func,
-                    ctx,
-                    ct,
-                    continueOnCapturedContext
-                ).ConfigureAwait(continueOnCapturedContext),
-                context,
-                cancellationToken,
-                continueOnCapturedContext
-            ).ConfigureAwait(continueOnCapturedContext);
-        }
-
-        internal static async Task ImplementationAsync(
-            Func<Context, CancellationToken, Task> action,
-            Context context,
-            CancellationToken cancellationToken,
-            bool continueOnCapturedContext,
-            IAsyncPolicy outerPolicy,
-            IAsyncPolicy innerPolicy)
-        {
-            await outerPolicy.ExecuteAsync(
-                async (ctx, ct) => await innerPolicy.ExecuteAsync(
-                    action,
-                    ctx,
-                    ct,
-                    continueOnCapturedContext
-                    ).ConfigureAwait(continueOnCapturedContext),
-                context,
-                cancellationToken,
-                continueOnCapturedContext
-                ).ConfigureAwait(continueOnCapturedContext);
-        }
-
     }
+
+    internal class PolicyWrapAsyncImplementationNonGenericNonGeneric<TResult> : IAsyncPolicyImplementation<TResult>
+    {
+        private readonly Policy _outerPolicy;
+        private readonly Policy _innerPolicy;
+
+        internal PolicyWrapAsyncImplementationNonGenericNonGeneric(IsPolicy policy, IsPolicy outer, IAsyncPolicy inner)
+        {
+            // PolicyWrap<TResult> nonGenericNonGenericWrap = policy ?? throw new ArgumentNullException(nameof(policy)); // Will be used once we emit events.
+            _outerPolicy = outer as Policy ?? throw new ArgumentNullException(nameof(outer));
+            _innerPolicy = inner as Policy ?? throw new ArgumentNullException(nameof(inner));
+        }
+
+        public Task<TResult> ExecuteAsync<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TResult>
+        {
+            AsyncPollyExecutableFunc<Policy, TExecutable, TResult> innerExecutionAsExecutable = new AsyncPollyExecutableFunc<Policy, TExecutable, TResult>(
+                (ctx, ct, capture, policy, f) => policy.ExecuteAsyncExecutableThroughPolicy<TExecutable, TResult>(f, ctx, ct, capture),
+                _innerPolicy,
+                func);
+            return _outerPolicy.ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFunc<Policy, TExecutable, TResult>, TResult>(
+                innerExecutionAsExecutable,
+                context,
+                cancellationToken, continueOnCapturedContext);
+
+            // Equivalent to this, avoiding all closures: return _outerPolicy.ExecuteAsync<TResult>((ctx, ct) => _innerPolicy.ExecuteAsync<TResult>(func, ctx, ct), context, cancellationToken);
+        }
+    }
+
+    internal class PolicyWrapAsyncImplementationGenericGeneric<TResult> : IAsyncPolicyImplementation<TResult>
+    {
+        private readonly Policy<TResult> _outerPolicy;
+        private readonly Policy<TResult> _innerPolicy;
+
+        internal PolicyWrapAsyncImplementationGenericGeneric(IsPolicy policy, Policy<TResult> outer, IAsyncPolicy<TResult> inner)
+        {
+            // PolicyWrap<TResult> genericGenericWrap = policy as PolicyWrap<TResult> ?? throw new ArgumentNullException(nameof(policy)); // Will be used once we emit events.
+            _outerPolicy = outer ?? throw new ArgumentNullException(nameof(outer));
+            _innerPolicy = inner as Policy<TResult> ?? throw new ArgumentNullException(nameof(inner));
+        }
+
+        public Task<TResult> ExecuteAsync<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TResult>
+        {
+            AsyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult> innerExecutionAsExecutable = new AsyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult>(
+                (ctx, ct, capture, policy, f) => policy.ExecuteAsyncExecutableThroughPolicy(f, ctx, ct, capture),
+                _innerPolicy,
+                func);
+            return _outerPolicy.ExecuteAsyncExecutableThroughPolicy(
+                innerExecutionAsExecutable,
+                context,
+                cancellationToken, continueOnCapturedContext);
+
+            // Equivalent to this, avoiding all closures: return _outerPolicy.ExecuteAsync<TResult>((ctx, ct) => _innerPolicy.ExecuteAsync<TResult>(func, ctx, ct), context, cancellationToken);
+        }
+    }
+
+    internal class PolicyWrapAsyncImplementationGenericNonGeneric<TResult> : IAsyncPolicyImplementation<TResult>
+    {
+        private readonly Policy<TResult> _outerPolicy;
+        private readonly Policy _innerPolicy;
+
+        internal PolicyWrapAsyncImplementationGenericNonGeneric(IsPolicy policy, Policy<TResult> outer, IAsyncPolicy inner)
+        {
+            // PolicyWrap<TResult> genericNonGenericWrap = policy as PolicyWrap<TResult> ?? throw new ArgumentNullException(nameof(policy)); // Will be used once we emit events.
+            _outerPolicy = outer ?? throw new ArgumentNullException(nameof(outer));
+            _innerPolicy = inner as Policy ?? throw new ArgumentNullException(nameof(inner));
+        }
+
+        public Task<TResult> ExecuteAsync<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TResult>
+        {
+            AsyncPollyExecutableFunc<Policy, TExecutable, TResult> innerExecutionAsExecutable = new AsyncPollyExecutableFunc<Policy, TExecutable, TResult>(
+                (ctx, ct, capture, policy, f) => policy.ExecuteAsyncExecutableThroughPolicy<TExecutable, TResult>(f, ctx, ct, capture),
+                _innerPolicy,
+                func);
+            return _outerPolicy.ExecuteAsyncExecutableThroughPolicy(
+                innerExecutionAsExecutable,
+                context,
+                cancellationToken, continueOnCapturedContext);
+
+            // Equivalent to this, avoiding all closures: return _outerPolicy.ExecuteAsync<TResult>((ctx, ct) => _innerPolicy.ExecuteAsync<TResult>(func, ctx, ct), context, cancellationToken);
+        }
+    }
+
+    internal class PolicyWrapAsyncImplementationNonGenericGeneric<TResult> : IAsyncPolicyImplementation<TResult>
+    {
+        private readonly Policy _outerPolicy;
+        private readonly Policy<TResult> _innerPolicy;
+
+        internal PolicyWrapAsyncImplementationNonGenericGeneric(IsPolicy policy, Policy outer, IAsyncPolicy<TResult> inner)
+        {
+            // PolicyWrap<TResult> nonGenericGenericWrap = policy as PolicyWrap<TResult> ?? throw new ArgumentNullException(nameof(policy)); // Will be used once we emit events.
+            _outerPolicy = outer ?? throw new ArgumentNullException(nameof(outer));
+            _innerPolicy = inner as Policy<TResult> ?? throw new ArgumentNullException(nameof(inner));
+        }
+
+        public Task<TResult> ExecuteAsync<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TResult>
+        {
+            AsyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult> innerExecutionAsExecutable = new AsyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult>(
+                (ctx, ct, capture, policy, f) => policy.ExecuteAsyncExecutableThroughPolicy(f, ctx, ct, capture),
+                _innerPolicy,
+                func);
+
+            return _outerPolicy.ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult>, TResult>(
+                innerExecutionAsExecutable,
+                context,
+                cancellationToken, continueOnCapturedContext);
+
+            // Equivalent to this, avoiding all closures: return _outerPolicy.ExecuteAsync<TResult>((ctx, ct) => _innerPolicy.ExecuteAsync<TResult>(func, ctx, ct), context, cancellationToken);
+        }
+    }
+
 }

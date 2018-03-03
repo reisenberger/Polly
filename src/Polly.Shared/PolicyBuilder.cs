@@ -20,6 +20,11 @@ namespace Polly
             _exceptionPredicates.Add(exceptionPredicate);
         }
 
+        internal PolicyBuilder(IEnumerable<ExceptionPredicate> exceptionPredicates) : this()
+        {
+            _exceptionPredicates = new List<ExceptionPredicate>(exceptionPredicates);
+        }
+
         internal IList<ExceptionPredicate> ExceptionPredicates
         {
             get { return _exceptionPredicates; }
@@ -101,10 +106,17 @@ namespace Polly
             _exceptionPredicates.Add(predicate);
         }
 
-        internal PolicyBuilder(IList<ExceptionPredicate> exceptionPredicates)
+        internal PolicyBuilder(IEnumerable<ExceptionPredicate> exceptionPredicates)
             : this()
         {
-            _exceptionPredicates = exceptionPredicates;
+            _exceptionPredicates = new List<ExceptionPredicate>(exceptionPredicates);
+        }
+
+        internal PolicyBuilder(IEnumerable<ExceptionPredicate> exceptionPredicates, IEnumerable<ResultPredicate<TResult>> resultPredicates)
+            : this()
+        {
+            _exceptionPredicates = new List<ExceptionPredicate>(exceptionPredicates);
+            _resultPredicates = new List<ResultPredicate<TResult>>(resultPredicates);
         }
 
         internal IList<ExceptionPredicate> ExceptionPredicates

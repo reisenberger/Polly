@@ -21,20 +21,11 @@ namespace Polly
         /// Updates the execution <see cref="Context"/> with context from the executing <see cref="Policy"/>.
         /// </summary>
         /// <param name="executionContext">The execution <see cref="Context"/>.</param>
-        internal virtual void SetPolicyContext(Context executionContext)
+        internal virtual void SetPolicyExecutionContext(Context executionContext)
         {
             executionContext.PolicyKey = PolicyKey;
         }
 
-        internal Exception NotConfiguredForSyncExecution()
-        {
-            return new InvalidOperationException($"This {this.GetType().Name} policy is not configured for synchronous executions.");
-        }
-
-        internal Exception NotConfiguredForAsyncExecution()
-        {
-            return new InvalidOperationException($"This {this.GetType().Name} policy is not configured for asynchronous executions.");
-        }
     }
 
     public abstract partial class Policy

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
-using Polly.Utilities;
+using Polly.Execution;
 
 namespace Polly.Wrap
 {
@@ -23,34 +22,30 @@ namespace Polly.Wrap
         /// </summary>
         public IsPolicy Inner => _inner;
 
-        internal PolicyWrap(Action<Action<Context, CancellationToken>, Context, CancellationToken> policyAction, Policy outer, ISyncPolicy inner) 
-            : base(policyAction, outer.ExceptionPredicates)
+        internal PolicyWrap(Policy outer, ISyncPolicy inner, Func<ISyncPolicy, ISyncPolicyImplementation<Object>> factory) 
+            : base(new PolicyBuilder(outer.ExceptionPredicates), factory)
         {
             _outer = outer;
             _inner = inner;
         }
 
         /// <summary>
-        /// Executes the specified action within the cache policy and returns the result.
+        /// Override method-generic invocations .Execute{TMethodGeneric} on a non-generic PolicyWrap configured with non-generic Outer and Inner.  
+        /// <remarks>When a method-generic execution is being made on non-generic PolicyWrap, we have to be sure to pass it through the strongly-typed method-generic .Execute{TMethodGeneric} overloads on the non-generic Outer and Inner policies, in order to pick up any overrides of those methods on the wrapped policies.  For instance, non-generic CachePolicy overrides its method-generic .Execute{TMethodGeneric} to ensure a strongly-typed CacheProvider is used.</remarks>
+        /// <remarks>If we did not override this method, the default sync implementation in {Object} of the inner policies, would be used, missing some nuances of TResult-typed execution.</remarks>
         /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="context">Execution context that is passed to the exception policy; defines the cache key to use in cache lookup.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action, or the cache.</returns>
-        [DebuggerStepThrough]
-        protected internal
-            new // override // PROBABLY WANT TO OVERRIDE IN A SIMILAR WAY, VIA THE NEW CHANNEL.
-            TResult ExecuteInternal<TResult>(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
+        /// <typeparam name="TExecutable">The type of the executable</typeparam>
+        /// <typeparam name="TMethodGeneric">The return type of the executable</typeparam>
+        /// <param name="executable">The original delegate supplied for execution, now as a <see cref="ISyncPollyExecutable{TMethodGeneric}"/></param>
+        /// <param name="context">The execution context.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> governing cancellation of the execution.</param>
+        /// <returns>A <typeparamref name="TMethodGeneric"/> return value.</returns>
+        protected override TMethodGeneric ExecuteThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable executable, Context context, CancellationToken cancellationToken)
         {
-            return PolicyWrapEngine.Implementation<TResult>(
-                   action,
-                   context,
-                   cancellationToken,
-                   (ISyncPolicy)_outer,
-                   (ISyncPolicy)_inner
-                   );
+            return new PolicyWrapSyncImplementationNonGenericNonGeneric<TMethodGeneric>(this, Outer, Inner as ISyncPolicy)
+                .Execute(executable, context, cancellationToken);
         }
+        
     }
 
     /// <summary>
@@ -69,15 +64,15 @@ namespace Polly.Wrap
         /// </summary>
         public IsPolicy Inner { get; private set; }
 
-        internal PolicyWrap(Func<Func<Context, CancellationToken, TResult>, Context, CancellationToken, TResult> policyAction, Policy outer, IsPolicy inner)
-            : base(policyAction, outer.ExceptionPredicates,  PredicateHelper<TResult>.EmptyResultPredicates)
+        internal PolicyWrap(Policy outer, IsPolicy inner, Func<ISyncPolicy<TResult>, ISyncPolicyImplementation<TResult>> factory)
+            : base(new PolicyBuilder<TResult>(outer.ExceptionPredicates), factory)
         {
             Outer = outer;
             Inner = inner;
         }
 
-        internal PolicyWrap(Func<Func<Context, CancellationToken, TResult>, Context, CancellationToken, TResult> policyAction, Policy<TResult> outer, IsPolicy inner)
-            : base(policyAction, outer.ExceptionPredicates, outer.ResultPredicates)
+        internal PolicyWrap(Policy<TResult> outer, IsPolicy inner, Func<ISyncPolicy<TResult>, ISyncPolicyImplementation<TResult>> factory)
+            : base(new PolicyBuilder<TResult>(outer.ExceptionPredicates, outer.ResultPredicates), factory)
         {
             Outer = outer;
             Inner = inner;

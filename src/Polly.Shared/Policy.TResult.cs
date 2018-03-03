@@ -12,29 +12,6 @@ namespace Polly
     /// </summary>
     public abstract partial class Policy<TResult> : PolicyBase
     {
-        #region TO REMOVE
-
-        private readonly Func<Func<Context, CancellationToken, TResult>, Context, CancellationToken, TResult> _executionPolicy;
-
-        /// <summary>
-        /// Constructs a new instance of a derived <see cref="Policy"/> type with the passed <paramref name="executionPolicy"/>, <paramref name="exceptionPredicates"/> and <paramref name="resultPredicates"/> 
-        /// </summary>
-        /// <param name="executionPolicy">The execution policy that will be applied to delegates executed synchronously through the policy.</param>
-        /// <param name="exceptionPredicates">Predicates indicating which exceptions the policy should handle. </param>
-        /// <param name="resultPredicates">Predicates indicating which results the policy should handle. </param>
-        protected Policy(
-            Func<Func<Context, CancellationToken, TResult>, Context, CancellationToken, TResult> executionPolicy,
-            IEnumerable<ExceptionPredicate> exceptionPredicates,
-            IEnumerable<ResultPredicate<TResult>> resultPredicates
-            )
-        {
-            _executionPolicy = executionPolicy ?? throw new ArgumentNullException(nameof(executionPolicy));
-            ExceptionPredicates = exceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
-            ResultPredicates = resultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
-        }
-
-        #endregion
-
         internal readonly ISyncPolicyImplementation<TResult> _genericImplementation;
 
         internal IEnumerable<ResultPredicate<TResult>> ResultPredicates { get; }
@@ -54,33 +31,33 @@ namespace Polly
             _genericImplementation = implementationFactory(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
         }
 
-        internal virtual TResult ExecuteInternal<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        /// <summary>
+        /// Executes the original delegate supplied for execution (now <paramref name="executable"/> in the form of a <see cref="ISyncPollyExecutable{TResult}"/>), through the implementation configured on this policy.
+        /// <remarks>Override this method if you need to prevent or modify standard execution through the implementation configured on the policy.</remarks>
+        /// </summary>
+        /// <typeparam name="TExecutable">The type of the executable</typeparam>
+        /// <param name="executable">The original delegate supplied for execution, now as a <see cref="ISyncPollyExecutable{TResult}"/></param>
+        /// <param name="context">The execution context.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> governing cancellation of the execution.</param>
+        /// <returns>A <typeparamref name="TResult"/> return value.</returns>
+        [DebuggerStepThrough]
+        protected virtual TResult ExecuteThroughImplementationInternal<TExecutable>(TExecutable executable, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
+            // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and omit to set context).
+
             if (_genericImplementation == null) throw NotConfiguredForSyncExecution();
 
-            return _genericImplementation.Execute(action, context, cancellationToken);
+            return _genericImplementation.Execute(executable, context, cancellationToken);
         }
 
-        #region TO REMOVE - or keep adaptation
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="context">Context data that is passed to the exception policy.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action</returns>
         [DebuggerStepThrough]
-        protected internal TResult ExecuteInternal(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
+        internal virtual TResult ExecuteSyncExecutableThroughPolicy<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
-            return ExecuteInternal(new SyncPollyExecutableFunc<TResult>(action), context, cancellationToken);
+            SetPolicyExecutionContext(context);
 
-            //if (_executionPolicy == null) throw new InvalidOperationException("Please use the synchronous-defined policies when calling the synchronous Execute (and similar) methods.");
-
-            //return _executionPolicy(action, context, cancellationToken);
+            return ExecuteThroughImplementationInternal(action, context, cancellationToken);
         }
-
-        #endregion
+        
     }
 
 }

@@ -12,7 +12,11 @@ namespace Polly.Fallback
             : base(builder, factory)
         { }
 
-        internal override Task<TMethodGeneric> ExecuteInternalAsync<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
+        /// <summary>
+        /// Overrides method-generic async executions through non-generic fallback policy, to throw.  
+        /// See the exception thrown by <see cref="M:GenGenericExecuteMethodsAreAnInvalidOperationOnNonGenericFallbackPolicy()"/> for further explanation.
+        /// </summary>
+        protected override Task<TMethodGeneric> ExecuteAsyncThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
             throw GenericExecuteMethodsAreAnInvalidOperationOnNonGenericFallbackPolicy<TMethodGeneric>();
         }

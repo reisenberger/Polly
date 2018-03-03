@@ -44,7 +44,7 @@ namespace Polly.Caching
         /// <summary>
         /// Overrides execution of void-returning calls, for cache policies, to be a simple pass-through.
         /// </summary>
-        internal override void ExecuteInternal<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken)
+        protected override void ExecuteThroughImplementationInternal<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken)
         {
             // Void-returning calls have no cached result to check and no result to cache; fast-path execute the call without intervention.
             action.Execute(context, cancellationToken);
@@ -54,7 +54,7 @@ namespace Polly.Caching
         /// Overrides method-generic executions through non-generic cache policies, to execute through a fully-typed implementation of the cache policy,
         /// to ensure that caching functionality on method-generic executions is invoked.
         /// </summary>
-        internal override TMethodGeneric ExecuteInternal<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken)
+        protected override TMethodGeneric ExecuteThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken)
         {
             return new CacheSyncImplementation<TMethodGeneric>(
                 _syncCacheProvider.For<TMethodGeneric>(),

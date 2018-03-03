@@ -17,10 +17,10 @@ namespace Polly
             if (innerPolicy == null) throw new ArgumentNullException(nameof(innerPolicy));
 
             return new PolicyWrap(
-                (action, context, cancellationtoken, continueOnCapturedContext) => PolicyWrapEngine.ImplementationAsync(action, context, cancellationtoken, continueOnCapturedContext, this, innerPolicy),
                 this,
-                innerPolicy
-                );
+                innerPolicy,
+                policy => new PolicyWrapAsyncImplementationNonGenericNonGeneric(policy, this, innerPolicy)
+            );
         }
 
         /// <summary>
@@ -34,10 +34,10 @@ namespace Polly
             if (innerPolicy == null) throw new ArgumentNullException(nameof(innerPolicy));
 
             return new PolicyWrap<TResult>(
-                (func, context, cancellationtoken, continueOnCapturedContext) => PolicyWrapEngine.ImplementationAsync<TResult>(func, context, cancellationtoken, continueOnCapturedContext, this, innerPolicy),
                 this,
-                innerPolicy
-                );
+                innerPolicy,
+                policy => new PolicyWrapAsyncImplementationNonGenericGeneric<TResult>(policy, this, innerPolicy)
+            );
         }
     }
 
@@ -53,10 +53,10 @@ namespace Polly
             if (innerPolicy == null) throw new ArgumentNullException(nameof(innerPolicy));
 
             return new PolicyWrap<TResult>(
-                (func, context, cancellationtoken, continueOnCapturedContext) => PolicyWrapEngine.ImplementationAsync<TResult>(func, context, cancellationtoken, continueOnCapturedContext, this, innerPolicy),
                 this,
-                innerPolicy
-                );
+                innerPolicy,
+                policy => new PolicyWrapAsyncImplementationGenericNonGeneric<TResult>(policy, this, innerPolicy)
+            );
         }
 
         /// <summary>
@@ -69,10 +69,10 @@ namespace Polly
             if (innerPolicy == null) throw new ArgumentNullException(nameof(innerPolicy));
 
             return new PolicyWrap<TResult>(
-                (func, context, cancellationtoken, continueOnCapturedContext) => PolicyWrapEngine.ImplementationAsync<TResult>(func, context, cancellationtoken, continueOnCapturedContext, this, innerPolicy),
                 this,
-                innerPolicy
-                );
+                innerPolicy,
+                policy => new PolicyWrapAsyncImplementationGenericGeneric<TResult>(policy, this, innerPolicy)
+            );
         }
     }
 
@@ -93,14 +93,10 @@ namespace Polly
                     throw new ArgumentException("The enumerable of policies to form the wrap must contain at least two policies.", nameof(policies));
                 case 2:
                     return new PolicyWrap(
-                        (func, context, cancellationtoken, continueOnCapturedContext) => PolicyWrapEngine.ImplementationAsync(
-                            func,
-                            context,
-                            cancellationtoken,
-                            continueOnCapturedContext,
-                            policies[0],
-                            policies[1]),
-                        (Policy)policies[0], policies[1]);
+                        (Policy)policies[0],
+                        policies[1],
+                        policy => new PolicyWrapAsyncImplementationNonGenericNonGeneric(policy, (Policy)policies[0], policies[1])
+                    );
 
                 default:
                     return WrapAsync(policies[0], WrapAsync(policies.Skip(1).ToArray()));
@@ -123,14 +119,10 @@ namespace Polly
                     throw new ArgumentException("The enumerable of policies to form the wrap must contain at least two policies.", nameof(policies));
                 case 2:
                     return new PolicyWrap<TResult>(
-                        (func, context, cancellationtoken, continueOnCapturedContext) => PolicyWrapEngine.ImplementationAsync<TResult>(
-                            func,
-                            context,
-                            cancellationtoken,
-                            continueOnCapturedContext,
-                            policies[0],
-                            policies[1]),
-                        (Policy<TResult>)policies[0], policies[1]);
+                        (Policy<TResult>)policies[0],
+                        policies[1],
+                        policy => new PolicyWrapAsyncImplementationGenericGeneric<TResult>(policy, (Policy<TResult>)policies[0], policies[1])
+                    );
 
                 default:
                     return WrapAsync(policies[0], WrapAsync(policies.Skip(1).ToArray()));

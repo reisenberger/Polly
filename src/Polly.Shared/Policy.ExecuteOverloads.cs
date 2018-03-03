@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Polly.Execution;
 
 namespace Polly
 {
@@ -17,7 +18,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action action)
         {
-            Execute((ctx, ct) => action(), new Context(), DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingParams(action), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -28,7 +29,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action action, IDictionary<string, object> contextData)
         {
-            Execute((ctx, ct) => action(), new Context(contextData), DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingParams(action), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -39,7 +40,9 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action action, Context context)
         {
-            Execute((ctx, ct) => action(), context, DefaultCancellationToken);
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingParams(action), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<Context> action, IDictionary<string, object> contextData)
         {
-            Execute((ctx, ct) => action(ctx), new Context(contextData), DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingCancellationTokenParam(action), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -61,7 +64,9 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<Context> action, Context context)
         {
-            Execute((ctx, ct) => action(ctx), context, DefaultCancellationToken);
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingCancellationTokenParam(action), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -72,7 +77,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<CancellationToken> action, CancellationToken cancellationToken)
         {
-            Execute((ctx, ct) => action(ct), new Context(), cancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingContextParam(action), new Context(), cancellationToken);
         }
 
         /// <summary>
@@ -85,7 +90,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<CancellationToken> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            Execute((ctx, ct) => action(ct), new Context(contextData), cancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingContextParam(action), new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -97,7 +102,9 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<CancellationToken> action, Context context, CancellationToken cancellationToken)
         {
-            Execute((ctx, ct) => action(ct), context, cancellationToken);
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingContextParam(action), context, cancellationToken);
         }
 
         /// <summary>
@@ -110,7 +117,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<Context, CancellationToken> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            Execute(action, new Context(contextData), cancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableAction(action), new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -124,9 +131,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            SetPolicyContext(context);
-
-            ExecuteInternal(action, context, cancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableAction(action), context, cancellationToken);
         }
 
         #region Overloads method-generic in TResult
@@ -135,19 +140,19 @@ namespace Polly
         /// Executes the specified action within the policy and returns the Result.
         /// </summary>
         /// <typeparam name="TResult">The type of the Result.</typeparam>
-        /// <param name="action">The action to perform.</param>
+        /// <param name="func">The action to perform.</param>
         /// <returns>The value returned by the action</returns>
         [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<TResult> action)
+        public TResult Execute<TResult>(Func<TResult> func)
         {
-            return Execute((ctx, ct) => action(), new Context(), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingParams<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingParams<TResult>(func), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
         /// Executes the specified action within the policy and returns the result.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
+        /// <param name="func">The action to perform.</param>
         /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         /// <returns>
@@ -155,135 +160,141 @@ namespace Polly
         /// </returns>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<TResult> action, IDictionary<string, object> contextData)
+        public TResult Execute<TResult>(Func<TResult> func, IDictionary<string, object> contextData)
         {
-            return Execute((ctx, ct) => action(), new Context(contextData), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingParams<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingParams<TResult>(func), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
         /// Executes the specified action within the policy and returns the result.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
+        /// <param name="func">The action to perform.</param>
         /// <param name="context">Context data that is passed to the exception policy.</param>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         /// <returns>
         /// The value returned by the action
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">contextData</exception>
+        /// <exception cref="System.ArgumentNullException">context</exception>
         [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<TResult> action, Context context)
-        {
-            return Execute((ctx, ct) => action(), context, DefaultCancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
-        /// <exception cref="System.ArgumentNullException">contextData</exception>
-        /// <returns>
-        /// The value returned by the action
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">contextData</exception>
-        [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<Context, TResult> action, IDictionary<string, object> contextData)
-        {
-            return Execute((ctx, ct) => action(ctx), new Context(contextData), DefaultCancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="context">Context data that is passed to the exception policy.</param>
-        /// <exception cref="System.ArgumentNullException">contextData</exception>
-        /// <returns>
-        /// The value returned by the action
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">contextData</exception>
-        [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<Context, TResult> action, Context context)
-        {
-            return Execute((ctx, ct) => action(ctx), context, DefaultCancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action</returns>
-        [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<CancellationToken, TResult> action, CancellationToken cancellationToken)
-        {
-            return Execute((ctx, ct) => action(ct), new Context(), cancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action</returns>
-        /// <exception cref="System.ArgumentNullException">contextData</exception>
-        [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
-        {
-            return Execute((ctx, ct) => action(ct), new Context(contextData), cancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="context">Context data that is passed to the exception policy.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action</returns>
-        [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
-        {
-            return Execute((ctx, ct) => action(ct), context, cancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action</returns>
-        /// <exception cref="System.ArgumentNullException">contextData</exception>
-        [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<Context, CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
-        {
-            return Execute(action, new Context(contextData), cancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the specified action within the policy and returns the result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
-        /// <param name="context">Context data that is passed to the exception policy.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The value returned by the action</returns>
-        [DebuggerStepThrough]
-        public TResult Execute<TResult>(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
+        public TResult Execute<TResult>(Func<TResult> func, Context context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            SetPolicyContext(context);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingParams<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingParams<TResult>(func), context, DefaultCancellationToken);
+        }
 
-            return ExecuteInternal(action, context, cancellationToken);
+        /// <summary>
+        /// Executes the specified action within the policy and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The action to perform.</param>
+        /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
+        /// <exception cref="System.ArgumentNullException">contextData</exception>
+        /// <returns>
+        /// The value returned by the action
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">contextData</exception>
+        [DebuggerStepThrough]
+        public TResult Execute<TResult>(Func<Context, TResult> func, IDictionary<string, object> contextData)
+        {
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>(func), new Context(contextData), DefaultCancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the specified action within the policy and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The action to perform.</param>
+        /// <param name="context">Context data that is passed to the exception policy.</param>
+        /// <exception cref="System.ArgumentNullException">contextData</exception>
+        /// <returns>
+        /// The value returned by the action
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">context</exception>
+        [DebuggerStepThrough]
+        public TResult Execute<TResult>(Func<Context, TResult> func, Context context)
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>(func), context, DefaultCancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the specified action within the policy and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The action to perform.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The value returned by the action</returns>
+        [DebuggerStepThrough]
+        public TResult Execute<TResult>(Func<CancellationToken, TResult> func, CancellationToken cancellationToken)
+        {
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingContextParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(func), new Context(), cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the specified action within the policy and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The action to perform.</param>
+        /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The value returned by the action</returns>
+        /// <exception cref="System.ArgumentNullException">contextData</exception>
+        [DebuggerStepThrough]
+        public TResult Execute<TResult>(Func<CancellationToken, TResult> func, IDictionary<string, object> contextData, CancellationToken cancellationToken)
+        {
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingContextParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(func), new Context(contextData), cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the specified action within the policy and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The action to perform.</param>
+        /// <param name="context">Context data that is passed to the exception policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The value returned by the action</returns>
+        /// <exception cref="System.ArgumentNullException">context</exception>
+        [DebuggerStepThrough]
+        public TResult Execute<TResult>(Func<CancellationToken, TResult> func, Context context, CancellationToken cancellationToken)
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingContextParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(func), context, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the specified action within the policy and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The action to perform.</param>
+        /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The value returned by the action</returns>
+        /// <exception cref="System.ArgumentNullException">contextData</exception>
+        [DebuggerStepThrough]
+        public TResult Execute<TResult>(Func<Context, CancellationToken, TResult> func, IDictionary<string, object> contextData, CancellationToken cancellationToken)
+        {
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFunc<TResult>, TResult>(new SyncPollyExecutableFunc<TResult>(func), new Context(contextData), cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the specified function within the policy and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The function to execute.</param>
+        /// <param name="context">Context data that is passed to the exception policy.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="System.ArgumentNullException">context</exception>
+        /// <returns>The value returned by the action</returns>
+        [DebuggerStepThrough]
+        public TResult Execute<TResult>(Func<Context, CancellationToken, TResult> func, Context context, CancellationToken cancellationToken)
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFunc<TResult>, TResult>(new SyncPollyExecutableFunc<TResult>(func), context, cancellationToken);
         }
 
         #endregion
@@ -300,7 +311,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action action)
         {
-            return ExecuteAndCapture((ctx, ct) => action(), new Context(), DefaultCancellationToken);
+            return ExecuteAndCapture(action, new Context());
         }
 
         /// <summary>
@@ -313,7 +324,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action action, IDictionary<string, object> contextData)
         {
-            return ExecuteAndCapture((ctx, ct) => action(), new Context(contextData), DefaultCancellationToken);
+            return ExecuteAndCapture(action, new Context(contextData));
         }
 
         /// <summary>
@@ -325,7 +336,18 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action action, Context context)
         {
-            return ExecuteAndCapture((ctx, ct) => action(), context, DefaultCancellationToken);
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            try
+            {
+                Execute(action, context);
+                return PolicyResult.Successful(context);
+            }
+            catch (Exception exception)
+            {
+                return PolicyResult.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
+            }
         }
 
         /// <summary>
@@ -338,7 +360,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<Context> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ctx), new Context(contextData), DefaultCancellationToken);
+            return ExecuteAndCapture(action, new Context(contextData));
         }
 
         /// <summary>
@@ -350,7 +372,18 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<Context> action, Context context)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ctx), context, DefaultCancellationToken);
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            try
+            {
+                Execute(action, context);
+                return PolicyResult.Successful(context);
+            }
+            catch (Exception exception)
+            {
+                return PolicyResult.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
+            }
         }
 
         /// <summary>
@@ -362,7 +395,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<CancellationToken> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ct), new Context(), cancellationToken);
+            return ExecuteAndCapture(action, new Context(), cancellationToken);
         }
 
         /// <summary>
@@ -376,7 +409,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<CancellationToken> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ct), new Context(contextData), cancellationToken);
+            return ExecuteAndCapture(action, new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -389,7 +422,18 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<CancellationToken> action, Context context, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ct), context, cancellationToken);
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            try
+            {
+                Execute(action, context, cancellationToken);
+                return PolicyResult.Successful(context);
+            }
+            catch (Exception exception)
+            {
+                return PolicyResult.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
+            }
         }
 
         /// <summary>
@@ -416,6 +460,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<Context, CancellationToken> action, Context context, CancellationToken cancellationToken)
         {
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             try
@@ -439,7 +484,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<TResult> action)
         {
-            return ExecuteAndCapture((ctx, ct) => action(), new Context(), DefaultCancellationToken);
+            return ExecuteAndCapture(action, new Context());
         }
 
         /// <summary>
@@ -452,7 +497,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<TResult> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAndCapture((ctx, ct) => action(), new Context(contextData), DefaultCancellationToken);
+            return ExecuteAndCapture(action, new Context(contextData));
         }
 
 
@@ -466,7 +511,17 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<TResult> action, Context context)
         {
-            return ExecuteAndCapture((ctx, ct) => action(), context, DefaultCancellationToken);
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            try
+            {
+                return PolicyResult<TResult>.Successful(Execute(action, context), context);
+            }
+            catch (Exception exception)
+            {
+                return PolicyResult<TResult>.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
+            }
         }
 
         /// <summary>
@@ -479,7 +534,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<Context, TResult> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ctx), new Context(contextData), DefaultCancellationToken);
+            return ExecuteAndCapture(action, new Context(contextData));
         }
 
 
@@ -493,7 +548,17 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<Context, TResult> action, Context context)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ctx), context, DefaultCancellationToken);
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            try
+            {
+                return PolicyResult<TResult>.Successful(Execute(action, context), context);
+            }
+            catch (Exception exception)
+            {
+                return PolicyResult<TResult>.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
+            }
         }
 
         /// <summary>
@@ -505,7 +570,7 @@ namespace Polly
         /// <returns>The captured result</returns>
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<CancellationToken, TResult> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ct), new Context(), cancellationToken);
+            return ExecuteAndCapture(action, new Context(), cancellationToken);
         }
 
 
@@ -521,7 +586,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ct), new Context(contextData), cancellationToken);
+            return ExecuteAndCapture(action, new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -534,7 +599,17 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture((ctx, ct) => action(ct), context, cancellationToken);
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            try
+            {
+                return PolicyResult<TResult>.Successful(Execute(action, context, cancellationToken), context);
+            }
+            catch (Exception exception)
+            {
+                return PolicyResult<TResult>.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
+            }
         }
 
         /// <summary>
@@ -562,6 +637,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
         {
+            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             try
@@ -573,6 +649,7 @@ namespace Polly
                 return PolicyResult<TResult>.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
             }
         }
+
         #endregion
 
         internal static ExceptionType GetExceptionType(IEnumerable<ExceptionPredicate> exceptionPredicates, Exception exception)

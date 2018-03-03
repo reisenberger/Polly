@@ -19,12 +19,21 @@ namespace Polly
         /// <summary>
         /// Defines a CancellationToken to use, when none is supplied.
         /// </summary>
-        protected static internal CancellationToken DefaultCancellationToken = CancellationToken.None;
+        protected internal static CancellationToken DefaultCancellationToken = CancellationToken.None;
 
         /// <summary>
         /// Defines a value to use for continueOnCaptureContext, when none is supplied.
         /// </summary>
-        protected static internal bool DefaultContinueOnCapturedContext = false;
-        
+        protected internal static bool DefaultContinueOnCapturedContext = false;
+
+        internal Exception NotConfiguredForSyncExecution()
+        {
+            return new InvalidOperationException($"This {this.GetType().Name} policy is not configured for synchronous executions.");
+        }
+
+        internal Exception NotConfiguredForAsyncExecution()
+        {
+            return new InvalidOperationException($"This {this.GetType().Name} policy is not configured for asynchronous executions.");
+        }
     }
 }

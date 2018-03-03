@@ -156,7 +156,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutRejectedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutStrategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\AsyncSemaphoreExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\EmptyStruct.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ExceptionDispatchInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\KeyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\PredicateHelper.cs" />
@@ -166,12 +165,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\TimedLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\IPolicyWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\IPolicyWrapExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapAsyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapSyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrap.ContextAndKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapSyncImplementation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapAsyncImplementation.cs" />
   </ItemGroup>
 </Project>

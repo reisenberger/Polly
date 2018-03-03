@@ -74,7 +74,7 @@ namespace Polly
         /// <param name="continueOnCapturedContext">Whether to continue on a captured synchronization context.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the action.  When a retry policy is in use, also cancels any further retries.</param>
         /// <returns>The value returned by the action</returns>
-        /// <exception cref="System.InvalidOperationException">Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.</exception>
+        /// <exception cref="System.InvalidOperationException">This policy is not configured for asynchronous executions.</exception>
         Task<TResult> ExecuteAsync(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken, bool continueOnCapturedContext);
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Polly
         /// <param name="continueOnCapturedContext">Whether to continue on a captured synchronization context.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the action.  When a retry policy is in use, also cancels any further retries.</param>
         /// <returns>The value returned by the action</returns>
-        /// <exception cref="System.InvalidOperationException">Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.</exception>
+        /// <exception cref="System.InvalidOperationException">This policy is not configured for asynchronous executions.</exception>
         Task<TResult> ExecuteAsync(Func<Context, CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext);
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Polly
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the action.  When a retry policy in use, also cancels any further retries.</param>
         /// <param name="continueOnCapturedContext">Whether to continue on a captured synchronization context.</param>
         /// <returns>The captured result</returns>
-        /// <exception cref="System.InvalidOperationException">Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.</exception>
+        /// <exception cref="System.InvalidOperationException">This policy is not configured for asynchronous executions.</exception>
         Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken, bool continueOnCapturedContext);
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Polly
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the action.  When a retry policy in use, also cancels any further retries.</param>
         /// <param name="continueOnCapturedContext">Whether to continue on a captured synchronization context.</param>
         /// <returns>The captured result</returns>
-        /// <exception cref="System.InvalidOperationException">Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.</exception>
+        /// <exception cref="System.InvalidOperationException">This policy is not configured for asynchronous executions.</exception>
         Task<PolicyResult<TResult>> ExecuteAndCaptureAsync(Func<Context, CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext);
     }
 }
