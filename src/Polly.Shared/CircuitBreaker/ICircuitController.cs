@@ -2,10 +2,11 @@
 {
     /// <summary>
     /// Defines a circuit controller which can control when a circuit-breaker should transition between closed, half-open and open states, in response to failures and successes experienced by actions executed through the circuit.
-    /// <remarks>The interface defines only three operations:
+    /// <remarks>The interface defines four operations:
     /// - Reset any internal statistics governing the circuit
     /// - Respond to a successful execution through the circuit
     /// - Respond to an execution through the circuit resulting in a handled failure
+    /// - In half-open state, indicate whether another trial execution should be permitted
     /// </remarks>
     /// </summary>
     public interface ICircuitController
