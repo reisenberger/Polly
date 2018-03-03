@@ -21,8 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\IBulkheadPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\IBulkheadPolicyInternal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\AbsoluteTtl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CachePolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CachePolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheProviderExtensions.cs" />
