@@ -13,8 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadTResultSyntaxAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bulkhead\BulkheadRejectedException.cs" />
