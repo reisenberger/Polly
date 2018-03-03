@@ -157,8 +157,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutTResultSyntaxAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutRejectedException.cs" />
