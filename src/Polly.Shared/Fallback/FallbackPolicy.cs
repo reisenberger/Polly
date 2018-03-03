@@ -10,7 +10,7 @@ namespace Polly.Fallback
     /// </summary>
     public partial class FallbackPolicy : Policy, IFallbackPolicy
     {
-        internal FallbackPolicy(PolicyBuilder builder, FallbackAsyncImplementationFactory factory)
+        internal FallbackPolicy(PolicyBuilder builder, Func<ISyncPolicy, ISyncPolicyImplementation<object>> factory)
             : base(builder, factory)
         { }
 
@@ -30,7 +30,7 @@ namespace Polly.Fallback
     /// </summary>
     public partial class FallbackPolicy<TResult> : Policy<TResult>, IFallbackPolicy<TResult>
     {
-        internal FallbackPolicy(PolicyBuilder<TResult> builder, FallbackSyncImplementationFactory<TResult> factory)
+        internal FallbackPolicy(PolicyBuilder<TResult> builder, Func<ISyncPolicy<TResult>, ISyncPolicyImplementation<TResult>> factory)
            : base(builder, factory)
         { }
     }

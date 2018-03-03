@@ -6,7 +6,7 @@ namespace Polly.Execution
     /// Defines an operation that can be executed synchronously to return a result of type <typeparamref name="TResult"/>
     /// </summary>
     /// <typeparam name="TResult">The return type of the operation.</typeparam>
-    public interface ISyncPollyExecutable<TResult>
+    public interface ISyncPollyExecutable<out TResult>
     {
         /// <summary>
         /// Synchronously executes the operation represented by the instance.

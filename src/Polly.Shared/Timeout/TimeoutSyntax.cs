@@ -250,7 +250,7 @@ namespace Polly
                     timeoutProvider,
                     timeoutStrategy,
                     onTimeout,
-                    new TimeoutSyncImplementationFactory()
+                    policy => new TimeoutSyncImplementation<object>((ITimeoutPolicyInternal)policy)
                 );
         }
     }

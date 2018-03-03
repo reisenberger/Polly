@@ -12,7 +12,7 @@ namespace Polly.NoOp
     /// </summary>
     public partial class NoOpPolicy : Policy, INoOpPolicy
     {
-        internal NoOpPolicy(NoOpSyncImplementationFactory factory) : base(PolicyBuilder.Empty, factory)
+        internal NoOpPolicy(Func<ISyncPolicy, ISyncPolicyImplementation<object>> factory) : base(PolicyBuilder.Empty, factory)
         {
         }
     }
@@ -23,7 +23,7 @@ namespace Polly.NoOp
     /// <typeparam name="TResult">The type of return values this policy will handle.</typeparam>
     public partial class NoOpPolicy<TResult> : Policy<TResult>, INoOpPolicy<TResult>
     {
-        internal NoOpPolicy(NoOpSyncImplementationFactory<TResult> factory) : base(PolicyBuilder<TResult>.Empty, factory)
+        internal NoOpPolicy(Func<ISyncPolicy<TResult>, ISyncPolicyImplementation<TResult>> factory) : base(PolicyBuilder<TResult>.Empty, factory)
         {
         }
     }

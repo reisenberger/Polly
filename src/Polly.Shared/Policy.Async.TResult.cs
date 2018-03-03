@@ -39,14 +39,14 @@ namespace Polly
         /// </summary>
         /// <param name="policyBuilder">The policy builder holding configuration information for the policy.</param>
         /// <param name="implementationFactory">A factory for providing synchronous implementations for the given non-generic policy</param>
-        protected Policy(PolicyBuilder<TResult> policyBuilder, IAsyncPolicyImplementationFactory<TResult> implementationFactory)
+        protected Policy(PolicyBuilder<TResult> policyBuilder, Func<IAsyncPolicy<TResult>, IAsyncPolicyImplementation<TResult>> implementationFactory)
         {
             if (policyBuilder == null) throw new ArgumentNullException(nameof(policyBuilder));
             ExceptionPredicates = policyBuilder.ExceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
             ResultPredicates = policyBuilder.ResultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
 
             if (implementationFactory == null) throw new ArgumentNullException(nameof(implementationFactory));
-            _genericAsyncImplementation = implementationFactory.GetImplementation(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
+            _genericAsyncImplementation = implementationFactory(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
         }
 
         internal virtual Task<TResult> ExecuteInternalAsync<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TResult>
@@ -72,7 +72,13 @@ namespace Polly
             // WASNT ORIGINALLY: virtual // THESE ARE NO LONGER THE ONES WE WANT TO LET PEOPLE OVERRIDE - because there will be several, not just action.  Want them to override PollyAction ones.
             Task<TResult> ExecuteAsyncInternal(Func<Context, CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteInternalAsync(new AsyncPollyExecutableFunc<TResult>(action), context, cancellationToken, continueOnCapturedContext);
+            return ExecuteInternalAsync(
+                new AsyncPollyExecutableFunc<TResult>(
+                    (ctx, ct, capture) => action(ctx, ct)), 
+                    context, 
+                    cancellationToken, 
+                    continueOnCapturedContext)
+                ;
 
             //if (_asyncExecutionPolicy == null) throw new InvalidOperationException("Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.");
 

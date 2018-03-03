@@ -28,7 +28,7 @@ namespace Polly.Bulkhead
             int maxQueueingActions,
             SemaphoreSlim maxParallelizationSemaphore, 
             SemaphoreSlim maxQueuedActionsSemaphore,
-            BulkheadSyncImplementationFactory factory
+            Func<ISyncPolicy, ISyncPolicyImplementation<Object>> factory
             ) : base(PolicyBuilder.Empty, factory)
         {
             _onBulkheadRejected = onBulkheadRejected;
@@ -83,7 +83,7 @@ namespace Polly.Bulkhead
             int maxQueueingActions,
             SemaphoreSlim maxParallelizationSemaphore,
             SemaphoreSlim maxQueuedActionsSemaphore,
-            BulkheadSyncImplementationFactory<TResult> factory
+            Func<ISyncPolicy<TResult>, ISyncPolicyImplementation<TResult>> factory
             ) : base(PolicyBuilder<TResult>.Empty, factory)
         {
             _onBulkheadRejected = onBulkheadRejected;

@@ -86,7 +86,7 @@ namespace Polly
                 maxQueuingActions,
                 maxParallelizationSemaphore,
                 maxQueuedActionsSemaphore,
-                new BulkheadSyncImplementationFactory<TResult>()
+                policy => new BulkheadSyncImplementation<TResult>((IBulkheadPolicyInternal)policy)
                 );
         }
 

@@ -15,7 +15,7 @@ namespace Polly.Timeout
             Func<Context, TimeSpan> timeoutProvider,
             TimeoutStrategy timeoutStrategy,
             Func<Context, TimeSpan, Task, Task> onTimeoutAsync,
-            TimeoutAsyncImplementationFactory factory
+            Func<IAsyncPolicy, IAsyncPolicyImplementation<object>> factory
             ) : base(PolicyBuilder.Empty, factory)
 
         {
@@ -35,7 +35,7 @@ namespace Polly.Timeout
             Func<Context, TimeSpan> timeoutProvider,
             TimeoutStrategy timeoutStrategy,
             Func<Context, TimeSpan, Task, Task> onTimeoutAsync,
-            TimeoutAsyncImplementationFactory<TResult> factory
+            Func<IAsyncPolicy<TResult>, IAsyncPolicyImplementation<TResult>> factory
             ) : base(PolicyBuilder<TResult>.Empty, factory)
         {
             _timeoutProvider = timeoutProvider;

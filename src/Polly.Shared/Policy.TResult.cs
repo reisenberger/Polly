@@ -43,14 +43,14 @@ namespace Polly
         /// </summary>
         /// <param name="policyBuilder">The policy builder holding configuration information for the policy.</param>
         /// <param name="implementationFactory">A factory for providing synchronous implementations for the given non-generic policy</param>
-        protected Policy(PolicyBuilder<TResult> policyBuilder, ISyncPolicyImplementationFactory<TResult> implementationFactory)
+        protected Policy(PolicyBuilder<TResult> policyBuilder, Func<ISyncPolicy<TResult>, ISyncPolicyImplementation<TResult>> implementationFactory)
         {
             if (policyBuilder == null) throw new ArgumentNullException(nameof(policyBuilder));
             ExceptionPredicates = policyBuilder.ExceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
             ResultPredicates = policyBuilder.ResultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
 
             if (implementationFactory == null) throw new ArgumentNullException(nameof(implementationFactory));
-            _genericImplementation = implementationFactory.GetImplementation(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
+            _genericImplementation = implementationFactory(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
         }
 
         internal virtual TResult ExecuteInternal<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>

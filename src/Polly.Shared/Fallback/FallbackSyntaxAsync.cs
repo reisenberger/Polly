@@ -98,7 +98,14 @@ namespace Polly
             if (fallbackAction == null) throw new ArgumentNullException(nameof(fallbackAction));
             if (onFallbackAsync == null) throw new ArgumentNullException(nameof(onFallbackAsync));
 
-            return new FallbackPolicy(policyBuilder, new FallbackAsyncImplementationFactory(onFallbackAsync, fallbackAction));
+            return new FallbackPolicy(policyBuilder,
+                policy => new FallbackAsyncImplementation<object>(
+                    policy,
+                    policyBuilder.ExceptionPredicates,
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, ctx) => onFallbackAsync(outcome.Exception, ctx),
+                    async (outcome, ctx, ct, capture) => { await fallbackAction(outcome.Exception, ctx, ct).ConfigureAwait(capture); return null; }
+                    ));
         }
     }
 
@@ -245,7 +252,14 @@ namespace Polly
             if (fallbackAction == null) throw new ArgumentNullException(nameof(fallbackAction));
             if (onFallbackAsync == null) throw new ArgumentNullException(nameof(onFallbackAsync));
 
-            return new FallbackPolicy<TResult>(policyBuilder, new FallbackAsyncImplementationFactory<TResult>(onFallbackAsync, fallbackAction));
+            return new FallbackPolicy<TResult>(policyBuilder,
+                policy => new FallbackAsyncImplementation<TResult>(
+                    policy,
+                    policyBuilder.ExceptionPredicates,
+                    policyBuilder.ResultPredicates,
+                    onFallbackAsync,
+                    (outcome, ctx, ct, capture) => fallbackAction(outcome, ctx, ct) // TODO: Could use AsyncPollyExecutableFunc here, to remove the closure. Or local function.
+                ));
         }
     }
 }

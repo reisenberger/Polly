@@ -159,7 +159,13 @@ namespace Polly
             if (fallbackAction == null) throw new ArgumentNullException(nameof(fallbackAction));
             if (onFallback == null) throw new ArgumentNullException(nameof(onFallback));
 
-            return new FallbackPolicy(policyBuilder, new FallbackSyncImplementationFactory(onFallback, fallbackAction));
+            return new FallbackPolicy(policyBuilder,
+                policy => new FallbackSyncImplementation<object>(
+                    policy,
+                    policyBuilder.ExceptionPredicates,
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, context) => onFallback(outcome.Exception, context), // NOTE: In theory, this could be replaced by another SyncPollyAction.
+                    (outcome, context, ct) => { fallbackAction(outcome.Exception, context, ct); return null; })); // NOTE: In theory, this could be replaced by another SyncPollyFunc.
         }
     }
 
@@ -358,7 +364,13 @@ namespace Polly
             if (fallbackAction == null) throw new ArgumentNullException(nameof(fallbackAction));
             if (onFallback == null) throw new ArgumentNullException(nameof(onFallback));
 
-            return new FallbackPolicy<TResult>(policyBuilder, new FallbackSyncImplementationFactory<TResult>(onFallback, fallbackAction));
+            return new FallbackPolicy<TResult>(policyBuilder,
+                policy => new FallbackSyncImplementation<TResult>(
+                    policy,
+                    policyBuilder.ExceptionPredicates,
+                    policyBuilder.ResultPredicates,
+                    onFallback, 
+                    fallbackAction));
         }
     }
 }

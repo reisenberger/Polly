@@ -14,18 +14,20 @@ namespace Polly.Fallback
     internal class FallbackSyncImplementation<TResult> : ISyncPolicyImplementation<TResult>
     {
         private IsPolicy _policy;
-        IEnumerable<ExceptionPredicate> _shouldHandleExceptionPredicates;
-        IEnumerable<ResultPredicate<TResult>> _shouldHandleResultPredicates;
-        Action<DelegateResult<TResult>, Context> _onFallback;
-        Func<DelegateResult<TResult>, Context, CancellationToken, TResult> _fallbackAction;
+        private IEnumerable<ExceptionPredicate> _shouldHandleExceptionPredicates;
+        private IEnumerable<ResultPredicate<TResult>> _shouldHandleResultPredicates;
+        private Action<DelegateResult<TResult>, Context> _onFallback;
+        private Func<DelegateResult<TResult>, Context, CancellationToken, TResult> _fallbackAction;
 
-        internal FallbackSyncImplementation(IsPolicy policy, 
+        internal FallbackSyncImplementation(
+            IsPolicy policy, 
             IEnumerable<ExceptionPredicate> shouldHandleExceptionPredicates, 
             IEnumerable<ResultPredicate<TResult>> shouldHandleResultPredicates,
             Action<DelegateResult<TResult>, Context> onFallback,
             Func<DelegateResult<TResult>, Context, CancellationToken, TResult> fallbackAction)
         {
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
+
             _shouldHandleExceptionPredicates = shouldHandleExceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
             _shouldHandleResultPredicates = shouldHandleResultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
             _onFallback = onFallback ?? throw new ArgumentNullException(nameof(onFallback));

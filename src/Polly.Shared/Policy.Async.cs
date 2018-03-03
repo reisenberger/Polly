@@ -29,37 +29,39 @@ namespace Polly
 
         #endregion
 
-        private readonly IAsyncPolicyImplementation<EmptyStruct> _voidAsyncImplementation;
-        private readonly IAsyncPolicyImplementationFactory _asyncImplementationFactory;
+        private readonly IAsyncPolicyImplementation<object> _nonGenericAsyncImplementation;
 
         /// <summary>
         /// Constructs a new instance of a derived <see cref="Policy"/> type, using the passed <paramref name="policyBuilder"/>, and the passed <paramref name="implementationFactory"/> to generate implementations for executions for different return types.
         /// </summary>
         /// <param name="policyBuilder">The policy builder holding configuration information for the policy.</param>
         /// <param name="implementationFactory">A factory for providing synchronous implementations for the given non-generic policy</param>
-        protected Policy(PolicyBuilder policyBuilder, IAsyncPolicyImplementationFactory implementationFactory)
+        protected Policy(PolicyBuilder policyBuilder, Func<IAsyncPolicy, IAsyncPolicyImplementation<object>> implementationFactory)
         {
             if (policyBuilder == null) throw new ArgumentNullException(nameof(policyBuilder));
             ExceptionPredicates = policyBuilder.ExceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
 
-            _asyncImplementationFactory = implementationFactory ?? throw new ArgumentNullException(nameof(implementationFactory));
-            _voidAsyncImplementation = implementationFactory.GetImplementation<EmptyStruct>(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
+            if (implementationFactory == null) throw new ArgumentNullException(nameof(implementationFactory));
+            _nonGenericAsyncImplementation = implementationFactory(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
         }
 
-        internal virtual Task ExecuteInternalAsync<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<EmptyStruct>
+        internal virtual Task ExecuteInternalAsync<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<object>
         {
-            if (_voidAsyncImplementation == null) throw NotConfiguredForAsyncExecution();
+            if (_nonGenericAsyncImplementation == null) throw NotConfiguredForAsyncExecution();
 
-            return _voidAsyncImplementation.ExecuteAsync(action, context, cancellationToken, continueOnCapturedContext);
+            return _nonGenericAsyncImplementation.ExecuteAsync(action, context, cancellationToken, continueOnCapturedContext);
         }
 
-        internal virtual Task<TMethodGeneric> ExecuteInternalAsync<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TMethodGeneric>
+        internal virtual async Task<TMethodGeneric> ExecuteInternalAsync<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TMethodGeneric>
         {
-            if (_asyncImplementationFactory == null) throw NotConfiguredForAsyncExecution();
+            if (_nonGenericAsyncImplementation == null) throw NotConfiguredForAsyncExecution();
 
-            return _asyncImplementationFactory.GetImplementation<TMethodGeneric>(this).ExecuteAsync(func, context, cancellationToken, continueOnCapturedContext);
+            return (TMethodGeneric) 
+                await _nonGenericAsyncImplementation
+                .ExecuteAsync(new AsyncPollyExecutableFunc<object>(async (ctx, ct, capture) => await func.ExecuteAsync(ctx, ct, capture).ConfigureAwait(continueOnCapturedContext)), context, cancellationToken, continueOnCapturedContext)
+                .ConfigureAwait(continueOnCapturedContext);
         }
-        
+
         #region TOREMOVE - or leave adapted
 
         /// <summary>
@@ -76,17 +78,13 @@ namespace Polly
             Task ExecuteAsyncInternal(Func<Context, CancellationToken, Task> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
             return ExecuteInternalAsync(new AsyncPollyExecutableAction(action), context, cancellationToken, continueOnCapturedContext);
-
-            //if (_asyncExceptionPolicy == null) throw new InvalidOperationException("Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.");
-
-            //await _asyncExceptionPolicy(action, context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
         }
 
         /// <summary>
         ///     Executes the specified asynchronous action within the policy and returns the result.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="action">The action to perform.</param>
+        /// <param name="func">The action to perform.</param>
         /// <param name="context">Context data that is passed to the exception policy.</param>
         /// <param name="continueOnCapturedContext">Whether to continue on a captured synchronization context.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the action.  When a retry policy is in use, also cancels any further retries.</param>
@@ -96,21 +94,16 @@ namespace Polly
         protected internal
             // virtual // THESE ARE NO LONGER THE ONES WE WANT TO LET PEOPLE OVERRIDE - because there will be several, not just action.  Want them to override PollyAction ones.
             // async 
-            Task<TResult> ExecuteAsyncInternal<TResult>(Func<Context, CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
+           async Task<TResult> ExecuteAsyncInternal<TResult>(Func<Context, CancellationToken, Task<TResult>> func, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteInternalAsync<AsyncPollyExecutableFunc<TResult>, TResult>(new AsyncPollyExecutableFunc<TResult>(action), context, cancellationToken, continueOnCapturedContext);
-
-            //if (_asyncExceptionPolicy == null) throw new InvalidOperationException(
-            //    "Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.");
-
-            //var result = default(TResult);
-            //await _asyncExceptionPolicy(async (ctx, ct) =>
-            //{
-            //    result = await action(ctx, ct).ConfigureAwait(continueOnCapturedContext);
-            //}, context, cancellationToken, continueOnCapturedContext)
-            //    .ConfigureAwait(continueOnCapturedContext);
-            //return result;
+            return await ExecuteInternalAsync<AsyncPollyExecutableFunc<TResult>, TResult>(
+                new AsyncPollyExecutableFunc<TResult>((ctx, ct, capture) => func(ctx, ct)), 
+                context,
+                cancellationToken, 
+                continueOnCapturedContext)
+                .ConfigureAwait(continueOnCapturedContext);
         }
+
         #endregion
 
     }

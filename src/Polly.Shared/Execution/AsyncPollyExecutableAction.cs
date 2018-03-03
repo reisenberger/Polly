@@ -6,7 +6,7 @@ using Polly.Utilities;
 namespace Polly.Execution
 {
     /// <inheritdoc/>
-    internal struct AsyncPollyExecutableAction : IAsyncPollyExecutable<EmptyStruct>
+    internal struct AsyncPollyExecutableAction : IAsyncPollyExecutable<object>
     {
         private readonly Func<Context, CancellationToken, Task> _action;
 
@@ -20,14 +20,14 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public async Task<EmptyStruct> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
+        public async Task<object> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
             await _action(context, cancellationToken).ConfigureAwait(continueOnCapturedContext);
-            return EmptyStruct.Instance;
+            return null;
         }
     }
 
-    internal struct AsyncPollyExecutableAction<T1> : IAsyncPollyExecutable<EmptyStruct>
+    internal struct AsyncPollyExecutableAction<T1> : IAsyncPollyExecutable<object>
     {
         private readonly Func<Context, CancellationToken, T1, Task> _action;
         private readonly T1 _arg1;
@@ -45,10 +45,10 @@ namespace Polly.Execution
             _arg1 = arg1;
         }
 
-        public async Task<EmptyStruct> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
+        public async Task<object> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
             await _action(context, cancellationToken, _arg1).ConfigureAwait(continueOnCapturedContext);
-            return EmptyStruct.Instance;
+            return null;
         }
     }
 }

@@ -86,8 +86,7 @@ namespace Polly
                 maxQueuingActions,
                 maxParallelizationSemaphore,
                 maxQueuedActionsSemaphore,
-                new BulkheadAsyncImplementationFactory()
-                );
+                policy => new BulkheadAsyncImplementation<object>((IBulkheadPolicyInternal)policy));
         }
     }
 }

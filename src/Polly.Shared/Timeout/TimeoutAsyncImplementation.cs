@@ -70,5 +70,6 @@ namespace Polly.Timeout
                 }
             }
         }
+
     }
 }

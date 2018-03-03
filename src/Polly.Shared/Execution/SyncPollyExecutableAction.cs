@@ -5,7 +5,7 @@ using Polly.Utilities;
 namespace Polly.Execution
 {
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableAction : ISyncPollyExecutable<EmptyStruct>
+    internal struct SyncPollyExecutableAction : ISyncPollyExecutable<object>
     {
         private readonly Action<Context, CancellationToken> _action;
 
@@ -19,15 +19,15 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public EmptyStruct Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, CancellationToken cancellationToken)
         {
             _action(context, cancellationToken);
-            return EmptyStruct.Instance;
+            return null;
         }
     }
 
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableAction<T1> : ISyncPollyExecutable<EmptyStruct>
+    internal struct SyncPollyExecutableAction<T1> : ISyncPollyExecutable<object>
     {
         private readonly Action<Context, CancellationToken, T1> _action;
         private readonly T1 _arg1;
@@ -45,10 +45,10 @@ namespace Polly.Execution
             _arg1 = arg1;
         }
 
-        public EmptyStruct Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, CancellationToken cancellationToken)
         {
             _action(context, cancellationToken, _arg1);
-            return EmptyStruct.Instance;
+            return null;
         }
     }
     

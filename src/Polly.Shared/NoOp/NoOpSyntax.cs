@@ -10,7 +10,7 @@ namespace Polly
         /// <returns>The policy instance.</returns>
         public static NoOpPolicy NoOp()
         {
-            return new NoOpPolicy(new NoOpSyncImplementationFactory());
+            return new NoOpPolicy(policy => new NoOpSyncImplementation<object>());
         }
     }
 }
