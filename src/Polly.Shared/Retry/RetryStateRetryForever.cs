@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Threading;
 
 namespace Polly.Retry
 {
-    internal partial class RetryStateRetryForever<TResult> : IRetryPolicyState<TResult>
+    internal class RetryStateRetryForever<TResult> : IRetryPolicyState<TResult>
     {
-        private readonly Action<DelegateResult<TResult>, Context> _onRetry;
-        private readonly Context _context;
+        internal static RetryStateRetryForever<TResult> Instance = new RetryStateRetryForever<TResult>();
 
-        public RetryStateRetryForever(Action<DelegateResult<TResult>, Context> onRetry, Context context)
-        {
-            _onRetry = onRetry;
-            _context = context;
-        }
+        public bool CanRetry(int failureCount) => true;
 
-        public bool CanRetry(DelegateResult<TResult> delegateResult, CancellationToken cancellationToken)
-        {
-            _onRetry(delegateResult, _context);
-            return true;
-        }
+        public TimeSpan GetWaitDuration(DelegateResult<TResult> delegateResult, int failureCount, Context context) => TimeSpan.Zero;
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Threading;
 
 namespace Polly.Retry
 {
-    internal partial interface IRetryPolicyState<TResult>
+    internal interface IRetryPolicyState<TResult>
     {
-        bool CanRetry(DelegateResult<TResult> delegateResult, CancellationToken cancellationToken);
+        bool CanRetry(int failureCount);
+
+        TimeSpan GetWaitDuration(DelegateResult<TResult> delegateResult, int failureCount, Context context);
     }
 }

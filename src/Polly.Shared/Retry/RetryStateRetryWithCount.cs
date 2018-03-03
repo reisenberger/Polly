@@ -1,33 +1,17 @@
 ﻿using System;
-using System.Threading;
 
 namespace Polly.Retry
 {
-    internal partial class RetryStateRetryWithCount<TResult> : IRetryPolicyState<TResult>
+    internal class RetryStateRetryWithCount<TResult> : IRetryPolicyState<TResult>
     {
-        private int _errorCount;
-        private readonly int _retryCount;
-        private readonly Action<DelegateResult<TResult>, int, Context> _onRetry;
-        private readonly Context _context;
-
-        public RetryStateRetryWithCount(int retryCount, Action<DelegateResult<TResult>, int, Context> onRetry, Context context)
+        private readonly int _numberOfRetriesPermitted;
+        public RetryStateRetryWithCount(int numberOfRetriesPermitted)
         {
-            _retryCount = retryCount;
-            _onRetry = onRetry;
-            _context = context;
+            _numberOfRetriesPermitted = numberOfRetriesPermitted;
         }
 
-        public bool CanRetry(DelegateResult<TResult> delegateResult, CancellationToken cancellationToken)
-        {
-            _errorCount += 1;
+        public bool CanRetry(int failureCount) => failureCount <= _numberOfRetriesPermitted; 
 
-            bool shouldRetry = _errorCount <= _retryCount;
-            if (shouldRetry)
-            {
-                _onRetry(delegateResult, _errorCount, _context);
-            }
-
-            return shouldRetry;
-        }
+        public TimeSpan GetWaitDuration(DelegateResult<TResult> delegateResult, int failureCount, Context context) => TimeSpan.Zero;
     }
 }

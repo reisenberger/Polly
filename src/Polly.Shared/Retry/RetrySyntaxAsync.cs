@@ -166,16 +166,15 @@ namespace Polly
             if (onRetryAsync == null) throw new ArgumentNullException(nameof(onRetryAsync));
 
             return new RetryPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) =>
-                  RetryEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context, 
-                    cancellationToken,
+                policyBuilder,
+                policy => new RetryAsyncImplementation<object>(
+                    policy,
                     policyBuilder.ExceptionPredicates,
-                    PredicateHelper<EmptyStruct>.EmptyResultPredicates,
-                () => new RetryStateRetryWithCount<EmptyStruct>(retryCount, (outcome, i, ctx) => onRetryAsync(outcome.Exception, i, ctx), context),
-                continueOnCapturedContext
-            ), policyBuilder.ExceptionPredicates);
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, wait, failures, context) => onRetryAsync(outcome.Exception, failures, context),
+                    () => new RetryStateRetryWithCount<object>(retryCount)
+                    )
+                );
         }
 
         /// <summary>
@@ -256,16 +255,15 @@ namespace Polly
             if (onRetryAsync == null) throw new ArgumentNullException(nameof(onRetryAsync));
 
             return new RetryPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) =>
-                  RetryEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context, 
-                    cancellationToken,
+                policyBuilder,
+                policy => new RetryAsyncImplementation<object>(
+                    policy,
                     policyBuilder.ExceptionPredicates,
-                    PredicateHelper<EmptyStruct>.EmptyResultPredicates,
-                () => new RetryStateRetryForever<EmptyStruct>((outcome, ctx) => onRetryAsync(outcome.Exception, ctx), context),
-                continueOnCapturedContext
-            ), policyBuilder.ExceptionPredicates);
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, wait, failures, context) => onRetryAsync(outcome.Exception, context),
+                    () => new RetryStateRetryForever<object>()
+                    )
+                );
         }
 
         /// <summary>
@@ -462,17 +460,15 @@ namespace Polly
                 .Select(sleepDurationProvider);
 
             return new RetryPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) =>
-                  RetryEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context, 
-                    cancellationToken,
+                policyBuilder,
+                policy => new RetryAsyncImplementation<object>(
+                    policy,
                     policyBuilder.ExceptionPredicates,
-                    PredicateHelper<EmptyStruct>.EmptyResultPredicates,
-                    () => new RetryStateWaitAndRetry<EmptyStruct>(sleepDurations, (outcome, timespan, i, ctx) => onRetryAsync(outcome.Exception, timespan, i, ctx), context),
-                    continueOnCapturedContext),
-                policyBuilder.ExceptionPredicates
-            );
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, wait, failures, context) => onRetryAsync(outcome.Exception, wait, failures, context),
+                    () => new RetryStateWaitAndRetry<object>(sleepDurations)
+                    )
+                );
         }
 
         /// <summary>
@@ -617,21 +613,15 @@ namespace Polly
             if (onRetryAsync == null) throw new ArgumentNullException(nameof(onRetryAsync));
 
             return new RetryPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) =>
-                  RetryEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context,
-                    cancellationToken,
+                policyBuilder,
+                policy => new RetryAsyncImplementation<object>(
+                    policy,
                     policyBuilder.ExceptionPredicates,
-                    PredicateHelper<EmptyStruct>.EmptyResultPredicates,
-                    () => new RetryStateWaitAndRetryWithProvider<EmptyStruct>(
-                        retryCount,
-                        (i, outcome, ctx) => sleepDurationProvider(i, outcome.Exception, ctx),
-                        (outcome, timespan, i, ctx) => onRetryAsync(outcome.Exception, timespan, i, ctx),
-                        context),
-                    continueOnCapturedContext),
-                policyBuilder.ExceptionPredicates
-            );
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, wait, failures, context) => onRetryAsync(outcome.Exception, wait, failures, context),
+                    () => new RetryStateWaitAndRetryWithProvider<object>(retryCount,
+                        (failures, outcome, context) => sleepDurationProvider(failures, outcome.Exception, context))
+                ));
         }
 
         /// <summary>
@@ -802,16 +792,14 @@ namespace Polly
             if (onRetryAsync == null) throw new ArgumentNullException(nameof(onRetryAsync));
 
             return new RetryPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) =>
-                  RetryEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context, 
-                    cancellationToken,
+                policyBuilder,
+                policy => new RetryAsyncImplementation<object>(
+                    policy,
                     policyBuilder.ExceptionPredicates,
-                    PredicateHelper<EmptyStruct>.EmptyResultPredicates,
-                    () => new RetryStateWaitAndRetry<EmptyStruct>(sleepDurations, (outcome, timespan, i, ctx) => onRetryAsync(outcome.Exception, timespan, i, ctx), context),
-                    continueOnCapturedContext),
-                policyBuilder.ExceptionPredicates
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, wait, failures, context) => onRetryAsync(outcome.Exception, wait, failures, context),
+                    () => new RetryStateWaitAndRetry<object>(sleepDurations)
+                )
             );
         }
 
@@ -950,19 +938,15 @@ namespace Polly
             if (onRetryAsync == null) throw new ArgumentNullException(nameof(onRetryAsync));
 
             return new RetryPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) =>
-                  RetryEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context, 
-                    cancellationToken,
+                policyBuilder,
+                policy => new RetryAsyncImplementation<object>(
+                    policy,
                     policyBuilder.ExceptionPredicates,
-                    PredicateHelper<EmptyStruct>.EmptyResultPredicates,
-                    () => new RetryStateWaitAndRetryForever<EmptyStruct>(
-                        (i, outcome, ctx) => sleepDurationProvider(i, outcome.Exception, ctx),
-                        (outcome, timespan, ctx) => onRetryAsync(outcome.Exception, timespan, ctx), 
-                        context),
-                    continueOnCapturedContext
-                  ), policyBuilder.ExceptionPredicates);
+                    PredicateHelper<object>.EmptyResultPredicates,
+                    (outcome, wait, failures, context) => onRetryAsync(outcome.Exception, wait, context),
+                    () => new RetryStateWaitAndRetryForever<object>((failures, outcome, context) => sleepDurationProvider(failures, outcome.Exception, context))
+                )
+            );
         }
     }
 }

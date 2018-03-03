@@ -1,37 +1,18 @@
 ﻿using System;
-using System.Threading;
-using Polly.Utilities;
 
 namespace Polly.Retry
 {
-    internal partial class RetryStateWaitAndRetryForever<TResult> : IRetryPolicyState<TResult>
+    internal class RetryStateWaitAndRetryForever<TResult> : IRetryPolicyState<TResult>
     {
-        private int _errorCount;
         private readonly Func<int, DelegateResult<TResult>, Context, TimeSpan> _sleepDurationProvider;
-        private readonly Action<DelegateResult<TResult>, TimeSpan, Context> _onRetry;
-        private readonly Context _context;
 
-        public RetryStateWaitAndRetryForever(Func<int, DelegateResult<TResult>, Context, TimeSpan> sleepDurationProvider, Action<DelegateResult<TResult>, TimeSpan, Context> onRetry, Context context)
+        public RetryStateWaitAndRetryForever(Func<int, DelegateResult<TResult>, Context, TimeSpan> sleepDurationProvider)
         {
             _sleepDurationProvider = sleepDurationProvider;
-            _onRetry = onRetry;
-            _context = context;
         }
 
-        public bool CanRetry(DelegateResult<TResult> delegateResult, CancellationToken cancellationToken)
-        {
-            if (_errorCount < int.MaxValue)
-            {
-                _errorCount += 1;
-            }
+        public bool CanRetry(int failureCount) => true;
 
-            TimeSpan waitTimeSpan = _sleepDurationProvider(_errorCount, delegateResult, _context);
-
-            _onRetry(delegateResult, waitTimeSpan, _context);
-
-            SystemClock.Sleep(waitTimeSpan, cancellationToken);
-            
-            return true;
-        }        
+        public TimeSpan GetWaitDuration(DelegateResult<TResult> delegateResult, int failureCount, Context context) => _sleepDurationProvider(failureCount, delegateResult, context);
     }
 }
