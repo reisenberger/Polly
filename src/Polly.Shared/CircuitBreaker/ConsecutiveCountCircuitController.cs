@@ -24,6 +24,7 @@
                         return CircuitState.Closed;
 
                     case CircuitState.Closed:
+                        // A success in closed state clearly cuts consecutive failures to zero.
                         _consecutiveFailureCount = 0;
                         break;
 
@@ -47,7 +48,7 @@
                         return CircuitState.Open;
 
                     case CircuitState.Closed:
-                        // Too many failures in Closed cause breaking, to Open.
+                        // Too many failures in Closed causes breaking, to Open.
                         _consecutiveFailureCount += 1;
                         if (_consecutiveFailureCount >= _exceptionsAllowedBeforeBreaking)
                         {
