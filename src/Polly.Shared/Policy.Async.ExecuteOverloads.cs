@@ -798,8 +798,6 @@ namespace Polly
         [DebuggerStepThrough]
         public async Task<PolicyResult> ExecuteAndCaptureAsync(Func<Context, CancellationToken, Task> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            if (_asyncExceptionPolicy == null) throw new InvalidOperationException
-                ("Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.");
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             try
@@ -1100,8 +1098,6 @@ namespace Polly
         [DebuggerStepThrough]
         public async Task<PolicyResult<TResult>> ExecuteAndCaptureAsync<TResult>(Func<Context, CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            if (_asyncExceptionPolicy == null) throw new InvalidOperationException(
-                "Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.");
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             try

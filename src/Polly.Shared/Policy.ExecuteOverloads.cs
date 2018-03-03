@@ -416,8 +416,6 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<Context, CancellationToken> action, Context context, CancellationToken cancellationToken)
         {
-            if (_exceptionPolicy == null) throw new InvalidOperationException(
-                "Please use the synchronous-defined policies when calling the synchronous Execute (and similar) methods.");
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             try
@@ -564,8 +562,6 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
         {
-            if (_exceptionPolicy == null) throw new InvalidOperationException(
-                "Please use the synchronous-defined policies when calling the synchronous Execute (and similar) methods.");
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             try

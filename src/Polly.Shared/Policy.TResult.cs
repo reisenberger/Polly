@@ -15,7 +15,6 @@ namespace Polly
         #region TO REMOVE
 
         private readonly Func<Func<Context, CancellationToken, TResult>, Context, CancellationToken, TResult> _executionPolicy;
-        internal IEnumerable<ResultPredicate<TResult>> ResultPredicates { get; }
 
         /// <summary>
         /// Constructs a new instance of a derived <see cref="Policy"/> type with the passed <paramref name="executionPolicy"/>, <paramref name="exceptionPredicates"/> and <paramref name="resultPredicates"/> 
@@ -37,6 +36,7 @@ namespace Polly
         #endregion
 
         private readonly ISyncPolicyImplementation<TResult> _genericImplementation;
+        internal IEnumerable<ResultPredicate<TResult>> ResultPredicates { get; }
 
         /// <summary>
         /// Constructs a new instance of a derived <see cref="Policy"/> type, using the passed <paramref name="policyBuilder"/>, and the passed <paramref name="implementationFactory"/> to generate implementations for executions for different return types.
