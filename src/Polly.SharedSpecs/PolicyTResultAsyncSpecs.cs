@@ -102,7 +102,7 @@ namespace Polly.Specs
             syncPolicy
                 .Awaiting(async x => await x.ExecuteAsync(() => Task.FromResult(ResultPrimitive.Good)))
                 .ShouldThrow<InvalidOperationException>()
-                .WithMessage("Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.");
+                .And.Message.Should().Contain("not configured for asynchronous executions");
         }
 
         [Theory, MemberData(nameof(SyncPolicies))]
@@ -111,7 +111,7 @@ namespace Polly.Specs
             syncPolicy
                 .Awaiting(async x => await x.ExecuteAndCaptureAsync(() => Task.FromResult(ResultPrimitive.Good)))
                 .ShouldThrow<InvalidOperationException>()
-                .WithMessage("Please use asynchronous-defined policies when calling asynchronous ExecuteAsync (and similar) methods.");
+                .And.Message.Should().Contain("not configured for asynchronous executions");
         }
 
         public static IEnumerable<object[]> SyncPolicies => new[]

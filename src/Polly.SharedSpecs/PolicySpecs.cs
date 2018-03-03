@@ -178,7 +178,7 @@ namespace Polly.Specs
             Action action = () => asyncPolicy.Execute(() => { });
 
             action.ShouldThrow<InvalidOperationException>()
-                .WithMessage("Please use the synchronous-defined policies when calling the synchronous Execute (and similar) methods.");
+                .And.Message.Should().Contain("not configured for synchronous executions");
         }
 
         [Theory, MemberData(nameof(AsyncPolicies))]
@@ -187,7 +187,7 @@ namespace Polly.Specs
             Action action = () => asyncPolicy.ExecuteAndCapture(() => { });
 
             action.ShouldThrow<InvalidOperationException>()
-                .WithMessage("Please use the synchronous-defined policies when calling the synchronous Execute (and similar) methods.");
+                .And.Message.Should().Contain("not configured for synchronous executions");
         }
 
         public static IEnumerable<object[]> AsyncPolicies => new[]
