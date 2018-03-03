@@ -35,7 +35,8 @@ namespace Polly
 
         #endregion
 
-        private readonly ISyncPolicyImplementation<TResult> _genericImplementation;
+        internal readonly ISyncPolicyImplementation<TResult> _genericImplementation;
+
         internal IEnumerable<ResultPredicate<TResult>> ResultPredicates { get; }
 
         /// <summary>

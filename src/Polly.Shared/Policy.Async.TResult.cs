@@ -32,7 +32,7 @@ namespace Polly
 
         #endregion
 
-        private readonly IAsyncPolicyImplementation<TResult> _genericAsyncImplementation;
+        internal readonly IAsyncPolicyImplementation<TResult> _genericAsyncImplementation;
 
         /// <summary>
         /// Constructs a new instance of a derived <see cref="Policy"/> type, using the passed <paramref name="policyBuilder"/>, and the passed <paramref name="implementationFactory"/> to generate implementations for executions for different return types.

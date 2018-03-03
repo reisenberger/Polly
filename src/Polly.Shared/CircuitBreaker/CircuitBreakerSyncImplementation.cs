@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using Polly.Execution;
+using Polly.Utilities;
 
 #if NET40
 using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
@@ -10,38 +12,59 @@ using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
 
 namespace Polly.CircuitBreaker
 {
-    internal partial class CircuitBreakerEngine
+    internal class CircuitBreakerSyncImplementation<TResult> : CircuitBreakerImplementation<TResult>, ISyncPolicyImplementation<TResult>
     {
-        internal static TResult Implementation<TResult>(
-            Func<Context, CancellationToken, TResult> action,
-            Context context,
-            CancellationToken cancellationToken,
-            IEnumerable<ExceptionPredicate> shouldHandleExceptionPredicates, 
-            IEnumerable<ResultPredicate<TResult>> shouldHandleResultPredicates, 
-            ICircuitController<TResult> breakerController)
+        internal CircuitBreakerSyncImplementation(
+            IsPolicy policy,
+            IEnumerable<ExceptionPredicate> shouldHandleExceptionPredicates,
+            IEnumerable<ResultPredicate<TResult>> shouldHandleResultPredicates,
+            ICircuitController breakerController,
+            TimeSpan durationOfBreak,
+            Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context> onBreak,
+            Action<Context> onReset,
+            Action onHalfOpen
+        ) : base(policy, shouldHandleExceptionPredicates, shouldHandleResultPredicates, breakerController, durationOfBreak, onBreak, onReset, onHalfOpen)
+        { }
+
+        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            breakerController.OnActionPreExecute();
+            OnActionPreExecute();
 
             try
             {
-                TResult result = action(context, cancellationToken);
+                TResult result = action.Execute(context, cancellationToken);
 
-                if (shouldHandleResultPredicates.Any(predicate => predicate(result)))
+                if (_shouldHandleResultPredicates.Any(predicate => predicate(result)))
                 {
-                    breakerController.OnActionFailure(new DelegateResult<TResult>(result), context);
+                    using (TimedLock.Lock(_lock))
+                    {
+                        _lastHandledOutcome = new DelegateResult<TResult>(result);
+                        CircuitState transitionTo = _breakerController.OnActionHandledFailure_WithinLock(_circuitState);
+                        if (transitionTo != _circuitState)
+                        {
+                            TransitionTo_NeedsLock(transitionTo, context);
+                        }
+                    }
                 }
                 else
                 {
-                    breakerController.OnActionSuccess(context);
+                    using (TimedLock.Lock(_lock))
+                    {
+                        CircuitState transitionTo = _breakerController.OnActionSuccess_WithinLock(_circuitState);
+                        if (transitionTo != _circuitState)
+                        {
+                            TransitionTo_NeedsLock(transitionTo, context);
+                        }
+                    }
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                Exception handledException = shouldHandleExceptionPredicates
+                Exception handledException = _shouldHandleExceptionPredicates
                     .Select(predicate => predicate(ex))
                     .FirstOrDefault(e => e != null);
                 if (handledException == null)
@@ -49,7 +72,15 @@ namespace Polly.CircuitBreaker
                     throw;
                 }
 
-                breakerController.OnActionFailure(new DelegateResult<TResult>(handledException), context);
+                using (TimedLock.Lock(_lock))
+                {
+                    _lastHandledOutcome = new DelegateResult<TResult>(handledException);
+                    CircuitState transitionTo = _breakerController.OnActionHandledFailure_WithinLock(_circuitState);
+                    if (transitionTo != _circuitState)
+                    {
+                        TransitionTo_NeedsLock(transitionTo, context);
+                    }
+                }
 
                 if (handledException != ex)
                 {
@@ -58,5 +89,6 @@ namespace Polly.CircuitBreaker
                 throw;
             }
         }
+
     }
 }

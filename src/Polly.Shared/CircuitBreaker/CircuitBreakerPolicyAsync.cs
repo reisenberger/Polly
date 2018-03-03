@@ -10,25 +10,22 @@ namespace Polly.CircuitBreaker
     public partial class CircuitBreakerPolicy : ICircuitBreakerPolicy
     {
         internal CircuitBreakerPolicy(
-            Func<Func<Context, CancellationToken, Task>, Context, CancellationToken, bool, Task> asyncExceptionPolicy, 
-            IEnumerable<ExceptionPredicate> exceptionPredicates, 
-            ICircuitController<EmptyStruct> breakerController
-            ) : base(asyncExceptionPolicy, exceptionPredicates)
+            PolicyBuilder builder,
+            Func<IAsyncPolicy, IAsyncPolicyImplementation<Object>> factory
+        ) : base(builder, factory)
         {
-            _breakerController = breakerController;
+            _implementation = (ICircuitBreakerImplementationInternal)_nonGenericAsyncImplementation;
         }
     }
 
     public partial class CircuitBreakerPolicy<TResult> : ICircuitBreakerPolicy<TResult>
     {
         internal CircuitBreakerPolicy(
-            Func<Func<Context, CancellationToken, Task<TResult>>, Context, CancellationToken, bool, Task<TResult>> asyncExecutionPolicy, 
-            IEnumerable<ExceptionPredicate> exceptionPredicates, 
-            IEnumerable<ResultPredicate<TResult>> resultPredicates, 
-            ICircuitController<TResult> breakerController
-            ) : base(asyncExecutionPolicy, exceptionPredicates, resultPredicates)
+            PolicyBuilder<TResult> builder,
+            Func<IAsyncPolicy<TResult>, IAsyncPolicyImplementation<TResult>> factory
+        ) : base(builder, factory)
         {
-            _breakerController = breakerController;
+            _implementation = (ICircuitBreakerImplementationInternal<TResult>) _genericAsyncImplementation;
         }
     }
 }

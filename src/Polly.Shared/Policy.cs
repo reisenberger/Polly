@@ -33,7 +33,7 @@ namespace Polly
 
         # endregion
 
-        private readonly ISyncPolicyImplementation<Object> _nonGenericSyncImplementation;
+        internal readonly ISyncPolicyImplementation<Object> _nonGenericSyncImplementation;
 
         /// <summary>
         /// Constructs a new instance of a derived <see cref="Policy"/> type, using the passed <paramref name="policyBuilder"/>, and the passed <paramref name="implementationFactory"/> to generate implementations for executions for different return types.

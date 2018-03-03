@@ -1,43 +1,27 @@
-﻿using System;
-using Polly.Utilities;
-
-namespace Polly.CircuitBreaker
+﻿namespace Polly.CircuitBreaker
 {
-    internal class ConsecutiveCountCircuitController<TResult> : CircuitStateController<TResult>
+    internal class ConsecutiveCountCircuitController : ICircuitController
     {
         private readonly int _exceptionsAllowedBeforeBreaking;
         private int _consecutiveFailureCount;
 
-        public ConsecutiveCountCircuitController(
-            int exceptionsAllowedBeforeBreaking, 
-            TimeSpan durationOfBreak, 
-            Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context> onBreak, 
-            Action<Context> onReset, 
-            Action onHalfOpen
-            ) : base(durationOfBreak, onBreak, onReset, onHalfOpen)
+        public ConsecutiveCountCircuitController(int exceptionsAllowedBeforeBreaking) 
         {
             _exceptionsAllowedBeforeBreaking = exceptionsAllowedBeforeBreaking;
         }
 
-        public override void OnCircuitReset(Context context)
+        public void ResetCircuitStatistics_WithinLock()
         {
-            using (TimedLock.Lock(_lock))
-            {
-                _consecutiveFailureCount = 0;
-
-                ResetInternal_NeedsLock(context);
-            }
+            _consecutiveFailureCount = 0;
         }
 
-        public override void OnActionSuccess(Context context)
+        public CircuitState OnActionSuccess_WithinLock(CircuitState currentState)
         {
-            using (TimedLock.Lock(_lock))
-            {
-                switch (_circuitState)
+                switch (currentState)
                 {
                     case CircuitState.HalfOpen:
-                        OnCircuitReset(context);
-                        break;
+                        // A single success in half-open state closes the circuit again.
+                        return CircuitState.Closed;
 
                     case CircuitState.Closed:
                         _consecutiveFailureCount = 0;
@@ -48,41 +32,39 @@ namespace Polly.CircuitBreaker
                         break; // A successful call result may arrive when the circuit is open, if it was placed before the circuit broke.  We take no action; only time passing governs transitioning from Open to HalfOpen state.
 
                     default:
-                        throw new InvalidOperationException("Unhandled CircuitState.");
+                        throw new UnhandledCircuitStateException(currentState);
                 }
-            }
+
+            return currentState;
         }
 
-        public override void OnActionFailure(DelegateResult<TResult> outcome, Context context)
+        public CircuitState OnActionHandledFailure_WithinLock(CircuitState currentState)
         {
-            using (TimedLock.Lock(_lock))
-            {
-                _lastOutcome = outcome;
-
-                switch (_circuitState)
+                switch (currentState)
                 {
                     case CircuitState.HalfOpen:
-                        Break_NeedsLock(context);
-                        return;
+                    // A single failure in HalfOpen causes reversion to Open.
+                        return CircuitState.Open;
 
                     case CircuitState.Closed:
+                        // Too many failures in Closed cause breaking, to Open.
                         _consecutiveFailureCount += 1;
                         if (_consecutiveFailureCount >= _exceptionsAllowedBeforeBreaking)
                         {
-                            Break_NeedsLock(context);
+                            return CircuitState.Open;
                         }
-                        break;
+                    break;
 
                     case CircuitState.Open:
                     case CircuitState.Isolated:
                         break; // A failure call result may arrive when the circuit is open, if it was placed before the circuit broke.  We take no action; we do not want to duplicate-signal onBreak; we do not want to extend time for which the circuit is broken.  We do not want to mask the fact that the call executed (as replacing its result with a Broken/IsolatedCircuitException would do).
 
                     default:
-                        throw new InvalidOperationException("Unhandled CircuitState.");
+                        throw new UnhandledCircuitStateException(currentState);
                 }
 
-
-            }
+            return currentState;
         }
+
     }
 }

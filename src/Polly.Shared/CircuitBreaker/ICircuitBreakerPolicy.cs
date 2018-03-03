@@ -32,7 +32,7 @@ namespace Polly.CircuitBreaker
     /// <summary>
     /// Defines properties and methods common to all circuit-breaker policies generic-typed for executions returning results of type <typeparamref name="TResult"/>.
     /// </summary>
-    public interface ICircuitBreakerPolicy<TResult> : ICircuitBreakerPolicy
+    public interface ICircuitBreakerPolicy<out TResult> : ICircuitBreakerPolicy
     {
         /// <summary>
         /// Gets the last result returned from a user delegate which the circuit-breaker handled.
