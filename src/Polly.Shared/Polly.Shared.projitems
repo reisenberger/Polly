@@ -58,8 +58,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerTResultSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\BrokenCircuitException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\CircuitBreakerPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\ConsecutiveCountCircuitController.cs" />
