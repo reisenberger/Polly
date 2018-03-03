@@ -8,13 +8,13 @@ namespace Polly.Execution
     /// <inheritdoc/>
     internal struct AsyncPollyExecutableAction : IAsyncPollyExecutable<EmptyStruct>
     {
-        private readonly Func<Context, CancellationToken, bool, Task> _action;
+        private readonly Func<Context, CancellationToken, Task> _action;
 
         /// <summary>
         /// Creates a <see cref="AsyncPollyExecutableAction"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public AsyncPollyExecutableAction(Func<Context, CancellationToken, bool, Task> action)
+        public AsyncPollyExecutableAction(Func<Context, CancellationToken, Task> action)
         {
             _action = action;
         }
@@ -22,14 +22,14 @@ namespace Polly.Execution
         /// <inheritdoc/>
         public async Task<EmptyStruct> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            await _action(context, cancellationToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
+            await _action(context, cancellationToken).ConfigureAwait(continueOnCapturedContext);
             return EmptyStruct.Instance;
         }
     }
 
     internal struct AsyncPollyExecutableAction<T1> : IAsyncPollyExecutable<EmptyStruct>
     {
-        private readonly Func<Context, CancellationToken, bool, T1, Task> _action;
+        private readonly Func<Context, CancellationToken, T1, Task> _action;
         private readonly T1 _arg1;
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Polly.Execution
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="arg1">The parameter to pass, when executing the action.</param>
-        public AsyncPollyExecutableAction(Func<Context, CancellationToken, bool, T1, Task> action, T1 arg1)
+        public AsyncPollyExecutableAction(Func<Context, CancellationToken, T1, Task> action, T1 arg1)
         {
             _action = action;
             _arg1 = arg1;
@@ -47,7 +47,7 @@ namespace Polly.Execution
 
         public async Task<EmptyStruct> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            await _action(context, cancellationToken, continueOnCapturedContext, _arg1).ConfigureAwait(continueOnCapturedContext);
+            await _action(context, cancellationToken, _arg1).ConfigureAwait(continueOnCapturedContext);
             return EmptyStruct.Instance;
         }
     }

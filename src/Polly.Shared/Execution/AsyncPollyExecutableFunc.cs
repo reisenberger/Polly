@@ -9,25 +9,25 @@ namespace Polly.Execution
 
     public struct AsyncPollyExecutableFunc<TResult> : IAsyncPollyExecutable<TResult>
     {
-        private readonly Func<Context, CancellationToken, bool, Task<TResult>> _func;
+        private readonly Func<Context, CancellationToken, Task<TResult>> _func;
 
         /// <summary>
         /// Creates a <see cref="AsyncPollyExecutableFunc{TResult}"/> struct for the passed func, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="func">The function.</param>
-        public AsyncPollyExecutableFunc(Func<Context, CancellationToken, bool, Task<TResult>> func)
+        public AsyncPollyExecutableFunc(Func<Context, CancellationToken, Task<TResult>> func)
         {
             _func = func;
         }
 
         /// <inheritdoc/>
-        public Task<TResult> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) => _func(context, cancellationToken, continueOnCapturedContext);
+        public Task<TResult> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) => _func(context, cancellationToken);
     }
 
     /// <inheritdoc/>
     public struct AsyncPollyExecutableFunc<T1, TResult> : IAsyncPollyExecutable<TResult>
     {
-        private readonly Func<Context, CancellationToken, bool, T1, Task<TResult>> _func;
+        private readonly Func<Context, CancellationToken, T1, Task<TResult>> _func;
         private readonly T1 _arg1;
 
         /// <summary>
@@ -37,13 +37,13 @@ namespace Polly.Execution
         /// </summary>
         /// <param name="func">The function.</param>
         /// <param name="arg1">The parameter to pass, when executing the function.</param>
-        public AsyncPollyExecutableFunc(Func<Context, CancellationToken, bool, T1, Task<TResult>> func, T1 arg1)
+        public AsyncPollyExecutableFunc(Func<Context, CancellationToken, T1, Task<TResult>> func, T1 arg1)
         {
             _func = func;
             _arg1 = arg1;
         }
 
         /// <inheritdoc/>
-        public Task<TResult> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) => _func(context, cancellationToken, continueOnCapturedContext, _arg1);
+        public Task<TResult> ExecuteAsync(Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) => _func(context, cancellationToken, _arg1);
     }
 }
