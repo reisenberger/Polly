@@ -247,13 +247,10 @@ namespace Polly
             if (onTimeout == null) throw new ArgumentNullException(nameof(onTimeout));
 
             return new TimeoutPolicy(
-                (action, context, cancellationToken) => TimeoutEngine.Implementation(
-                    (ctx, ct) => { action(ctx, ct); return EmptyStruct.Instance; },
-                    context,
-                    cancellationToken,
                     timeoutProvider,
                     timeoutStrategy,
-                    onTimeout)
+                    onTimeout,
+                    new TimeoutSyncImplementationFactory()
                 );
         }
     }

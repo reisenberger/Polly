@@ -153,12 +153,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryStateWaitAndRetryForever.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryStateWaitAndRetryForeverAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\ITimeoutPolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeout\ITimeoutPolicyInternal.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutAsyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutAsyncImplementationFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSyncImplementationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutTResultSyntaxAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSyncImplementation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutRejectedException.cs" />

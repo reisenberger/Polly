@@ -2,6 +2,7 @@
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly.Execution;
 using Polly.Utilities;
 
 #if NET40
@@ -10,18 +11,19 @@ using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
 
 namespace Polly.Timeout
 {
-    internal static partial class TimeoutEngine
+    internal class TimeoutSyncImplementation<TResult> : ISyncPolicyImplementation<TResult>
     {
-        internal static TResult Implementation<TResult>(
-            Func<Context, CancellationToken, TResult> action,
-            Context context,
-            CancellationToken cancellationToken,
-            Func<Context, TimeSpan> timeoutProvider,
-            TimeoutStrategy timeoutStrategy,
-            Action<Context, TimeSpan, Task> onTimeout)
+        private ITimeoutPolicyInternal _policy;
+
+        internal TimeoutSyncImplementation(ITimeoutPolicyInternal policy)
+        {
+            _policy = policy ?? throw new ArgumentNullException(nameof(policy));
+        }
+
+        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            TimeSpan timeout = timeoutProvider(context);
+            TimeSpan timeout = _policy.TimeoutProvider(context);
 
             using (CancellationTokenSource timeoutCancellationTokenSource = new CancellationTokenSource())
             {
@@ -32,26 +34,26 @@ namespace Polly.Timeout
                     Task<TResult> actionTask = null;
                     try
                     {
-                        if (timeoutStrategy == TimeoutStrategy.Optimistic)
+                        if (_policy.TimeoutStrategy == TimeoutStrategy.Optimistic)
                         {
                             SystemClock.CancelTokenAfter(timeoutCancellationTokenSource, timeout);
-                            return action(context, combinedToken);
+                            return action.Execute(context, cancellationToken);
                         }
 
                         // else: timeoutStrategy == TimeoutStrategy.Pessimistic
 
                         SystemClock.CancelTokenAfter(timeoutCancellationTokenSource, timeout);
 
-                        actionTask = 
+                        actionTask =
 
-                        #if NET40
+#if NET40
                             TaskEx
-                        #else
+#else
                             Task
-                        #endif                             
+#endif
 
                         .Run(() =>
-                            action(context, combinedToken)       // cancellation token here allows the user delegate to react to cancellation: possibly clear up; then throw an OperationCanceledException.
+                            action.Execute(context, combinedToken)       // cancellation token here allows the user delegate to react to cancellation: possibly clear up; then throw an OperationCanceledException.
                             , combinedToken);           // cancellation token here only allows Task.Run() to not begin the passed delegate at all, if cancellation occurs prior to invoking the delegate.  
                         try
                         {
@@ -68,8 +70,8 @@ namespace Polly.Timeout
                     {
                         if (timeoutCancellationTokenSource.IsCancellationRequested)
                         {
-                            onTimeout(context, timeout, actionTask);
-                            throw new TimeoutRejectedException("The delegate executed through TimeoutPolicy did not complete within the timeout.", ex);
+                            _policy.OnTimeout(context, timeout, actionTask);
+                            throw TimeoutRejectedException(ex);
                         }
 
                         throw;
@@ -78,5 +80,9 @@ namespace Polly.Timeout
             }
         }
 
+        internal static Exception TimeoutRejectedException(Exception ex)
+        {
+            return new TimeoutRejectedException("The delegate executed through TimeoutPolicy did not complete within the timeout.", ex);
+        }
     }
 }

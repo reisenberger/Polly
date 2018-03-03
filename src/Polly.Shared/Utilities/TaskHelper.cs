@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Polly.Utilities
 {
@@ -28,5 +30,20 @@ namespace Polly.Utilities
 #endif
         }
 
+        internal static Task<TResult> AsTask<TResult>(this CancellationToken cancellationToken)
+        {
+            var tcs = new TaskCompletionSource<TResult>();
+
+            // A generalised version of this method would include a hotpath returning a canceled task (rather than setting up a registration) if (cancellationToken.IsCancellationRequested) on entry.  For Polly, this is currently omitted, since the only consumer of this method, TimeoutAsyncImplementation, only starts the timeout countdown in the token _after calling this method.
+
+            IDisposable registration = null;
+            registration = cancellationToken.Register(() =>
+            {
+                tcs.TrySetCanceled();
+                registration?.Dispose();
+            }, useSynchronizationContext: false);
+
+            return tcs.Task;
+        }
     }
 }

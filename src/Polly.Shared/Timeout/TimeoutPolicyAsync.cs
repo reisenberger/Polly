@@ -8,19 +8,39 @@ namespace Polly.Timeout
 {
     public partial class TimeoutPolicy : ITimeoutPolicy
     {
-        internal TimeoutPolicy(Func<Func<Context, CancellationToken, Task>, Context, CancellationToken, bool, Task> asyncExceptionPolicy)
-           : base(asyncExceptionPolicy, Enumerable.Empty<ExceptionPredicate>())
+        private Func<Context, TimeSpan, Task, Task> _onTimeoutAsync;
+        Func<Context, TimeSpan, Task, Task> ITimeoutPolicyInternal.OnTimeoutAsync => _onTimeoutAsync;
+
+        internal TimeoutPolicy(
+            Func<Context, TimeSpan> timeoutProvider,
+            TimeoutStrategy timeoutStrategy,
+            Func<Context, TimeSpan, Task, Task> onTimeoutAsync,
+            TimeoutAsyncImplementationFactory factory
+            ) : base(PolicyBuilder.Empty, factory)
+
         {
+            _timeoutProvider = timeoutProvider;
+            _timeoutStrategy = timeoutStrategy;
+            _onTimeoutAsync = onTimeoutAsync;
         }
 
     }
 
     public partial class TimeoutPolicy<TResult> : ITimeoutPolicy<TResult>
     {
+        private Func<Context, TimeSpan, Task, Task> _onTimeoutAsync;
+        Func<Context, TimeSpan, Task, Task> ITimeoutPolicyInternal.OnTimeoutAsync => _onTimeoutAsync;
+
         internal TimeoutPolicy(
-            Func<Func<Context, CancellationToken, Task<TResult>>, Context, CancellationToken, bool, Task<TResult>> asyncExecutionPolicy
-            ) : base(asyncExecutionPolicy, Enumerable.Empty<ExceptionPredicate>(), Enumerable.Empty<ResultPredicate<TResult>>())
+            Func<Context, TimeSpan> timeoutProvider,
+            TimeoutStrategy timeoutStrategy,
+            Func<Context, TimeSpan, Task, Task> onTimeoutAsync,
+            TimeoutAsyncImplementationFactory<TResult> factory
+            ) : base(PolicyBuilder<TResult>.Empty, factory)
         {
+            _timeoutProvider = timeoutProvider;
+            _timeoutStrategy = timeoutStrategy;
+            _onTimeoutAsync = onTimeoutAsync;
         }
     }
 }

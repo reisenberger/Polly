@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly.Execution;
 using Polly.Utilities;
+
+#if NET40
+using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
+#endif
 
 namespace Polly.Timeout
 {
-    internal static partial class TimeoutEngine
+    internal class TimeoutAsyncImplementation<TResult> : IAsyncPolicyImplementation<TResult>
     {
-        internal static async Task<TResult> ImplementationAsync<TResult>(
-            Func<Context, CancellationToken, Task<TResult>> action, 
-            Context context, 
-            Func<Context, TimeSpan> timeoutProvider,
-            TimeoutStrategy timeoutStrategy,
-            Func<Context, TimeSpan, Task, Task> onTimeoutAsync, 
-            CancellationToken cancellationToken, 
-            bool continueOnCapturedContext)
+        private ITimeoutPolicyInternal _policy;
+
+        internal TimeoutAsyncImplementation(ITimeoutPolicyInternal policy)
+        {
+            _policy = policy ?? throw new ArgumentNullException(nameof(policy));
+        }
+
+        public async Task<TResult> ExecuteAsync<TExecutableAsync>(TExecutableAsync action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutableAsync : IAsyncPollyExecutable<TResult>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            TimeSpan timeout = timeoutProvider(context);
+            TimeSpan timeout = _policy.TimeoutProvider(context);
 
             using (CancellationTokenSource timeoutCancellationTokenSource = new CancellationTokenSource())
             {
@@ -28,10 +34,10 @@ namespace Polly.Timeout
 
                     try
                     {
-                        if (timeoutStrategy == TimeoutStrategy.Optimistic)
+                        if (_policy.TimeoutStrategy == TimeoutStrategy.Optimistic)
                         {
                             SystemClock.CancelTokenAfter(timeoutCancellationTokenSource, timeout);
-                            return await action(context, combinedToken).ConfigureAwait(continueOnCapturedContext);
+                            return await action.ExecuteAsync(context, combinedToken, continueOnCapturedContext).ConfigureAwait(continueOnCapturedContext);
                         }
 
                         // else: timeoutStrategy == TimeoutStrategy.Pessimistic
@@ -40,9 +46,9 @@ namespace Polly.Timeout
 
                         SystemClock.CancelTokenAfter(timeoutCancellationTokenSource, timeout);
 
-                        actionTask = action(context, combinedToken);
+                        actionTask = action.ExecuteAsync(context, combinedToken, continueOnCapturedContext);
 
-                        return await (await 
+                        return await (await
 #if NET40
                             TaskEx
 #else
@@ -55,30 +61,14 @@ namespace Polly.Timeout
                     {
                         if (timeoutCancellationTokenSource.IsCancellationRequested)
                         {
-                            await onTimeoutAsync(context, timeout, actionTask).ConfigureAwait(continueOnCapturedContext);
-                            throw new TimeoutRejectedException("The delegate executed asynchronously through TimeoutPolicy did not complete within the timeout.", e);
+                            await _policy.OnTimeoutAsync(context, timeout, actionTask).ConfigureAwait(continueOnCapturedContext);
+                            throw TimeoutSyncImplementation<TResult>.TimeoutRejectedException(e);
                         }
 
                         throw;
                     }
                 }
             }
-        }
-
-        private static Task<TResult> AsTask<TResult>(this CancellationToken cancellationToken)
-        {
-            var tcs = new TaskCompletionSource<TResult>();
-
-            // A generalised version of this method would include a hotpath returning a canceled task (rather than setting up a registration) if (cancellationToken.IsCancellationRequested) on entry.  This is omitted, since we only start the timeout countdown in the token _after calling this method.
-
-            IDisposable registration = null;
-                registration = cancellationToken.Register(() =>
-                {
-                    tcs.TrySetCanceled();
-                    registration?.Dispose();
-                }, useSynchronizationContext: false);
-
-            return tcs.Task;
         }
     }
 }

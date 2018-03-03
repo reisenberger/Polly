@@ -247,14 +247,10 @@ namespace Polly
             if (onTimeoutAsync == null) throw new ArgumentNullException(nameof(onTimeoutAsync));
 
             return new TimeoutPolicy<TResult>(
-                (action, context, cancellationToken, continueOnCapturedContext) => TimeoutEngine.ImplementationAsync(
-                    action,
-                    context,
                     timeoutProvider,
                     timeoutStrategy,
                     onTimeoutAsync,
-                    cancellationToken, 
-                    continueOnCapturedContext)
+                    new TimeoutAsyncImplementationFactory<TResult>()
                 );
         }
     }

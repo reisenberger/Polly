@@ -251,14 +251,10 @@ namespace Polly
             if (onTimeoutAsync == null) throw new ArgumentNullException(nameof(onTimeoutAsync));
 
             return new TimeoutPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) => TimeoutEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context,
                     timeoutProvider,
                     timeoutStrategy,
                     onTimeoutAsync,
-                    cancellationToken,
-                    continueOnCapturedContext)
+                    new TimeoutAsyncImplementationFactory()
                 );
         }
     }
