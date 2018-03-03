@@ -91,9 +91,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\IFallbackPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncPolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IAsyncPolicyImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IAsyncPolicyImplementationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncPolicy.TResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicyImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IsPolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicyImplementationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicy.TResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\INoOpPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpEngineAsync.cs" />
