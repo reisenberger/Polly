@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +39,7 @@ namespace Polly
         [DebuggerStepThrough]
         protected virtual Task<TResult> ExecuteAsyncThroughImplementationInternal<TExecutable>(TExecutable executable, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TResult>
         {
-            // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and omit to set context).
+            // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and in doing so might omit to set context).
 
             if (_genericAsyncImplementation == null) throw NotConfiguredForAsyncExecution();
 

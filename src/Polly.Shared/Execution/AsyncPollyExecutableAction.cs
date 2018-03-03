@@ -4,17 +4,16 @@ using System.Threading.Tasks;
 
 namespace Polly.Execution
 {
-
     /// <inheritdoc/>
-    internal struct AsyncPollyExecutableActionMissingParams : IAsyncPollyExecutable<object>
+    internal struct AsyncPollyExecutableActionNoParams : IAsyncPollyExecutable<object>
     {
         private readonly Func<Task> _action;
 
         /// <summary>
-        /// Creates a <see cref="AsyncPollyExecutableActionMissingParams"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
+        /// Creates a <see cref="AsyncPollyExecutableActionNoParams"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public AsyncPollyExecutableActionMissingParams(Func<Task> action)
+        public AsyncPollyExecutableActionNoParams(Func<Task> action)
         {
             _action = action;
         }
@@ -28,15 +27,15 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    internal struct AsyncPollyExecutableActionMissingCancellationCaptureParams : IAsyncPollyExecutable<object>
+    internal struct AsyncPollyExecutableActionOnContext : IAsyncPollyExecutable<object>
     {
         private readonly Func<Context, Task> _action;
 
         /// <summary>
-        /// Creates a <see cref="AsyncPollyExecutableActionMissingCancellationCaptureParams"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
+        /// Creates a <see cref="AsyncPollyExecutableActionOnContext"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public AsyncPollyExecutableActionMissingCancellationCaptureParams(Func<Context, Task> action)
+        public AsyncPollyExecutableActionOnContext(Func<Context, Task> action)
         {
             _action = action;
         }
@@ -50,15 +49,15 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    internal struct AsyncPollyExecutableActionMissingContextCaptureParams : IAsyncPollyExecutable<object>
+    internal struct AsyncPollyExecutableActionOnCancellationToken : IAsyncPollyExecutable<object>
     {
         private readonly Func<CancellationToken, Task> _action;
 
         /// <summary>
-        /// Creates a <see cref="AsyncPollyExecutableActionMissingContextCaptureParams"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
+        /// Creates a <see cref="AsyncPollyExecutableActionOnCancellationToken"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public AsyncPollyExecutableActionMissingContextCaptureParams(Func<CancellationToken, Task> action)
+        public AsyncPollyExecutableActionOnCancellationToken(Func<CancellationToken, Task> action)
         {
             _action = action;
         }
@@ -72,15 +71,15 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    internal struct AsyncPollyExecutableActionMissingCaptureParam : IAsyncPollyExecutable<object>
+    internal struct AsyncPollyExecutableActionOnContextCancellationToken : IAsyncPollyExecutable<object>
     {
         private readonly Func<Context, CancellationToken, Task> _action;
 
         /// <summary>
-        /// Creates a <see cref="AsyncPollyExecutableActionMissingCaptureParam"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
+        /// Creates a <see cref="AsyncPollyExecutableActionOnContextCancellationToken"/> struct for the passed asynchronous action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public AsyncPollyExecutableActionMissingCaptureParam(Func<Context, CancellationToken, Task> action)
+        public AsyncPollyExecutableActionOnContextCancellationToken(Func<Context, CancellationToken, Task> action)
         {
             _action = action;
         }

@@ -62,7 +62,7 @@ namespace Polly
         [DebuggerStepThrough]
         protected virtual TMethodGeneric ExecuteThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable executable, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TMethodGeneric>
         {
-            // Public overloads should always call via ExecuteSyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and omit to set context).
+            // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and in doing so might omit to set context).
 
             if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
 

@@ -4,15 +4,15 @@ using System.Threading;
 namespace Polly.Execution
 {
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableActionWithMissingParams : ISyncPollyExecutable<object>
+    internal struct SyncPollyExecutableActionNoParams : ISyncPollyExecutable<object>
     {
         private readonly Action _action;
 
         /// <summary>
-        /// Creates a <see cref="SyncPollyExecutableActionWithMissingParams"/> struct for the passed action, which may be executed through a policy at a later point in time.
+        /// Creates a <see cref="SyncPollyExecutableActionNoParams"/> struct for the passed action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public SyncPollyExecutableActionWithMissingParams(Action action)
+        public SyncPollyExecutableActionNoParams(Action action)
         {
             _action = action;
         }
@@ -25,15 +25,15 @@ namespace Polly.Execution
         }
     }
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableActionWithMissingContextParam : ISyncPollyExecutable<object>
+    internal struct SyncPollyExecutableActionOnCancellationToken : ISyncPollyExecutable<object>
     {
         private readonly Action<CancellationToken> _action;
 
         /// <summary>
-        /// Creates a <see cref="SyncPollyExecutableActionWithMissingContextParam"/> struct for the passed action, which may be executed through a policy at a later point in time.
+        /// Creates a <see cref="SyncPollyExecutableActionOnCancellationToken"/> struct for the passed action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public SyncPollyExecutableActionWithMissingContextParam(Action<CancellationToken> action)
+        public SyncPollyExecutableActionOnCancellationToken(Action<CancellationToken> action)
         {
             _action = action;
         }
@@ -47,15 +47,15 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableActionWithMissingCancellationTokenParam : ISyncPollyExecutable<object>
+    internal struct SyncPollyExecutableActionOnContext : ISyncPollyExecutable<object>
     {
         private readonly Action<Context> _action;
 
         /// <summary>
-        /// Creates a <see cref="SyncPollyExecutableActionWithMissingCancellationTokenParam"/> struct for the passed action, which may be executed through a policy at a later point in time.
+        /// Creates a <see cref="SyncPollyExecutableActionOnContext"/> struct for the passed action, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="action">The action.</param>
-        public SyncPollyExecutableActionWithMissingCancellationTokenParam(Action<Context> action)
+        public SyncPollyExecutableActionOnContext(Action<Context> action)
         {
             _action = action;
         }

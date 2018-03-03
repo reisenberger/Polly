@@ -110,7 +110,7 @@ namespace Polly
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             return ExecuteAsyncExecutableThroughPolicy(
-                    new AsyncPollyExecutableFuncMissingParams<TResult>(action),
+                    new AsyncPollyExecutableFuncNoParams<TResult>(action),
                     context,
                     DefaultCancellationToken,
                     continueOnCapturedContext)
@@ -143,7 +143,7 @@ namespace Polly
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             return ExecuteAsyncExecutableThroughPolicy(
-                    new AsyncPollyExecutableFuncMissingCancellationCapture<TResult>(action),
+                    new AsyncPollyExecutableFuncOnContext<TResult>(action),
                     context,
                     DefaultCancellationToken,
                     continueOnCapturedContext)
@@ -258,7 +258,7 @@ namespace Polly
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             return ExecuteAsyncExecutableThroughPolicy(
-                    new AsyncPollyExecutableFuncMissingContextCapture<TResult>(action),
+                    new AsyncPollyExecutableFuncOnCancellationToken<TResult>(action),
                     context,
                     cancellationToken,
                     continueOnCapturedContext)
@@ -295,7 +295,7 @@ namespace Polly
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             return ExecuteAsyncExecutableThroughPolicy(
-                    new AsyncPollyExecutableFuncMissingCapture<TResult>(action),
+                    new AsyncPollyExecutableFuncOnContextCancellationToken<TResult>(action),
                     context,
                     cancellationToken,
                     continueOnCapturedContext)

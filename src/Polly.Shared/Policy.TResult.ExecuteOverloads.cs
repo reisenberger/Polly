@@ -21,7 +21,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute(Func<TResult> action)
         {
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingParams<TResult>(action), new Context(), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncNoParams<TResult>(action), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute(Func<TResult> action, IDictionary<string, object> contextData)
         {
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingParams<TResult>(action), new Context(contextData), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncNoParams<TResult>(action), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingParams<TResult>(action), context, DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncNoParams<TResult>(action), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute(Func<Context, TResult> action, IDictionary<string, object> contextData)
         {
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>(action), new Context(contextData), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncOnContext<TResult>(action), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>(action), context, DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncOnContext<TResult>(action), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute(Func<CancellationToken, TResult> action, CancellationToken cancellationToken)
         {
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(action), new Context(), cancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncOnCancellationToken<TResult>(action), new Context(), cancellationToken);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute(Func<CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(action), new Context(contextData), cancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncOnCancellationToken<TResult>(action), new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(action), context, cancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFuncOnCancellationToken<TResult>(action), context, cancellationToken);
         }
 
         /// <summary>

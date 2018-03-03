@@ -6,7 +6,7 @@ namespace Polly.Execution
 {
     /// <inheritdoc/>
 
-    public struct SyncPollyExecutableFuncWithMissingParams<TResult> : ISyncPollyExecutable<TResult>
+    public struct SyncPollyExecutableFuncNoParams<TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<TResult> _func;
 
@@ -14,7 +14,7 @@ namespace Polly.Execution
         /// Creates a <see cref="SyncPollyExecutableFunc{TResult}"/> struct for the passed func, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="func">The function.</param>
-        public SyncPollyExecutableFuncWithMissingParams(Func<TResult> func)
+        public SyncPollyExecutableFuncNoParams(Func<TResult> func)
         {
             _func = func;
         }
@@ -25,7 +25,7 @@ namespace Polly.Execution
 
     /// <inheritdoc/>
 
-    public struct SyncPollyExecutableFuncWithMissingContextParam<TResult> : ISyncPollyExecutable<TResult>
+    public struct SyncPollyExecutableFuncOnCancellationToken<TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<CancellationToken, TResult> _func;
 
@@ -33,7 +33,7 @@ namespace Polly.Execution
         /// Creates a <see cref="SyncPollyExecutableFunc{TResult}"/> struct for the passed func, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="func">The function.</param>
-        public SyncPollyExecutableFuncWithMissingContextParam(Func<CancellationToken, TResult> func)
+        public SyncPollyExecutableFuncOnCancellationToken(Func<CancellationToken, TResult> func)
         {
             _func = func;
         }
@@ -44,7 +44,7 @@ namespace Polly.Execution
 
     /// <inheritdoc/>
 
-    public struct SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult> : ISyncPollyExecutable<TResult>
+    public struct SyncPollyExecutableFuncOnContext<TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<Context, TResult> _func;
 
@@ -52,7 +52,7 @@ namespace Polly.Execution
         /// Creates a <see cref="SyncPollyExecutableFunc{TResult}"/> struct for the passed func, which may be executed through a policy at a later point in time.
         /// </summary>
         /// <param name="func">The function.</param>
-        public SyncPollyExecutableFuncWithMissingCancellationTokenParam(Func<Context, TResult> func)
+        public SyncPollyExecutableFuncOnContext(Func<Context, TResult> func)
         {
             _func = func;
         }

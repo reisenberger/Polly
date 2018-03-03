@@ -18,7 +18,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Task> action)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingParams(action), new Context(), DefaultCancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionNoParams(action), new Context(), DefaultCancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Task> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingParams(action), new Context(contextData), DefaultCancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionNoParams(action), new Context(contextData), DefaultCancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingParams(action), context, DefaultCancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionNoParams(action), context, DefaultCancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Context, Task> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCancellationCaptureParams(action), new Context(contextData), DefaultCancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContext(action), new Context(contextData), DefaultCancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCancellationCaptureParams(action), context, DefaultCancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContext(action), context, DefaultCancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Task> action, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingParams(action), new Context(), DefaultCancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionNoParams(action), new Context(), DefaultCancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Task> action, IDictionary<string, object> contextData, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingParams(action), new Context(contextData), DefaultCancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionNoParams(action), new Context(contextData), DefaultCancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingParams(action), context, DefaultCancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionNoParams(action), context, DefaultCancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Context, Task> action, IDictionary<string, object> contextData, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCancellationCaptureParams(action), new Context(contextData), DefaultCancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContext(action), new Context(contextData), DefaultCancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCancellationCaptureParams(action), context, DefaultCancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContext(action), context, DefaultCancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingContextCaptureParams(action), new Context(), cancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnCancellationToken(action), new Context(), cancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<CancellationToken, Task> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingContextCaptureParams(action), new Context(contextData), cancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnCancellationToken(action), new Context(contextData), cancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingContextCaptureParams(action), context, cancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnCancellationToken(action), context, cancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Context, CancellationToken, Task> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCaptureParam(action), new Context(contextData), cancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContextCancellationToken(action), new Context(contextData), cancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCaptureParam(action), context, cancellationToken, DefaultContinueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContextCancellationToken(action), context, cancellationToken, DefaultContinueOnCapturedContext);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingContextCaptureParams(action), new Context(), cancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnCancellationToken(action), new Context(), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<CancellationToken, Task> action, IDictionary<string, object> contextData, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingContextCaptureParams(action), new Context(contextData), cancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnCancellationToken(action), new Context(contextData), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingContextCaptureParams(action), context, cancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnCancellationToken(action), context, cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Context, CancellationToken, Task> action, IDictionary<string, object> contextData, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCaptureParam(action), new Context(contextData), cancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContextCancellationToken(action), new Context(contextData), cancellationToken, continueOnCapturedContext);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionMissingCaptureParam(action), context, cancellationToken, continueOnCapturedContext);
+            return ExecuteAsyncExecutableThroughPolicy(new AsyncPollyExecutableActionOnContextCancellationToken(action), context, cancellationToken, continueOnCapturedContext);
         }
 
         #region Overloads method-generic in TResult
@@ -279,8 +279,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> func)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingParams<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingParams<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncNoParams<TResult>, TResult>(
+                new AsyncPollyExecutableFuncNoParams<TResult>(func),
                 new Context(),
                 DefaultCancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -295,8 +295,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> func, IDictionary<string, object> contextData)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingParams<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingParams<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncNoParams<TResult>, TResult>(
+                new AsyncPollyExecutableFuncNoParams<TResult>(func),
                 new Context(contextData),
                 DefaultCancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -314,8 +314,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingParams<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingParams<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncNoParams<TResult>, TResult>(
+                new AsyncPollyExecutableFuncNoParams<TResult>(func),
                 context,
                 DefaultCancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -330,8 +330,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Context, Task<TResult>> func, IDictionary<string, object> contextData)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCancellationCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCancellationCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContext<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContext<TResult>(func),
                 new Context(contextData),
                 DefaultCancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -349,8 +349,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCancellationCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCancellationCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContext<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContext<TResult>(func),
                 context,
                 DefaultCancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -366,8 +366,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> func, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingParams<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingParams<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncNoParams<TResult>, TResult>(
+                new AsyncPollyExecutableFuncNoParams<TResult>(func),
                 new Context(),
                 DefaultCancellationToken,
                 continueOnCapturedContext);
@@ -383,8 +383,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> func, IDictionary<string, object> contextData, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingParams<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingParams<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncNoParams<TResult>, TResult>(
+                new AsyncPollyExecutableFuncNoParams<TResult>(func),
                 new Context(contextData),
                 DefaultCancellationToken,
                 continueOnCapturedContext);
@@ -403,8 +403,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingParams<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingParams<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncNoParams<TResult>, TResult>(
+                new AsyncPollyExecutableFuncNoParams<TResult>(func),
                 context,
                 DefaultCancellationToken,
                 continueOnCapturedContext);
@@ -420,8 +420,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Context, Task<TResult>> func, IDictionary<string, object> contextData, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCancellationCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCancellationCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContext<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContext<TResult>(func),
                 new Context(contextData),
                 DefaultCancellationToken,
                 continueOnCapturedContext);
@@ -440,8 +440,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCancellationCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCancellationCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContext<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContext<TResult>(func),
                 context,
                 DefaultCancellationToken,
                 continueOnCapturedContext);
@@ -457,8 +457,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> func, CancellationToken cancellationToken)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingContextCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingContextCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnCancellationToken<TResult>(func),
                 new Context(),
                 cancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -474,8 +474,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> func, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingContextCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingContextCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnCancellationToken<TResult>(func),
                 new Context(contextData),
                 cancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -494,8 +494,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingContextCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingContextCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnCancellationToken<TResult>(func),
                 context,
                 cancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -511,8 +511,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Context, CancellationToken, Task<TResult>> func, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContextCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContextCancellationToken<TResult>(func),
                 new Context(contextData),
                 cancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -531,8 +531,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContextCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContextCancellationToken<TResult>(func),
                 context,
                 cancellationToken,
                 DefaultContinueOnCapturedContext);
@@ -550,8 +550,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> func, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingContextCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingContextCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnCancellationToken<TResult>(func),
                 new Context(),
                 cancellationToken,
                 continueOnCapturedContext);
@@ -569,8 +569,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> func, IDictionary<string, object> contextData, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingContextCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingContextCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnCancellationToken<TResult>(func),
                 new Context(contextData),
                 cancellationToken,
                 continueOnCapturedContext);
@@ -591,8 +591,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingContextCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingContextCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnCancellationToken<TResult>(func),
                 context,
                 cancellationToken,
                 continueOnCapturedContext);
@@ -610,8 +610,8 @@ namespace Polly
         [DebuggerStepThrough]
         public Task<TResult> ExecuteAsync<TResult>(Func<Context, CancellationToken, Task<TResult>> func, IDictionary<string, object> contextData, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContextCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContextCancellationToken<TResult>(func),
                 new Context(contextData),
                 cancellationToken,
                 continueOnCapturedContext);
@@ -632,8 +632,8 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncMissingCapture<TResult>, TResult>(
-                new AsyncPollyExecutableFuncMissingCapture<TResult>(func),
+            return ExecuteAsyncExecutableThroughPolicy<AsyncPollyExecutableFuncOnContextCancellationToken<TResult>, TResult>(
+                new AsyncPollyExecutableFuncOnContextCancellationToken<TResult>(func),
                 context,
                 cancellationToken,
                 continueOnCapturedContext);

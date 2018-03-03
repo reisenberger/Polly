@@ -58,16 +58,16 @@ namespace Polly
         /// <param name="continueOnCapturedContext">Whether async continuations should be on a captured synchronization context.</param>
         /// <returns>A <see cref="Task{TMethodGeneric}"/> promise of a <typeparamref name="TMethodGeneric"/> return value.</returns>
         [DebuggerStepThrough]
-        protected virtual async Task<TMethodGeneric> ExecuteAsyncThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable executable, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TMethodGeneric>
+        protected async virtual Task<TMethodGeneric> ExecuteAsyncThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable executable, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext) where TExecutable : IAsyncPollyExecutable<TMethodGeneric>
         {
-            // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and omit to set context).
+            // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and in doing so might omit to set context).
 
             if (_nonGenericAsyncImplementation == null) throw NotConfiguredForAsyncExecution();
 
-            return (TMethodGeneric) 
-                await _nonGenericAsyncImplementation
-                .ExecuteAsync(new AsyncPollyExecutableFunc<object>(async (ctx, ct, capture) => await executable.ExecuteAsync(ctx, ct, capture).ConfigureAwait(continueOnCapturedContext)), context, cancellationToken, continueOnCapturedContext)
-                .ConfigureAwait(continueOnCapturedContext);
+            return (TMethodGeneric)
+               await _nonGenericAsyncImplementation
+                   .ExecuteAsync(new AsyncPollyExecutableFunc<object>(async (ctx, ct, capture) => await executable.ExecuteAsync(ctx, ct, capture).ConfigureAwait(continueOnCapturedContext)), context, cancellationToken, continueOnCapturedContext)
+                   .ConfigureAwait(continueOnCapturedContext);
         }
 
         [DebuggerStepThrough]

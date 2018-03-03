@@ -18,7 +18,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action action)
         {
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingParams(action), new Context(), DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionNoParams(action), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action action, IDictionary<string, object> contextData)
         {
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingParams(action), new Context(contextData), DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionNoParams(action), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingParams(action), context, DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionNoParams(action), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<Context> action, IDictionary<string, object> contextData)
         {
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingCancellationTokenParam(action), new Context(contextData), DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionOnContext(action), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingCancellationTokenParam(action), context, DefaultCancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionOnContext(action), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<CancellationToken> action, CancellationToken cancellationToken)
         {
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingContextParam(action), new Context(), cancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionOnCancellationToken(action), new Context(), cancellationToken);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Polly
         [DebuggerStepThrough]
         public void Execute(Action<CancellationToken> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingContextParam(action), new Context(contextData), cancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionOnCancellationToken(action), new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionWithMissingContextParam(action), context, cancellationToken);
+            ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionOnCancellationToken(action), context, cancellationToken);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute<TResult>(Func<TResult> func)
         {
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingParams<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingParams<TResult>(func), new Context(), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncNoParams<TResult>, TResult>(new SyncPollyExecutableFuncNoParams<TResult>(func), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute<TResult>(Func<TResult> func, IDictionary<string, object> contextData)
         {
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingParams<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingParams<TResult>(func), new Context(contextData), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncNoParams<TResult>, TResult>(new SyncPollyExecutableFuncNoParams<TResult>(func), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingParams<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingParams<TResult>(func), context, DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncNoParams<TResult>, TResult>(new SyncPollyExecutableFuncNoParams<TResult>(func), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute<TResult>(Func<Context, TResult> func, IDictionary<string, object> contextData)
         {
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>(func), new Context(contextData), DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncOnContext<TResult>, TResult>(new SyncPollyExecutableFuncOnContext<TResult>(func), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingCancellationTokenParam<TResult>(func), context, DefaultCancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncOnContext<TResult>, TResult>(new SyncPollyExecutableFuncOnContext<TResult>(func), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute<TResult>(Func<CancellationToken, TResult> func, CancellationToken cancellationToken)
         {
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingContextParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(func), new Context(), cancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(new SyncPollyExecutableFuncOnCancellationToken<TResult>(func), new Context(), cancellationToken);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute<TResult>(Func<CancellationToken, TResult> func, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingContextParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(func), new Context(contextData), cancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(new SyncPollyExecutableFuncOnCancellationToken<TResult>(func), new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Polly
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncWithMissingContextParam<TResult>, TResult>(new SyncPollyExecutableFuncWithMissingContextParam<TResult>(func), context, cancellationToken);
+            return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(new SyncPollyExecutableFuncOnCancellationToken<TResult>(func), context, cancellationToken);
         }
 
         /// <summary>
