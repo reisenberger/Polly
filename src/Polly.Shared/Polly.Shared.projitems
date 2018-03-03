@@ -138,8 +138,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryTResultSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryTResultSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Retry\IRetryPolicyState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryEngineAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Retry\RetrySyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryAsyncImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Retry\RetryStateRetryForever.cs" />
