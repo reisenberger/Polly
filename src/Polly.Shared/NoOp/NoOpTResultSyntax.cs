@@ -14,12 +14,7 @@ namespace Polly
         /// <returns>The policy instance.</returns>
         public static NoOpPolicy<TResult> NoOp<TResult>()
         {
-            return new NoOpPolicy<TResult>(
-                (func, context, cancellationToken) => NoOpEngine.Implementation(
-                    func,
-                    context, 
-                    cancellationToken)
-                );
+            return new NoOpPolicy<TResult>(new NoOpSyncImplementationFactory<TResult>());
         }
     }
 }

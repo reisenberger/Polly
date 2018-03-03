@@ -9,14 +9,15 @@ namespace Polly
     /// </summary>
     public sealed partial class PolicyBuilder
     {
-        private readonly IList<ExceptionPredicate> _exceptionPredicates;
+        internal static PolicyBuilder Empty = new PolicyBuilder(); 
 
-        internal PolicyBuilder(ExceptionPredicate exceptionPredicate)
+        private readonly IList<ExceptionPredicate> _exceptionPredicates = new List<ExceptionPredicate>();
+
+        internal PolicyBuilder() { }
+
+        internal PolicyBuilder(ExceptionPredicate exceptionPredicate) : this()
         {
-            _exceptionPredicates = new List<ExceptionPredicate>()
-            {
-                exceptionPredicate
-            };
+            _exceptionPredicates.Add(exceptionPredicate);
         }
 
         internal IList<ExceptionPredicate> ExceptionPredicates
@@ -83,14 +84,12 @@ namespace Polly
     /// </summary>
     public sealed partial class PolicyBuilder<TResult>
     {
-        private readonly IList<ExceptionPredicate> _exceptionPredicates;
-        private readonly IList<ResultPredicate<TResult>> _resultPredicates;
+        internal static PolicyBuilder<TResult> Empty = new PolicyBuilder<TResult>();
 
-        private PolicyBuilder()
-        {
-            _exceptionPredicates = new List<ExceptionPredicate>();
-            _resultPredicates = new List<ResultPredicate<TResult>>();
-        }
+        private readonly IList<ExceptionPredicate> _exceptionPredicates = new List<ExceptionPredicate>();
+        private readonly IList<ResultPredicate<TResult>> _resultPredicates = new List<ResultPredicate<TResult>>();
+
+        internal PolicyBuilder() { }
 
         internal PolicyBuilder(Func<TResult, bool> resultPredicate) : this()
         {

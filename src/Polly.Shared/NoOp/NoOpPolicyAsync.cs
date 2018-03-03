@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Polly.Utilities;
-
-namespace Polly.NoOp
+﻿namespace Polly.NoOp
 {
-    public partial class NoOpPolicy : INoOpPolicy
+    /// <summary>
+    /// A no op policy that can be applied to delegates.
+    /// </summary>
+    public partial class NoOpPolicy : Policy, INoOpPolicy
     {
-        internal NoOpPolicy(Func<Func<Context, CancellationToken, Task>, Context, CancellationToken, bool, Task> asyncExceptionPolicy)
-           : base(asyncExceptionPolicy, Enumerable.Empty<ExceptionPredicate>())
+        internal NoOpPolicy(NoOpAsyncImplementationFactory factory) : base(PolicyBuilder.Empty, factory)
         {
         }
     }
 
     public partial class NoOpPolicy<TResult> : INoOpPolicy<TResult>
     {
-        internal NoOpPolicy(
-            Func<Func<Context, CancellationToken, Task<TResult>>, Context, CancellationToken, bool, Task<TResult>> asyncExecutionPolicy
-            ) : base(asyncExecutionPolicy, Enumerable.Empty<ExceptionPredicate>(), Enumerable.Empty<ResultPredicate<TResult>>())
+        internal NoOpPolicy(NoOpAsyncImplementationFactory<TResult> factory) : base(PolicyBuilder<TResult>.Empty, factory)
         {
         }
     }

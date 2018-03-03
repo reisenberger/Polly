@@ -25,7 +25,9 @@ namespace Polly.Wrap
         /// <param name="continueOnCapturedContext">Whether to continue on a captured synchronization context.</param>
         /// <returns>The value returned by the action, or the cache.</returns>
         [DebuggerStepThrough]
-        protected internal override Task<TResult> ExecuteAsyncInternal<TResult>(Func<Context, CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
+        protected internal
+            new // override // PROBABLY WANT TO OVERRIDE IN A SIMILAR WAY, VIA THE NEW CHANNEL.
+            Task<TResult> ExecuteAsyncInternal<TResult>(Func<Context, CancellationToken, Task<TResult>> action, Context context, CancellationToken cancellationToken, bool continueOnCapturedContext)
         {
             return PolicyWrapEngine.ImplementationAsync<TResult>(
                 action,

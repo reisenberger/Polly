@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Polly.NoOp;
-using Polly.Utilities;
+﻿using Polly.NoOp;
 
 namespace Polly
 {
@@ -14,11 +10,7 @@ namespace Polly
         /// <returns>The policy instance.</returns>
         public static NoOpPolicy NoOpAsync()
         {
-            return new NoOpPolicy(
-                (action, context, cancellationToken, continueOnCapturedContext) => NoOpEngine.ImplementationAsync(
-                    async (ctx, ct) => { await action(ctx, ct).ConfigureAwait(continueOnCapturedContext); return EmptyStruct.Instance; },
-                    context, cancellationToken, continueOnCapturedContext)
-                );
+            return new NoOpPolicy(new NoOpAsyncImplementationFactory());
         }
     }
 }

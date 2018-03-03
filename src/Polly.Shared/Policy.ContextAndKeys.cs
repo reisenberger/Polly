@@ -25,6 +25,16 @@ namespace Polly
         {
             executionContext.PolicyKey = PolicyKey;
         }
+
+        internal Exception NotConfiguredForSyncExecution()
+        {
+            return new InvalidOperationException($"This {this.GetType()} policy is not configured for synchronous executions.");
+        }
+
+        internal Exception NotConfiguredForAsyncExecution()
+        {
+            return new InvalidOperationException($"This {this.GetType()} policy is not configured for asynchronous executions.");
+        }
     }
 
     public abstract partial class Policy

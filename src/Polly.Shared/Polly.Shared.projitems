@@ -100,10 +100,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicyImplementationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicy.TResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\INoOpPolicy.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpEngineAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpAsyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpAsyncImplementationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpPolicyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpPolicy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpSyncImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpSyncImplementationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpTResultSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpTResultSyntax.cs" />

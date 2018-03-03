@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using Polly.Execution;
 using Polly.Utilities;
 
 namespace Polly
@@ -11,6 +12,8 @@ namespace Polly
     /// </summary>
     public abstract partial class Policy<TResult> : PolicyBase
     {
+        #region TO REMOVE
+
         private readonly Func<Func<Context, CancellationToken, TResult>, Context, CancellationToken, TResult> _executionPolicy;
         internal IEnumerable<ResultPredicate<TResult>> ResultPredicates { get; }
 
@@ -31,6 +34,34 @@ namespace Polly
             ResultPredicates = resultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
         }
 
+        #endregion
+
+        private readonly ISyncPolicyImplementation<TResult> _genericImplementation;
+
+        /// <summary>
+        /// Constructs a new instance of a derived <see cref="Policy"/> type, using the passed <paramref name="policyBuilder"/>, and the passed <paramref name="implementationFactory"/> to generate implementations for executions for different return types.
+        /// </summary>
+        /// <param name="policyBuilder">The policy builder holding configuration information for the policy.</param>
+        /// <param name="implementationFactory">A factory for providing synchronous implementations for the given non-generic policy</param>
+        protected Policy(PolicyBuilder<TResult> policyBuilder, ISyncPolicyImplementationFactory<TResult> implementationFactory)
+        {
+            if (policyBuilder == null) throw new ArgumentNullException(nameof(policyBuilder));
+            ExceptionPredicates = policyBuilder.ExceptionPredicates ?? PredicateHelper.EmptyExceptionPredicates;
+            ResultPredicates = policyBuilder.ResultPredicates ?? PredicateHelper<TResult>.EmptyResultPredicates;
+
+            if (implementationFactory == null) throw new ArgumentNullException(nameof(implementationFactory));
+            _genericImplementation = implementationFactory.GetImplementation(this) ?? throw new ArgumentOutOfRangeException(nameof(implementationFactory), $"{nameof(implementationFactory)} returned a null implementation.");
+        }
+
+        internal virtual TResult ExecuteInternal<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        {
+            if (_genericImplementation == null) throw NotConfiguredForSyncExecution();
+
+            return _genericImplementation.Execute(action, context, cancellationToken);
+        }
+
+        #region TO REMOVE - or keep adaptation
+
         /// <summary>
         /// Executes the specified action within the policy and returns the result.
         /// </summary>
@@ -41,10 +72,14 @@ namespace Polly
         [DebuggerStepThrough]
         protected internal TResult ExecuteInternal(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
         {
-            if (_executionPolicy == null) throw new InvalidOperationException("Please use the synchronous-defined policies when calling the synchronous Execute (and similar) methods.");
+            return ExecuteInternal(new SyncPollyExecutableFunc<TResult>(action), context, cancellationToken);
 
-            return _executionPolicy(action, context, cancellationToken);
+            //if (_executionPolicy == null) throw new InvalidOperationException("Please use the synchronous-defined policies when calling the synchronous Execute (and similar) methods.");
+
+            //return _executionPolicy(action, context, cancellationToken);
         }
+
+        #endregion
     }
 
 }
