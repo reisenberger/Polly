@@ -77,6 +77,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionPredicate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DelegateResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExecutionRejectedException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Execution\AsyncPollyExecutableAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Execution\AsyncPollyExecutableFunc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Execution\SyncPollyExecutableAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Execution\IAsyncPollyExecutable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Execution\ISyncPollyExecutable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Execution\SyncPollyExecutableFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackSyntaxAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fallback\FallbackEngine.cs" />
