@@ -1,3 +1,10 @@
+## 6.0.0-alpha
+- Performance improvements: Reduce heap allocations by 2x - 6x, for all executions.
+- Retry hotpath improvement: do not allocate retry state machine if first try succeeds.
+- Refactor circuit-breaker internals for clarity. 
+- Remove deprecated execute overloads (breaking change).
+- Rename keys on Context, in preparation for telemetry (breaking change). 
+
 ## 5.9.0
 - No functional changes. 
 - Per Semver, indicates deprecation of overloads and properties intended to be removed or renamed in Polly v6.

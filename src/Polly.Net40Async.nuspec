@@ -13,7 +13,15 @@
     <tags>Exception Handling Resilience Transient Fault Policy Circuit Breaker CircuitBreaker Retry Wait Cache Cache-aside Bulkhead Fallback Timeout Throttle Parallelization</tags>
     <copyright>Copyright © 2017, App vNext</copyright>
     <releaseNotes>
-     v5.0 is a major release with significant new resilience policies: Timeout; Bulkhead Isolation; Fallback; Cache; and PolicyWrap.  See release notes back to v5.0.0 for full details.
+     v6.0 is a major performance release, and further builds towards adding telemetry and metrics to Polly.
+
+     6.0.0-alpha
+     ---------------------
+     - Performance improvements: Reduce heap allocations by 2x - 6x, for all executions.
+     - Retry hotpath improvement: do not allocate retry state machine if first try succeeds.
+     - Refactor circuit-breaker internals for clarity. 
+     - Remove deprecated execute overloads (breaking change).
+     - Rename keys on Context, in preparation for telemetry (breaking change). 
 
      5.9.0
      ---------------------
