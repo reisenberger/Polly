@@ -18,7 +18,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public object Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, in CancellationToken cancellationToken)
         {
             _action();
             return null;
@@ -39,7 +39,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public object Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, in CancellationToken cancellationToken)
         {
             _action(cancellationToken);
             return null;
@@ -61,7 +61,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public object Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, in CancellationToken cancellationToken)
         {
             _action(context);
             return null;
@@ -83,7 +83,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public object Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, in CancellationToken cancellationToken)
         {
             _action(context, cancellationToken);
             return null;
@@ -109,7 +109,7 @@ namespace Polly.Execution
             _arg1 = arg1;
         }
 
-        public object Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, in CancellationToken cancellationToken)
         {
             _action(context, cancellationToken, _arg1);
             return null;
@@ -138,7 +138,7 @@ namespace Polly.Execution
             _arg2 = arg2;
         }
 
-        public object Execute(Context context, CancellationToken cancellationToken)
+        public object Execute(Context context, in CancellationToken cancellationToken)
         {
             _action(context, cancellationToken, _arg1, _arg2);
             return null;

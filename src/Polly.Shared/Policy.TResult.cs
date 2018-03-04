@@ -41,7 +41,7 @@ namespace Polly
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> governing cancellation of the execution.</param>
         /// <returns>A <typeparamref name="TResult"/> return value.</returns>
         [DebuggerStepThrough]
-        protected virtual TResult ExecuteThroughImplementationInternal<TExecutable>(TExecutable executable, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        protected virtual TResult ExecuteThroughImplementationInternal<TExecutable>(TExecutable executable, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and in doing so might omit to set context).
 
@@ -51,7 +51,7 @@ namespace Polly
         }
 
         [DebuggerStepThrough]
-        internal virtual TResult ExecuteSyncExecutableThroughPolicy<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        internal virtual TResult ExecuteSyncExecutableThroughPolicy<TExecutable>(in TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             SetPolicyExecutionContext(context);
 

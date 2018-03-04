@@ -35,7 +35,7 @@ namespace Polly.Retry
             _policyStateFactory = policyStateFactory ?? throw new ArgumentNullException(nameof(policyStateFactory));
         }
 
-        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             int failureCount = 0;
             IRetryPolicyState<TResult> policyState = null; // To optimise the hotpath, we avoid allocating policyState unless the first try fails.

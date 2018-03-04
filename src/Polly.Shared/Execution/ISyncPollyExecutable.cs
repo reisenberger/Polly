@@ -14,7 +14,7 @@ namespace Polly.Execution
         /// <param name="context">The Polly execution <see cref="Context"/> to execute the operation with.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> governing cancellation of the executed operation.</param>
         /// <returns>A result of type <typeparamref name="TResult"/></returns>
-        TResult Execute(Context context, CancellationToken cancellationToken);
+        TResult Execute(Context context, in CancellationToken cancellationToken);
     }
 
 }

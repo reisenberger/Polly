@@ -34,7 +34,7 @@ namespace Polly.Fallback
             _fallbackAction = fallbackAction ?? throw new ArgumentNullException(nameof(fallbackAction));
         }
 
-        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             DelegateResult<TResult> delegateOutcome;
 

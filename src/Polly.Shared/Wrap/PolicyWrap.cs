@@ -40,7 +40,7 @@ namespace Polly.Wrap
         /// <param name="context">The execution context.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> governing cancellation of the execution.</param>
         /// <returns>A <typeparamref name="TMethodGeneric"/> return value.</returns>
-        protected override TMethodGeneric ExecuteThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable executable, Context context, CancellationToken cancellationToken)
+        protected override TMethodGeneric ExecuteThroughImplementationInternal<TExecutable, TMethodGeneric>(in TExecutable executable, Context context, in CancellationToken cancellationToken)
         {
             return new PolicyWrapSyncImplementationNonGenericNonGeneric<TMethodGeneric>(this, Outer, Inner as ISyncPolicy)
                 .Execute(executable, context, cancellationToken);

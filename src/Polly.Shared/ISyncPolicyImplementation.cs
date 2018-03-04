@@ -21,6 +21,6 @@ namespace Polly
         /// <param name="context">Context data that is passed to the execution.</param>
         /// <param name="cancellationToken">The cancellation token which will govern the execution.</param>
         /// <returns>A result of type <typeparamref name="TResult"/></returns>
-        TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>;
+        TResult Execute<TExecutable>(in TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>;
     }
 }

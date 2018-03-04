@@ -20,7 +20,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public TResult Execute(Context context, CancellationToken cancellationToken) => _func();
+        public TResult Execute(Context context, in CancellationToken cancellationToken) => _func();
     }
 
     /// <inheritdoc/>
@@ -39,7 +39,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public TResult Execute(Context context, CancellationToken cancellationToken) => _func(cancellationToken);
+        public TResult Execute(Context context, in CancellationToken cancellationToken) => _func(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -58,7 +58,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public TResult Execute(Context context, CancellationToken cancellationToken) => _func(context);
+        public TResult Execute(Context context, in CancellationToken cancellationToken) => _func(context);
     }
 
     /// <inheritdoc/>
@@ -77,7 +77,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public TResult Execute(Context context, CancellationToken cancellationToken) => _func(context, cancellationToken);
+        public TResult Execute(Context context, in CancellationToken cancellationToken) => _func(context, cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -100,7 +100,7 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public TResult Execute(Context context, CancellationToken cancellationToken) => _func(context, cancellationToken, _arg1);
+        public TResult Execute(Context context, in CancellationToken cancellationToken) => _func(context, cancellationToken, _arg1);
     }
 
     /// <inheritdoc/>
@@ -126,6 +126,6 @@ namespace Polly.Execution
         }
 
         /// <inheritdoc/>
-        public TResult Execute(Context context, CancellationToken cancellationToken) => _func(context, cancellationToken, _arg1, _arg2);
+        public TResult Execute(Context context, in CancellationToken cancellationToken) => _func(context, cancellationToken, _arg1, _arg2);
     }
 }

@@ -20,7 +20,7 @@ namespace Polly.Bulkhead
             _bulkhead = policy ?? throw new ArgumentNullException(nameof(policy));
         }
 
-        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             if (!_bulkhead.MaxQueuedActionsSemaphore.Wait(TimeSpan.Zero, cancellationToken))
             {

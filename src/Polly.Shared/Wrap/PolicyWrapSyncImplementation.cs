@@ -17,7 +17,7 @@ namespace Polly.Wrap
             _innerPolicy = inner as Policy ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public Object Execute<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<Object>
+        public Object Execute<TExecutable>(in TExecutable func, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<Object>
         {
             SyncPollyExecutableAction<Policy, TExecutable> innerExecutionAsExecutable = new SyncPollyExecutableAction<Policy, TExecutable>(
                 (ctx, ct, policy, f) => policy.ExecuteSyncExecutableThroughPolicy<TExecutable>(f, ctx, ct),
@@ -45,7 +45,7 @@ namespace Polly.Wrap
             _innerPolicy = inner as Policy ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public TResult Execute<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable func, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             SyncPollyExecutableFunc<Policy, TExecutable, TResult> innerExecutionAsExecutable = new SyncPollyExecutableFunc<Policy, TExecutable, TResult>(
                 (ctx, ct, policy, f) => policy.ExecuteSyncExecutableThroughPolicy<TExecutable, TResult>(f, ctx, ct),
@@ -72,7 +72,7 @@ namespace Polly.Wrap
             _innerPolicy = inner as Policy<TResult> ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public TResult Execute<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable func, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             SyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult> innerExecutionAsExecutable = new SyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult>(
                 (ctx, ct, policy, f) => policy.ExecuteSyncExecutableThroughPolicy(f, ctx, ct),
@@ -99,7 +99,7 @@ namespace Polly.Wrap
             _innerPolicy = inner as Policy ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public TResult Execute<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable func, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             SyncPollyExecutableFunc<Policy, TExecutable, TResult> innerExecutionAsExecutable = new SyncPollyExecutableFunc<Policy, TExecutable, TResult>(
                 (ctx, ct, policy, f) => policy.ExecuteSyncExecutableThroughPolicy<TExecutable, TResult>(f, ctx, ct),
@@ -126,7 +126,7 @@ namespace Polly.Wrap
             _innerPolicy = inner as Policy<TResult> ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public TResult Execute<TExecutable>(TExecutable func, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable func, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             SyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult> innerExecutionAsExecutable = new SyncPollyExecutableFunc<Policy<TResult>, TExecutable, TResult>(
                 (ctx, ct, policy, f) => policy.ExecuteSyncExecutableThroughPolicy(f, ctx, ct),

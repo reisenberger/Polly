@@ -39,7 +39,7 @@ namespace Polly
         /// <param name="context">The execution context.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> governing cancellation of the execution.</param>
         [DebuggerStepThrough]
-        protected virtual void ExecuteThroughImplementationInternal<TExecutable>(TExecutable executable, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<object>
+        protected virtual void ExecuteThroughImplementationInternal<TExecutable>(in TExecutable executable, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<object>
         {
             // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and omit to set context).
 
@@ -60,17 +60,17 @@ namespace Polly
         /// <returns>A <typeparamref name="TMethodGeneric"/> return value.</returns>
 
         [DebuggerStepThrough]
-        protected virtual TMethodGeneric ExecuteThroughImplementationInternal<TExecutable, TMethodGeneric>(TExecutable executable, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TMethodGeneric>
+        protected virtual TMethodGeneric ExecuteThroughImplementationInternal<TExecutable, TMethodGeneric>(in TExecutable executable, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TMethodGeneric>
         {
             // Public overloads should always call via ExecuteAsyncExecutableThroughPolicy(), to ensure that context is set on the execution.  Context is not set on the execution in this method, because custom policy types may override this method (and in doing so might omit to set context).
 
             if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
 
-            return (TMethodGeneric)_nonGenericSyncImplementation.Execute(new SyncPollyExecutableFunc<object>((ctx, ct) => executable.Execute(ctx, ct)), context, cancellationToken);
+            return (TMethodGeneric)_nonGenericSyncImplementation.Execute(new SyncPollyExecutableFunc<TExecutable, object>((ctx, ct, exec) => exec.Execute(ctx, ct), executable), context, cancellationToken);
         }
 
         [DebuggerStepThrough]
-        internal virtual void ExecuteSyncExecutableThroughPolicy<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<object>
+        internal virtual void ExecuteSyncExecutableThroughPolicy<TExecutable>(in TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<object>
         {
             SetPolicyExecutionContext(context);
 
@@ -78,7 +78,7 @@ namespace Polly
         }
 
         [DebuggerStepThrough]
-        internal virtual TMethodGeneric ExecuteSyncExecutableThroughPolicy<TExecutable, TMethodGeneric>(TExecutable func, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TMethodGeneric>
+        internal virtual TMethodGeneric ExecuteSyncExecutableThroughPolicy<TExecutable, TMethodGeneric>(in TExecutable func, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TMethodGeneric>
         {
             SetPolicyExecutionContext(context);
 

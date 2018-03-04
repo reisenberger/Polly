@@ -56,7 +56,7 @@ namespace Polly
         /// <param name="action">The action to perform.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The value returned by the action</returns>
-        TResult Execute(Func<CancellationToken, TResult> action, CancellationToken cancellationToken);
+        TResult Execute(Func<CancellationToken, TResult> action, in CancellationToken cancellationToken);
 
         /// <summary>
         /// Executes the specified action within the policy and returns the result.
@@ -66,7 +66,7 @@ namespace Polly
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The value returned by the action</returns>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
-        TResult Execute(Func<Context, CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken);
+        TResult Execute(Func<Context, CancellationToken, TResult> action, IDictionary<string, object> contextData, in CancellationToken cancellationToken);
 
         /// <summary>
         /// Executes the specified action within the policy and returns the result.
@@ -75,7 +75,7 @@ namespace Polly
         /// <param name="context">Context data that is passed to the exception policy.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The value returned by the action</returns>
-        TResult Execute(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken);
+        TResult Execute(Func<Context, CancellationToken, TResult> action, Context context, in CancellationToken cancellationToken);
 
         /// <summary>
         /// Executes the specified action within the policy and returns the captured result
@@ -108,7 +108,7 @@ namespace Polly
         /// <param name="action">The action to perform.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The captured result</returns>
-        PolicyResult<TResult> ExecuteAndCapture(Func<CancellationToken, TResult> action, CancellationToken cancellationToken);
+        PolicyResult<TResult> ExecuteAndCapture(Func<CancellationToken, TResult> action, in CancellationToken cancellationToken);
 
         /// <summary>
         /// Executes the specified action within the policy and returns the captured result.
@@ -118,7 +118,7 @@ namespace Polly
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The captured result</returns>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
-        PolicyResult<TResult> ExecuteAndCapture(Func<Context, CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken);
+        PolicyResult<TResult> ExecuteAndCapture(Func<Context, CancellationToken, TResult> action, IDictionary<string, object> contextData, in CancellationToken cancellationToken);
 
         /// <summary>
         /// Executes the specified action within the policy and returns the captured result.
@@ -127,6 +127,6 @@ namespace Polly
         /// <param name="context">Context data that is passed to the exception policy.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The captured result</returns>
-        PolicyResult<TResult> ExecuteAndCapture(Func<Context, CancellationToken, TResult> action, Context context, CancellationToken cancellationToken);
+        PolicyResult<TResult> ExecuteAndCapture(Func<Context, CancellationToken, TResult> action, Context context, in CancellationToken cancellationToken);
     }
 }

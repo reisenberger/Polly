@@ -20,7 +20,13 @@ namespace Polly.Timeout
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
         }
 
-        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable action, Context context,
+            in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        {
+            return TimeoutSyncExecuteInternal(action, context, cancellationToken);
+        }
+
+        private TResult TimeoutSyncExecuteInternal<TExecutable>(TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             cancellationToken.ThrowIfCancellationRequested();
             TimeSpan timeout = _policy.TimeoutProvider(context);

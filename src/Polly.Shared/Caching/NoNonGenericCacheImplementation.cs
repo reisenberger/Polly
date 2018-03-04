@@ -12,7 +12,7 @@ namespace Polly.Caching
     /// </summary>
     internal class NoNonGenericCacheImplementation<TResult> : ISyncPolicyImplementation<TResult>, IAsyncPolicyImplementation<TResult>
     {
-        public TResult Execute<TExecutable>(TExecutable action, Context context, CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
+        public TResult Execute<TExecutable>(in TExecutable action, Context context, in CancellationToken cancellationToken) where TExecutable : ISyncPollyExecutable<TResult>
         {
             throw InvalidOperation();
         }
