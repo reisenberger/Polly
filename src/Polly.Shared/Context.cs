@@ -40,25 +40,18 @@ namespace Polly
         public String PolicyKey { get; internal set; }
 
         /// <summary>
-        /// A key unique to the call site of the current execution. 
+        /// A key unique to the operation or call site of this usage of the policy. 
         /// <remarks>The value is set by using the <see cref="Context(String)"/> constructor taking an operationKey parameter.</remarks>
         /// </summary>
-        [Obsolete("This property is being renamed OperationKey, from Polly v6.")]
+        [Obsolete("This property has renamed OperationKey. Prefer OperationKey.")]
         public String ExecutionKey => OperationKey;
 
         /// <summary>
-        /// A key unique to the call site of the current execution. 
-        /// <remarks><see cref="Policy"/> instances are commonly reused across multiple call sites.  Set an OperationKey so that logging and metrics can distinguish usages of policy instances at different call sites.</remarks>
+        /// A key unique to the operation or call site of this usage of the policy. 
+        /// <remarks><see cref="Policy"/> instances are commonly reused across multiple call sites.  Set an OperationKey to distinguish the different operations that policy instances are being used for in logging and metrics.</remarks>
         /// <remarks>The value is set by using the <see cref="Context(String)"/> constructor taking an operationKey parameter.</remarks>
         /// </summary>
         public String OperationKey { get; }
-
-        /// <summary>
-        /// A Guid guaranteed to be unique to each execution.
-        /// <remarks>Acts as a correlation id so that events specific to a single execution can be identified in logging and telemetry.</remarks>
-        /// </summary>
-        [Obsolete("This property is being renamed CorrelationId, from Polly v6.")]
-        public Guid ExecutionGuid => CorrelationId;
 
         /// <summary>
         /// A Guid guaranteed to be unique to each execution.
