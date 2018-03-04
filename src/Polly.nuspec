@@ -15,6 +15,10 @@
     <releaseNotes>
      v6.0 is a major performance release, and further builds towards adding telemetry and metrics to Polly.
 
+     6.0.3-alpha
+     ---------------------
+     - Discontinue .NET4.0 support. .NET4.0 does not support features intended for use with Polly metrics.
+
      6.0.2-alpha
      ---------------------
      - Enforce use of DateTimeOffset for internal timings.

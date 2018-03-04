@@ -1,3 +1,6 @@
+## 6.0.3-alpha
+- Discontinue .NET4.0 support. .NET4.0 does not support features intended for use with Polly metrics. 
+
 ## 6.0.2-alpha
 - Enforce use of DateTimeOffset for internal timings.
 - Refactor circuit-breaker internals to give ICircuitController control of exiting from half-open state.

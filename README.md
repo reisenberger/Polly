@@ -2,7 +2,7 @@
 
 Polly is a .NET resilience and transient-fault-handling library that allows developers to express policies such as Retry, Circuit Breaker, Timeout, Bulkhead Isolation, and Fallback in a fluent and thread-safe manner.  
 
-Polly targets .NET 4.0, .NET 4.5 and .NET Standard 1.1 ([coverage](https://github.com/dotnet/standard/blob/master/docs/versions.md): .NET Core, Mono, Xamarin.iOS, Xamarin.Android, UWP, WP8.1+).
+Polly targets .NET 4.5 and .NET Standard 1.1 ([coverage](https://github.com/dotnet/standard/blob/master/docs/versions.md): .NET Core, Mono, Xamarin.iOS, Xamarin.Android, UWP, WP8.1+).
 
 [<img align="right" src="https://github.com/dotnet/swag/raw/master/logo/dotnetfoundation_v4_small.png" width="100" />](https://www.dotnetfoundation.org/)
 We are now a member of the [.NET Foundation](https://www.dotnetfoundation.org/about)!
@@ -20,11 +20,6 @@ We are now a member of the [.NET Foundation](https://www.dotnetfoundation.org/ab
 You can install the Strongly Named version via: 
 
     Install-Package Polly-Signed
-
-.NET4.0 support is provided via the packages:
-
-    Install-Package Polly.Net40Async
-    Install-Package Polly.Net40Async-Signed
 
 
 # Resilience policies
@@ -880,7 +875,9 @@ For more detail see: [Polly and interfaces](https://github.com/App-vNext/Polly/w
 
 # .NET4.0 support 
 
-The .NET4.0 package uses `Microsoft.Bcl.Async` to add async support.  To minimise  dependencies on the main Polly nuget package, the .NET4.0 version is available as separate Nuget packages `Polly.Net40Async` and `Polly.Net40Async-signed`.
+The last version of Polly to support .NET4.0 is [v5.8.0](https://www.nuget.org/packages/Polly/5.8.0).  This includes all of the v5.x features.  This package may be installed via the NuGet package manager by specifying its version: `Install-Package Polly.Net40Async -Version 5.8.0`.
+
+The .NET4.0 packages use `Microsoft.Bcl.Async` to add async support.  To minimise  dependencies on the main Polly nuget package, the .NET4.0 version is available as separate Nuget packages `Polly.Net40Async` and `Polly.Net40Async-signed`.
 
 # .NET3.5 support 
 
