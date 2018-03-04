@@ -6,7 +6,7 @@ namespace Polly.Execution
 {
     /// <inheritdoc/>
 
-    public struct SyncPollyExecutableFuncNoParams<TResult> : ISyncPollyExecutable<TResult>
+    internal readonly struct SyncPollyExecutableFuncNoParams<TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<TResult> _func;
 
@@ -25,7 +25,7 @@ namespace Polly.Execution
 
     /// <inheritdoc/>
 
-    public struct SyncPollyExecutableFuncOnCancellationToken<TResult> : ISyncPollyExecutable<TResult>
+    internal readonly struct SyncPollyExecutableFuncOnCancellationToken<TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<CancellationToken, TResult> _func;
 
@@ -44,7 +44,7 @@ namespace Polly.Execution
 
     /// <inheritdoc/>
 
-    public struct SyncPollyExecutableFuncOnContext<TResult> : ISyncPollyExecutable<TResult>
+    internal readonly struct SyncPollyExecutableFuncOnContext<TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<Context, TResult> _func;
 
@@ -63,7 +63,7 @@ namespace Polly.Execution
 
     /// <inheritdoc/>
 
-    public struct SyncPollyExecutableFunc<TResult> : ISyncPollyExecutable<TResult>
+    internal readonly struct SyncPollyExecutableFunc<TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<Context, CancellationToken, TResult> _func;
 
@@ -81,7 +81,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct SyncPollyExecutableFunc<T1, TResult> : ISyncPollyExecutable<TResult>
+    internal readonly struct SyncPollyExecutableFunc<T1, TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<Context, CancellationToken, T1, TResult> _func;
         private readonly T1 _arg1;
@@ -104,7 +104,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct SyncPollyExecutableFunc<T1, T2, TResult> : ISyncPollyExecutable<TResult>
+    internal readonly struct SyncPollyExecutableFunc<T1, T2, TResult> : ISyncPollyExecutable<TResult>
     {
         private readonly Func<Context, CancellationToken, T1, T2, TResult> _func;
         private readonly T1 _arg1;

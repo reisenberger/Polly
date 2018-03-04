@@ -4,7 +4,7 @@ using System.Threading;
 namespace Polly.Execution
 {
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableActionNoParams : ISyncPollyExecutable<object>
+    internal readonly struct SyncPollyExecutableActionNoParams : ISyncPollyExecutable<object>
     {
         private readonly Action _action;
 
@@ -25,7 +25,7 @@ namespace Polly.Execution
         }
     }
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableActionOnCancellationToken : ISyncPollyExecutable<object>
+    internal readonly struct SyncPollyExecutableActionOnCancellationToken : ISyncPollyExecutable<object>
     {
         private readonly Action<CancellationToken> _action;
 
@@ -47,7 +47,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableActionOnContext : ISyncPollyExecutable<object>
+    internal readonly struct SyncPollyExecutableActionOnContext : ISyncPollyExecutable<object>
     {
         private readonly Action<Context> _action;
 
@@ -69,7 +69,7 @@ namespace Polly.Execution
     }
     
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableAction : ISyncPollyExecutable<object>
+    internal readonly struct SyncPollyExecutableAction : ISyncPollyExecutable<object>
     {
         private readonly Action<Context, CancellationToken> _action;
 
@@ -91,7 +91,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableAction<T1> : ISyncPollyExecutable<object>
+    internal readonly struct SyncPollyExecutableAction<T1> : ISyncPollyExecutable<object>
     {
         private readonly Action<Context, CancellationToken, T1> _action;
         private readonly T1 _arg1;
@@ -117,7 +117,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    internal struct SyncPollyExecutableAction<T1, T2> : ISyncPollyExecutable<object>
+    internal readonly struct SyncPollyExecutableAction<T1, T2> : ISyncPollyExecutable<object>
     {
         private readonly Action<Context, CancellationToken, T1, T2> _action;
         private readonly T1 _arg1;

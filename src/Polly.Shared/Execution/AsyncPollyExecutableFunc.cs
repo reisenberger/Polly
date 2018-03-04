@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Polly.Execution
 {
     /// <inheritdoc/>
-    public struct AsyncPollyExecutableFuncNoParams<TResult> : IAsyncPollyExecutable<TResult>
+    internal readonly struct AsyncPollyExecutableFuncNoParams<TResult> : IAsyncPollyExecutable<TResult>
     {
         private readonly Func<Task<TResult>> _func;
 
@@ -23,7 +23,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct AsyncPollyExecutableFuncOnContext<TResult> : IAsyncPollyExecutable<TResult>
+    internal readonly struct AsyncPollyExecutableFuncOnContext<TResult> : IAsyncPollyExecutable<TResult>
     {
         private readonly Func<Context, Task<TResult>> _func;
 
@@ -41,7 +41,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct AsyncPollyExecutableFuncOnCancellationToken<TResult> : IAsyncPollyExecutable<TResult>
+    internal readonly struct AsyncPollyExecutableFuncOnCancellationToken<TResult> : IAsyncPollyExecutable<TResult>
     {
         private readonly Func<CancellationToken, Task<TResult>> _func;
 
@@ -59,7 +59,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct AsyncPollyExecutableFuncOnContextCancellationToken<TResult> : IAsyncPollyExecutable<TResult>
+    internal readonly struct AsyncPollyExecutableFuncOnContextCancellationToken<TResult> : IAsyncPollyExecutable<TResult>
     {
         private readonly Func<Context, CancellationToken, Task<TResult>> _func;
 
@@ -77,7 +77,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct AsyncPollyExecutableFunc<TResult> : IAsyncPollyExecutable<TResult>
+    internal readonly struct AsyncPollyExecutableFunc<TResult> : IAsyncPollyExecutable<TResult>
     {
         private readonly Func<Context, CancellationToken, bool, Task<TResult>> _func;
 
@@ -95,7 +95,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct AsyncPollyExecutableFunc<T1, TResult> : IAsyncPollyExecutable<TResult>
+    internal readonly struct AsyncPollyExecutableFunc<T1, TResult> : IAsyncPollyExecutable<TResult>
     {
         private readonly Func<Context, CancellationToken, bool, T1, Task<TResult>> _func;
         private readonly T1 _arg1;
@@ -118,7 +118,7 @@ namespace Polly.Execution
     }
 
     /// <inheritdoc/>
-    public struct AsyncPollyExecutableFunc<T1, T2, TResult> : IAsyncPollyExecutable<TResult>
+    internal readonly struct AsyncPollyExecutableFunc<T1, T2, TResult> : IAsyncPollyExecutable<TResult>
     {
         private readonly Func<Context, CancellationToken, bool, T1, T2, Task<TResult>> _func;
         private readonly T1 _arg1;
