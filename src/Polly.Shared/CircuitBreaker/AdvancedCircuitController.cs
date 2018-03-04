@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using Polly.Utilities;
 
 namespace Polly.CircuitBreaker
 {
@@ -10,6 +12,8 @@ namespace Polly.CircuitBreaker
         private readonly IHealthMetrics _metrics;
         private readonly double _failureThreshold;
         private readonly int _minimumThroughput;
+
+        private long _blockHalfOpenUntil;
 
         public AdvancedCircuitController(
             double failureThreshold, 
@@ -31,6 +35,18 @@ namespace Polly.CircuitBreaker
             // Is only null during initialization of the current class
             // as the variable is not set, before the base class calls
             // current method from constructor.
+        }
+
+        public bool PermitHalfOpenCircuitTest(TimeSpan durationOfBreak)
+        {
+            long currentlyBlockedHalfOpenUntil = _blockHalfOpenUntil;
+            if (SystemClock.DateTimeOffsetUtcNow().Ticks >= currentlyBlockedHalfOpenUntil)
+            {
+                // It's time to permit a / another trial call in the half-open state ...
+                // ... but to prevent race conditions/multiple calls, we have to ensure only _one_ thread wins the race to own this next call.
+                return Interlocked.CompareExchange(ref _blockHalfOpenUntil, SystemClock.DateTimeOffsetUtcNow().Ticks + durationOfBreak.Ticks, currentlyBlockedHalfOpenUntil) == currentlyBlockedHalfOpenUntil;
+            }
+            return false;
         }
 
         public CircuitState OnActionSuccess_WithinLock(CircuitState currentState)

@@ -42,7 +42,7 @@ namespace Polly.CircuitBreaker
 
         private void ActualiseCurrentMetric_NeedsLock()
         {
-            long now = SystemClock.UtcNow().Ticks;
+            long now = SystemClock.DateTimeOffsetUtcNow().Ticks;
             if (_current == null || now - _current.StartedAt >= _samplingDuration)
             {
                 _current = new HealthCount { StartedAt = now };

@@ -1,9 +1,15 @@
-﻿namespace Polly.CircuitBreaker
+﻿using System;
+using System.Threading;
+using Polly.Utilities;
+
+namespace Polly.CircuitBreaker
 {
     internal class ConsecutiveCountCircuitController : ICircuitController
     {
         private readonly int _exceptionsAllowedBeforeBreaking;
         private int _consecutiveFailureCount;
+
+        private long _blockHalfOpenUntil;
 
         public ConsecutiveCountCircuitController(int exceptionsAllowedBeforeBreaking) 
         {
@@ -15,6 +21,18 @@
             _consecutiveFailureCount = 0;
         }
 
+        public bool PermitHalfOpenCircuitTest(TimeSpan durationOfBreak)
+        {
+            long currentlyBlockedHalfOpenUntil = _blockHalfOpenUntil;
+            if (SystemClock.DateTimeOffsetUtcNow().Ticks >= currentlyBlockedHalfOpenUntil)
+            {
+                // It's time to permit a / another trial call in the half-open state ...
+                // ... but to prevent race conditions/multiple calls, we have to ensure only _one_ thread wins the race to own this next call.
+                return Interlocked.CompareExchange(ref _blockHalfOpenUntil, SystemClock.DateTimeOffsetUtcNow().Ticks + durationOfBreak.Ticks, currentlyBlockedHalfOpenUntil) == currentlyBlockedHalfOpenUntil;
+            }
+            return false;
+        }
+
         public CircuitState OnActionSuccess_WithinLock(CircuitState currentState)
         {
                 switch (currentState)
@@ -24,7 +42,7 @@
                         return CircuitState.Closed;
 
                     case CircuitState.Closed:
-                        // A success in closed state clearly cuts consecutive failures to zero.
+                        // A success in closed state cuts consecutive failure count to zero.
                         _consecutiveFailureCount = 0;
                         break;
 
@@ -49,8 +67,7 @@
 
                     case CircuitState.Closed:
                         // Too many failures in Closed causes breaking, to Open.
-                        _consecutiveFailureCount += 1;
-                        if (_consecutiveFailureCount >= _exceptionsAllowedBeforeBreaking)
+                        if (++ _consecutiveFailureCount >= _exceptionsAllowedBeforeBreaking)
                         {
                             return CircuitState.Open;
                         }

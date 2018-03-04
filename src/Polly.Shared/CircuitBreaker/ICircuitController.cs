@@ -1,4 +1,6 @@
-﻿namespace Polly.CircuitBreaker
+﻿using System;
+
+namespace Polly.CircuitBreaker
 {
     /// <summary>
     /// Defines a circuit controller which can control when a circuit-breaker should transition between closed, half-open and open states, in response to failures and successes experienced by actions executed through the circuit.
@@ -35,5 +37,13 @@
         /// <param name="currentState">The state of the circuit at the time the action resulted in a handled failure.</param>
         /// <returns>A <see cref="CircuitState"/> to transition to (if different from the passed <paramref name="currentState"/>). </returns>
         CircuitState OnActionHandledFailure_WithinLock(CircuitState currentState);
+
+        /// <summary>
+        /// Called when an action is requested to be executed, in half-open state.  The method may return true or false to indicate the actioned should be attempted, or not.
+        /// </summary>
+        /// <param name="durationOfBreak">The duration of break configured in the circuit, ticks.
+        /// <remarks>Circuit controllers may choose to allow 1, or a small number, of executions per break duration; this parameter allows them to calculate that.</remarks></param>
+        /// <returns>true, if the action should be permitted; false, if it should not.</returns>
+        bool PermitHalfOpenCircuitTest(TimeSpan durationOfBreak);
     }
 }

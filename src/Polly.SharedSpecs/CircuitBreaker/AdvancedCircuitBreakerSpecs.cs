@@ -173,7 +173,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_and_minimum_threshold_is_equalled_but_last_call_is_success()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -202,14 +202,14 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.Execute(() => { }))
                 .ShouldNotThrow();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
         }
 
         [Fact]
         public void Should_not_open_circuit_if_exceptions_raised_are_not_one_of_the_specified_exceptions()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -253,7 +253,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_blocking_executions_and_noting_the_last_raised_exception_if_failure_threshold_exceeded_and_throughput_threshold_equalled_within_timeslice_in_same_window()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -277,7 +277,7 @@ namespace Polly.Specs.CircuitBreaker
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
-            // No adjustment to SystemClock.UtcNow, so all exceptions raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -297,7 +297,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_exceeded_and_throughput_threshold_equalled_within_timeslice_in_different_windows()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -326,7 +326,7 @@ namespace Polly.Specs.CircuitBreaker
             // Placing the rest of the invocations ('samplingDuration' / 2) + 1 seconds later
             // ensures that even if there are only two windows, then the invocations are placed in the second.
             // They are still placed within same timeslice.
-            SystemClock.UtcNow = () => time.AddSeconds(samplingDuration.Seconds / 2d + 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddSeconds(samplingDuration.Seconds / 2d + 1);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -344,7 +344,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_exceeded_though_not_all_are_failures_and_throughput_threshold_equalled_within_timeslice_in_same_window()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -371,7 +371,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Open);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<BrokenCircuitException>()
@@ -385,7 +385,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_exceeded_though_not_all_are_failures_and_throughput_threshold_equalled_within_timeslice_in_different_windows()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -418,7 +418,7 @@ namespace Polly.Specs.CircuitBreaker
             // Placing the rest of the invocations ('samplingDuration' / 2) + 1 seconds later
             // ensures that even if there are only two windows, then the invocations are placed in the second.
             // They are still placed within same timeslice
-            SystemClock.UtcNow = () => time.AddSeconds(samplingDuration.Seconds / 2d + 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddSeconds(samplingDuration.Seconds / 2d + 1);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<BrokenCircuitException>()
@@ -432,7 +432,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_equalled_and_throughput_threshold_equalled_within_timeslice_in_same_window()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -459,7 +459,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Open);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<BrokenCircuitException>()
@@ -473,7 +473,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_equalled_and_throughput_threshold_equalled_within_timeslice_in_different_windows()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -506,7 +506,7 @@ namespace Polly.Specs.CircuitBreaker
             // Placing the rest of the invocations ('samplingDuration' / 2) + 1 seconds later
             // ensures that even if there are only two windows, then the invocations are placed in the second.
             // They are still placed within same timeslice
-            SystemClock.UtcNow = () => time.AddSeconds(samplingDuration.Seconds / 2d + 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddSeconds(samplingDuration.Seconds / 2d + 1);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<BrokenCircuitException>()
@@ -520,7 +520,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_exceeded_but_throughput_threshold_not_met_before_timeslice_expires()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -547,7 +547,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Adjust SystemClock so that timeslice (clearly) expires; fourth exception thrown in next-recorded timeslice.
-            SystemClock.UtcNow = () => time.Add(samplingDuration).Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration).Add(samplingDuration);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -559,7 +559,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_exceeded_but_throughput_threshold_not_met_before_timeslice_expires_even_if_timeslice_expires_only_exactly()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -586,7 +586,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Adjust SystemClock so that timeslice (just) expires; fourth exception thrown in following timeslice.
-            SystemClock.UtcNow = () => time.Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -598,7 +598,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_exceeded_but_throughput_threshold_not_met_before_timeslice_expires_even_if_error_occurring_just_at_the_end_of_the_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -623,14 +623,14 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Creates a new window right at the end of the original timeslice.
-            SystemClock.UtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Adjust SystemClock so that timeslice (just) expires; fourth exception thrown in following timeslice.  If timeslice/window rollover is precisely defined, this should cause first two actions to be forgotten from statistics (rolled out of the window of relevance), and thus the circuit not to break.
-            SystemClock.UtcNow = () => time.Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -642,7 +642,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_equalled_and_throughput_threshold_equalled_even_if_only_just_within_timeslice()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -669,7 +669,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Adjust SystemClock so that timeslice doesn't quite expire; fourth exception thrown in same timeslice.
-            SystemClock.UtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -687,7 +687,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_not_met_and_throughput_threshold_not_met()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -710,14 +710,14 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
         }
 
         [Fact]
         public void Should_not_open_circuit_if_failure_threshold_not_met_but_throughput_threshold_met_before_timeslice_expires()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -744,14 +744,14 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
         }
 
         [Fact]
         public void Should_open_circuit_if_failures_at_end_of_last_timeslice_below_failure_threshold_and_failures_in_beginning_of_new_timeslice_where_total_equals_failure_threshold()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -772,7 +772,7 @@ namespace Polly.Specs.CircuitBreaker
 
             // The time is set to just at the end of the sampling duration ensuring
             // the invocations are within the timeslice, but only barely.
-            SystemClock.UtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
 
             // Three of four actions in this test occur within the first timeslice.
             breaker.Invoking(x => x.Execute(() => { }))
@@ -788,7 +788,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Setting the time to just barely into the new timeslice
-            SystemClock.UtcNow = () => time.Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration);
 
             // This failure opens the circuit, because it is the second failure of four calls
             // equalling the failure threshold. The minimum threshold within the defined
@@ -802,7 +802,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failures_at_end_of_last_timeslice_and_failures_in_beginning_of_new_timeslice_when_below_minimum_throughput_threshold()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
 
@@ -823,7 +823,7 @@ namespace Polly.Specs.CircuitBreaker
 
             // The time is set to just at the end of the sampling duration ensuring
             // the invocations are within the timeslice, but only barely.
-            SystemClock.UtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
 
             // Two of three actions in this test occur within the first timeslice.
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
@@ -835,7 +835,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Setting the time to just barely into the new timeslice
-            SystemClock.UtcNow = () => time.Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration);
 
             // A third failure occurs just at the beginning of the new timeslice making 
             // the number of failures above the failure threshold. However, the throughput is 
@@ -849,7 +849,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_if_failures_in_second_window_of_last_timeslice_and_failures_in_first_window_in_next_timeslice_exceeds_failure_threshold_and_minimum_threshold()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromSeconds(10);
             var numberOfWindowsDefinedInCircuitBreaker = 10;
@@ -870,7 +870,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Setting the time to the second window in the rolling metrics
-            SystemClock.UtcNow = () => time.AddSeconds(samplingDuration.Seconds / (double)numberOfWindowsDefinedInCircuitBreaker);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddSeconds(samplingDuration.Seconds / (double)numberOfWindowsDefinedInCircuitBreaker);
 
             // Three actions occur in the second window of the first timeslice
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
@@ -886,7 +886,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Setting the time to just barely into the new timeslice
-            SystemClock.UtcNow = () => time.Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -907,7 +907,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_exceeded_and_throughput_threshold_equalled_within_timeslice_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -931,7 +931,7 @@ namespace Polly.Specs.CircuitBreaker
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
-            // No adjustment to SystemClock.UtcNow, so all exceptions raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -949,7 +949,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_exceeded_though_not_all_are_failures_and_throughput_threshold_equalled_within_timeslice_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -976,7 +976,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Open);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<BrokenCircuitException>()
@@ -990,7 +990,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_equalled_and_throughput_threshold_equalled_within_timeslice_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -1017,7 +1017,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Open);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<BrokenCircuitException>()
@@ -1031,7 +1031,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_exceeded_but_throughput_threshold_not_met_before_timeslice_expires_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromMilliseconds(199);
 
@@ -1058,7 +1058,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Adjust SystemClock so that timeslice (clearly) expires; fourth exception thrown in next-recorded timeslice.
-            SystemClock.UtcNow = () => time.Add(samplingDuration).Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration).Add(samplingDuration);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -1070,7 +1070,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_exceeded_but_throughput_threshold_not_met_before_timeslice_expires_even_if_timeslice_expires_only_exactly_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromMilliseconds(199);
 
@@ -1097,7 +1097,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Adjust SystemClock so that timeslice (just) expires; fourth exception thrown in following timeslice.
-            SystemClock.UtcNow = () => time.Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -1109,7 +1109,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_equalled_and_throughput_threshold_equalled_even_if_only_just_within_timeslice_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromMilliseconds(199);
 
@@ -1136,7 +1136,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Adjust SystemClock so that timeslice doesn't quite expire; fourth exception thrown in same timeslice.
-            SystemClock.UtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -1154,7 +1154,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_not_open_circuit_if_failure_threshold_not_met_and_throughput_threshold_not_met_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -1177,14 +1177,14 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
         }
 
         [Fact]
         public void Should_not_open_circuit_if_failure_threshold_not_met_but_throughput_threshold_met_before_timeslice_expires_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -1211,14 +1211,14 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
-            // No adjustment to SystemClock.UtcNow, so all exceptions were raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions were raised within same timeslice
         }
 
         [Fact]
         public void Should_not_open_circuit_if_failures_at_end_of_last_timeslice_below_failure_threshold_and_failures_in_beginning_of_new_timeslice_where_total_equals_failure_threshold_low_samping_duration()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var samplingDuration = TimeSpan.FromMilliseconds(199);
 
@@ -1239,7 +1239,7 @@ namespace Polly.Specs.CircuitBreaker
 
             // The time is set to just at the end of the sampling duration ensuring
             // the invocations are within the timeslice, but only barely.
-            SystemClock.UtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddTicks(samplingDuration.Ticks - 1);
 
             // Three of four actions in this test occur within the first timeslice.
             breaker.Invoking(x => x.Execute(() => { }))
@@ -1255,7 +1255,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
             // Setting the time to just barely into the new timeslice
-            SystemClock.UtcNow = () => time.Add(samplingDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(samplingDuration);
 
             // This failure does not open the circuit, because a new duration should have 
             // started and with such low sampling duration, windows should not be used.
@@ -1274,7 +1274,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_halfopen_circuit_after_the_specified_duration_has_passed_with_failures_in_same_window()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1305,7 +1305,7 @@ namespace Polly.Specs.CircuitBreaker
 
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
 
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
@@ -1317,7 +1317,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_halfopen_circuit_after_the_specified_duration_has_passed_with_failures_in_different_windows()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
             var samplingDuration = TimeSpan.FromSeconds(10);
@@ -1348,19 +1348,19 @@ namespace Polly.Specs.CircuitBreaker
             // ensures that even if there are only two windows, then the invocations are placed in the second.
             // They are still placed within same timeslice
             var anotherwindowDuration = samplingDuration.Seconds / 2d + 1;
-            SystemClock.UtcNow = () => time.AddSeconds(anotherwindowDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.AddSeconds(anotherwindowDuration);
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
 
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
             // Since the call that opened the circuit occurred in a later window, then the
             // break duration must be simulated as from that call.
-            SystemClock.UtcNow = () => time.Add(durationOfBreak).AddSeconds(anotherwindowDuration);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak).AddSeconds(anotherwindowDuration);
 
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
@@ -1372,7 +1372,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_open_circuit_again_after_the_specified_duration_has_passed_if_the_next_call_raises_an_exception()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1403,7 +1403,7 @@ namespace Polly.Specs.CircuitBreaker
 
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
 
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
@@ -1419,7 +1419,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_reset_circuit_after_the_specified_duration_has_passed_if_the_next_call_does_not_raise_an_exception()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1450,7 +1450,7 @@ namespace Polly.Specs.CircuitBreaker
 
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
 
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
@@ -1464,7 +1464,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_only_allow_single_execution_on_first_entering_halfopen_state__test_execution_permit_directly()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1486,7 +1486,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
             // break duration passes, circuit now half open
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
 
 
@@ -1503,7 +1503,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_allow_single_execution_per_break_duration_in_halfopen_state__test_execution_permit_directly()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1525,7 +1525,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
             // break duration passes, circuit now half open
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
 
 
@@ -1538,7 +1538,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
 
             // Allow another time window to pass (breaker should still be HalfOpen).
-            SystemClock.UtcNow = () => time.Add(durationOfBreak).Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak).Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
 
             // OnActionPreExecute() should now permit another trial execution.
@@ -1550,7 +1550,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_only_allow_single_execution_on_first_entering_halfopen_state__integration_test()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1572,7 +1572,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
             // break duration passes, circuit now half open
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
 
             // Start one execution during the HalfOpen state, and request a second execution before the first has completed (ie still during the HalfOpen state).
@@ -1654,7 +1654,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_allow_single_execution_per_break_duration_in_halfopen_state__integration_test()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1676,7 +1676,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
             // break duration passes, circuit now half open
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
 
             // Start one execution during the HalfOpen state.
@@ -1721,7 +1721,7 @@ namespace Polly.Specs.CircuitBreaker
 
                 try
                 {
-                    SystemClock.UtcNow = () => time.Add(durationOfBreak).Add(durationOfBreak);
+                    SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak).Add(durationOfBreak);
 
                     breaker.Execute(() =>
                     {
@@ -1785,7 +1785,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_hold_circuit_open_despite_elapsed_time_if_manual_override_open()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
@@ -1796,7 +1796,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.Isolate();
             breaker.CircuitState.Should().Be(CircuitState.Isolated);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.Isolated);
 
             bool delegateExecutedWhenBroken = false;
@@ -1809,7 +1809,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_close_circuit_again_on_reset_after_manual_override()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
@@ -1831,7 +1831,7 @@ namespace Polly.Specs.CircuitBreaker
         public void Should_be_able_to_reset_automatically_opened_circuit_without_specified_duration_passing()
         {
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -1863,7 +1863,7 @@ namespace Polly.Specs.CircuitBreaker
 
             // reset circuit, with no time having passed
             breaker.Reset();
-            SystemClock.UtcNow().Should().Be(time);
+            SystemClock.DateTimeOffsetUtcNow().Should().Be(time);
             breaker.CircuitState.Should().Be(CircuitState.Closed);
             breaker.Invoking(x => x.Execute(() => { })).ShouldNotThrow();
         }
@@ -1895,7 +1895,7 @@ namespace Polly.Specs.CircuitBreaker
             Action onReset = () => { };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -1921,7 +1921,7 @@ namespace Polly.Specs.CircuitBreaker
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
-            // No adjustment to SystemClock.UtcNow, so all exceptions raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -1957,7 +1957,7 @@ namespace Polly.Specs.CircuitBreaker
             Action onReset = () => { };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -1986,7 +1986,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
             onBreakCalled.Should().Be(0);
 
-            // No adjustment to SystemClock.UtcNow, so all exceptions raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -2077,7 +2077,7 @@ namespace Polly.Specs.CircuitBreaker
             Action onReset = () => { onResetCalled++; };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -2105,7 +2105,7 @@ namespace Polly.Specs.CircuitBreaker
                 .ShouldThrow<DivideByZeroException>();
             breaker.CircuitState.Should().Be(CircuitState.Closed);
 
-            // No adjustment to SystemClock.UtcNow, so all exceptions raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -2113,7 +2113,7 @@ namespace Polly.Specs.CircuitBreaker
 
             onBreakCalled.Should().Be(1);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
 
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
@@ -2160,7 +2160,7 @@ namespace Polly.Specs.CircuitBreaker
             Action onHalfOpen = () => { onHalfOpenCalled++; };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -2192,7 +2192,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
             onBreakCalled.Should().Be(0);
 
-            // No adjustment to SystemClock.UtcNow, so all exceptions raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -2200,7 +2200,7 @@ namespace Polly.Specs.CircuitBreaker
 
             onBreakCalled.Should().Be(1);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             // duration has passed, circuit now half open
             onHalfOpenCalled.Should().Be(0); // not yet transitioned to half-open, because we have not queried state
 
@@ -2222,7 +2222,7 @@ namespace Polly.Specs.CircuitBreaker
             Action onHalfOpen = () => { onHalfOpenCalled++; };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -2254,7 +2254,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Closed);
             onBreakCalled.Should().Be(0);
 
-            // No adjustment to SystemClock.UtcNow, so all exceptions raised within same timeslice
+            // No adjustment to SystemClock.DateTimeOffsetUtcNow, so all exceptions raised within same timeslice
 
             breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
                 .ShouldThrow<DivideByZeroException>();
@@ -2262,7 +2262,7 @@ namespace Polly.Specs.CircuitBreaker
 
             onBreakCalled.Should().Be(1);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
             onHalfOpenCalled.Should().Be(1);
@@ -2277,7 +2277,7 @@ namespace Polly.Specs.CircuitBreaker
             Action onReset = () => { onResetCalled++; };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
             CircuitBreakerPolicy breaker = Policy
@@ -2390,7 +2390,7 @@ namespace Polly.Specs.CircuitBreaker
             Action onHalfOpen = () => { };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -2424,7 +2424,7 @@ namespace Polly.Specs.CircuitBreaker
 
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
 
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
@@ -2486,7 +2486,7 @@ namespace Polly.Specs.CircuitBreaker
             Action<Context> onReset = _ => { };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
             
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -2520,7 +2520,7 @@ namespace Polly.Specs.CircuitBreaker
             Action<Context> onReset = _ => { };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -2565,7 +2565,7 @@ namespace Polly.Specs.CircuitBreaker
             Action<Context> onReset = context => { contextData = context; };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -2598,7 +2598,7 @@ namespace Polly.Specs.CircuitBreaker
 
             breaker.CircuitState.Should().Be(CircuitState.Open);
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);
 
 
@@ -2620,7 +2620,7 @@ namespace Polly.Specs.CircuitBreaker
             Action<Context> onReset = _ => { };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             CircuitBreakerPolicy breaker = Policy
                 .Handle<DivideByZeroException>()
@@ -2665,7 +2665,7 @@ namespace Polly.Specs.CircuitBreaker
                 context => { contextValue = context.ContainsKey("key") ? context["key"].ToString() : null; };
 
             var time = 1.January(2000);
-            SystemClock.UtcNow = () => time;
+            SystemClock.DateTimeOffsetUtcNow = () => time;
 
             var durationOfBreak = TimeSpan.FromSeconds(30);
 
@@ -2698,7 +2698,7 @@ namespace Polly.Specs.CircuitBreaker
             breaker.CircuitState.Should().Be(CircuitState.Open);
             contextValue.Should().Be("original_value");
 
-            SystemClock.UtcNow = () => time.Add(durationOfBreak);
+            SystemClock.DateTimeOffsetUtcNow = () => time.Add(durationOfBreak);
 
             // duration has passed, circuit now half open
             breaker.CircuitState.Should().Be(CircuitState.HalfOpen);

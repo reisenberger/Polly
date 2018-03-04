@@ -69,7 +69,7 @@ namespace Polly.CircuitBreaker
             }
         }
 
-        protected bool IsInAutomatedBreak_NeedsLock => SystemClock.UtcNow().Ticks < _blockedTill;
+        protected bool IsInAutomatedBreak_NeedsLock => SystemClock.DateTimeOffsetUtcNow().Ticks < _blockedTill;
 
         protected DelegateResult<TResult> _lastHandledOutcome;
 
@@ -102,7 +102,7 @@ namespace Polly.CircuitBreaker
                 case CircuitState.Closed:
                     break;
                 case CircuitState.HalfOpen:
-                    if (!PermitHalfOpenCircuitTest()) { throw GetBreakingException(); }
+                    if (!_breakerController.PermitHalfOpenCircuitTest(_durationOfBreak)) { throw GetBreakingException(); }
                     break;
                 case CircuitState.Open:
                     throw GetBreakingException();
@@ -112,19 +112,7 @@ namespace Polly.CircuitBreaker
                     throw new UnhandledCircuitStateException(CircuitState);
             }
         }
-
-        private bool PermitHalfOpenCircuitTest()
-        {
-            long currentlyBlockedUntil = _blockedTill;
-            if (SystemClock.UtcNow().Ticks >= currentlyBlockedUntil)
-            {
-                // It's time to permit a / another trial call in the half-open state ...
-                // ... but to prevent race conditions/multiple calls, we have to ensure only _one_ thread wins the race to own this next call.
-                return Interlocked.CompareExchange(ref _blockedTill, SystemClock.UtcNow().Ticks + _durationOfBreak.Ticks, currentlyBlockedUntil) == currentlyBlockedUntil;
-            }
-            return false;
-        }
-
+        
         protected void TransitionTo_NeedsLock(CircuitState transitionToState, Context context)
         {
             switch (transitionToState)
@@ -162,10 +150,10 @@ namespace Polly.CircuitBreaker
 
         private void BreakFor_NeedsLock(TimeSpan durationOfBreak, Context context)
         {
-            bool willDurationTakeUsPastDateTimeMaxValue = durationOfBreak > DateTime.MaxValue - SystemClock.UtcNow();
+            bool willDurationTakeUsPastDateTimeMaxValue = durationOfBreak > DateTime.MaxValue - SystemClock.DateTimeOffsetUtcNow();
             _blockedTill = willDurationTakeUsPastDateTimeMaxValue
                 ? DateTime.MaxValue.Ticks
-                : (SystemClock.UtcNow() + durationOfBreak).Ticks;
+                : (SystemClock.DateTimeOffsetUtcNow() + durationOfBreak).Ticks;
 
             var transitionedState = _circuitState;
             _circuitState = CircuitState.Open;
