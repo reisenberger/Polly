@@ -1,3 +1,7 @@
+## 6.0.2-alpha
+- Enforce use of DateTimeOffset for internal timings.
+- Refactor circuit-breaker internals to give ICircuitController control of exiting from half-open state.
+ 
 ## 6.0.1-alpha
 - Performance improvements: Use C#7.2 structs features.
  

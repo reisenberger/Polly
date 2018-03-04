@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Polly")]
-[assembly: AssemblyVersion("6.0.1.0")]
+[assembly: AssemblyVersion("6.0.2.0")]
 [assembly: CLSCompliant(true)]
 
 [assembly: InternalsVisibleTo("Polly.NetStandard11.Specs")]

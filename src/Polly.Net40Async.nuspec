@@ -15,6 +15,10 @@
     <releaseNotes>
      v6.0 is a major performance release, and further builds towards adding telemetry and metrics to Polly.
 
+     6.0.2-alpha
+     ---------------------
+     - Enforce use of DateTimeOffset for internal timings.
+
      6.0.1-alpha
      ---------------------
      - Performance improvements: Use C#7.2 structs features.
