@@ -33,7 +33,7 @@ namespace Polly.Specs.Bulkhead
         /// <param name="actionContainingAssertions">The action containing fluent assertions, which must succeed within the timespan.</param>
         protected void Within(TimeSpan timeSpan, Action actionContainingAssertions)
         {
-            DateTime timeoutTime = DateTime.UtcNow.Add(timeSpan);
+            DateTimeOffset timeoutTime = DateTimeOffset.UtcNow.Add(timeSpan);
             while (true)
             {
                 try
@@ -45,7 +45,7 @@ namespace Polly.Specs.Bulkhead
                 {
                     if (!(e is AssertionFailedException || e is XunitException)) { throw; }
 
-                    TimeSpan remaining = timeoutTime - DateTime.UtcNow;
+                    TimeSpan remaining = timeoutTime - DateTimeOffset.UtcNow;
                     if (remaining <= TimeSpan.Zero) { throw; }
 
                     statusChanged.WaitOne(remaining);
