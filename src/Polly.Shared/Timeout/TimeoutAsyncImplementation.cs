@@ -5,10 +5,6 @@ using System.Threading.Tasks;
 using Polly.Execution;
 using Polly.Utilities;
 
-#if NET40
-using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
-#endif
-
 namespace Polly.Timeout
 {
     internal class TimeoutAsyncImplementation<TResult> : IAsyncPolicyImplementation<TResult>
@@ -48,13 +44,7 @@ namespace Polly.Timeout
 
                         actionTask = action.ExecuteAsync(context, combinedToken, continueOnCapturedContext);
 
-                        return await (await
-#if NET40
-                            TaskEx
-#else
-                            Task
-#endif
-                            .WhenAny(actionTask, timeoutTask).ConfigureAwait(continueOnCapturedContext)).ConfigureAwait(continueOnCapturedContext);
+                        return await (await Task.WhenAny(actionTask, timeoutTask).ConfigureAwait(continueOnCapturedContext)).ConfigureAwait(continueOnCapturedContext);
 
                     }
                     catch (Exception e)

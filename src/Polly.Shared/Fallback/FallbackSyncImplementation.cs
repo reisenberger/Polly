@@ -5,10 +5,6 @@ using System.Threading;
 using Polly.Execution;
 using Polly.Utilities;
 
-#if NET40
-using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
-#endif
-
 namespace Polly.Fallback
 {
     internal class FallbackSyncImplementation<TResult> : ISyncPolicyImplementation<TResult>

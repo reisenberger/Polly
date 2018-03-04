@@ -6,10 +6,6 @@ using System.Threading;
 using Polly.Execution;
 using Polly.Utilities;
 
-#if NET40
-using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
-#endif
-
 namespace Polly.Retry
 {
     internal class RetrySyncImplementation<TResult> : ISyncPolicyImplementation<TResult>

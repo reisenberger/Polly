@@ -7,10 +7,6 @@ using System.Threading.Tasks;
 using Polly.Execution;
 using Polly.Utilities;
 
-#if NET40
-using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
-#endif
-
 namespace Polly.Retry
 {
     internal class RetryAsyncImplementation<TResult> : IAsyncPolicyImplementation<TResult>

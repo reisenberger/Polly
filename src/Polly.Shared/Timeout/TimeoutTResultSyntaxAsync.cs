@@ -17,7 +17,7 @@ namespace Polly
         {
             if (seconds <= 0) throw new ArgumentOutOfRangeException(nameof(seconds));
 
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(ctx => TimeSpan.FromSeconds(seconds), TimeoutStrategy.Optimistic, doNothingAsync);
         }
 
@@ -32,7 +32,7 @@ namespace Polly
         {
             if (seconds <= 0) throw new ArgumentOutOfRangeException(nameof(seconds));
 
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(ctx => TimeSpan.FromSeconds(seconds), timeoutStrategy, doNothingAsync);
         }
 
@@ -78,7 +78,7 @@ namespace Polly
         {
             if (timeout <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(timeout));
 
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(ctx => timeout, TimeoutStrategy.Optimistic, doNothingAsync);
         }
 
@@ -92,7 +92,7 @@ namespace Polly
         {
             if (timeout <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(timeout));
 
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(ctx => timeout, timeoutStrategy, doNothingAsync);
         }
 
@@ -140,7 +140,7 @@ namespace Polly
         {
             if (timeoutProvider == null) throw new ArgumentNullException(nameof(timeoutProvider));
 
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(ctx => timeoutProvider(), TimeoutStrategy.Optimistic, doNothingAsync);
         }
 
@@ -155,7 +155,7 @@ namespace Polly
         {
             if (timeoutProvider == null) throw new ArgumentNullException(nameof(timeoutProvider));
 
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(ctx => timeoutProvider(), timeoutStrategy, doNothingAsync);
         }
 
@@ -200,7 +200,7 @@ namespace Polly
         /// <returns>The policy instance.</returns>
         public static TimeoutPolicy<TResult> TimeoutAsync<TResult>(Func<Context, TimeSpan> timeoutProvider)
         {
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(timeoutProvider, TimeoutStrategy.Optimistic, doNothingAsync);
         }
 
@@ -213,7 +213,7 @@ namespace Polly
         /// <returns>The policy instance.</returns>
         public static TimeoutPolicy<TResult> TimeoutAsync<TResult>(Func<Context, TimeSpan> timeoutProvider, TimeoutStrategy timeoutStrategy)
         {
-            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => TaskHelper.FromResult(default(TResult));
+            Func<Context, TimeSpan, Task, Task> doNothingAsync = (_, __, ___) => Task.FromResult(default(TResult));
             return TimeoutAsync<TResult>(timeoutProvider, timeoutStrategy, doNothingAsync);
         }
 

@@ -22,11 +22,8 @@ namespace Polly.Utilities
         /// Allows the setting of a custom async Sleep implementation for testing.
         /// By default this will be a call to <see cref="M:Task.Delay"/> taking a <see cref="CancellationToken"/>
         /// </summary>
-#if NET40
-        public static Func<TimeSpan, CancellationToken, Task> SleepAsync = TaskEx.Delay;
-#else
         public static Func<TimeSpan, CancellationToken, Task> SleepAsync = Task.Delay;
-#endif
+
         /// <summary>
         /// Allows the setting of a custom DateTimeOffset.UtcNow implementation for testing.
         /// By default this will be a call to <see cref="DateTime.UtcNow"/>
@@ -50,11 +47,8 @@ namespace Polly.Utilities
                 if (cancellationToken.WaitHandle.WaitOne(timeSpan)) cancellationToken.ThrowIfCancellationRequested();
             };
 
-#if NET40
-            SleepAsync = TaskEx.Delay;
-#else
             SleepAsync = Task.Delay;
-#endif
+
             DateTimeOffsetUtcNow = () => DateTimeOffset.UtcNow;
 
             CancelTokenAfter = (tokenSource, timespan) => tokenSource.CancelAfter(timespan);

@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 using Polly.Execution;
 using Polly.Utilities;
 
-#if NET40
-using ExceptionDispatchInfo = Polly.Utilities.ExceptionDispatchInfo;
-#endif
-
 namespace Polly.Fallback
 {
     internal class FallbackAsyncImplementation<TResult> : IAsyncPolicyImplementation<TResult>
