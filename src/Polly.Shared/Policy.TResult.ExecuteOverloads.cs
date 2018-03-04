@@ -81,7 +81,7 @@ namespace Polly
         [DebuggerStepThrough]
         public TResult Execute(Func<Context, CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
-            return Execute(action, new Context(contextData), cancellationToken);
+            return ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableFunc<TResult>(action), new Context(contextData), cancellationToken);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture(Func<TResult> action)
         {
-            return ExecuteAndCapture(ctx => action(), new Context());
+            return ExecuteAndCapture((ctx, ct) => action(), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture(Func<Context, TResult> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAndCapture(action, new Context(contextData));
+            return ExecuteAndCapture((ctx, ct) => action(ctx), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -137,24 +137,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture(Func<Context, TResult> action, Context context)
         {
-            if (_genericImplementation == null) throw NotConfiguredForSyncExecution();
-            if (context == null) throw new ArgumentNullException(nameof(context));
-
-            try
-            {
-                TResult result = Execute(action, context);
-
-                if (ResultPredicates.Any(predicate => predicate(result)))
-                {
-                    return PolicyResult<TResult>.Failure(result, context);
-                }
-
-                return PolicyResult<TResult>.Successful(result, context);
-            }
-            catch (Exception exception)
-            {
-                return PolicyResult<TResult>.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
-            }
+            return ExecuteAndCapture((ctx, ct) => action(ctx), context, DefaultCancellationToken);
         }
 
         /// <summary>

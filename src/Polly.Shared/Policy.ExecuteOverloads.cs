@@ -192,7 +192,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action action)
         {
-            return ExecuteAndCapture(ctx => action(), new Context());
+            return ExecuteAndCapture((ctx, ct) => action(), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<Context> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAndCapture(action, new Context(contextData));
+            return ExecuteAndCapture((ctx, ct) => action(ctx), new Context(contextData), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -217,18 +217,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<Context> action, Context context)
         {
-            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
-            if (context == null) throw new ArgumentNullException(nameof(context));
-
-            try
-            {
-                Execute(action, context);
-                return PolicyResult.Successful(context);
-            }
-            catch (Exception exception)
-            {
-                return PolicyResult.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
-            }
+            return ExecuteAndCapture((ctx, ct) => action(ctx), context, DefaultCancellationToken);
         }
 
         /// <summary>
@@ -291,7 +280,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<TResult> action)
         {
-            return ExecuteAndCapture(ctx => action(), new Context());
+            return ExecuteAndCapture((ctx, ct) => action(), new Context(), DefaultCancellationToken);
         }
 
         /// <summary>
@@ -304,7 +293,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<Context, TResult> action, IDictionary<string, object> contextData)
         {
-            return ExecuteAndCapture(action, new Context(contextData));
+            return ExecuteAndCapture((ctx, ct) => action(ctx), new Context(contextData), DefaultCancellationToken);
         }
 
 
@@ -318,17 +307,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<Context, TResult> action, Context context)
         {
-            if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
-            if (context == null) throw new ArgumentNullException(nameof(context));
-
-            try
-            {
-                return PolicyResult<TResult>.Successful(Execute(action, context), context);
-            }
-            catch (Exception exception)
-            {
-                return PolicyResult<TResult>.Failure(exception, GetExceptionType(ExceptionPredicates, exception), context);
-            }
+            return ExecuteAndCapture((ctx, ct) => action(ctx), context, DefaultCancellationToken);
         }
 
         /// <summary>
