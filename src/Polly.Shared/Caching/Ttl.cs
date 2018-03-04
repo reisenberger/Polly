@@ -5,17 +5,17 @@ namespace Polly.Caching
     /// <summary>
     /// Represents a time-to-live for a given cache item.
     /// </summary>
-    public struct Ttl
+    public readonly struct Ttl
     {
         /// <summary>
         /// The timespan for which this cache-item remains valid.
         /// </summary>
-        public TimeSpan Timespan;
+        public readonly TimeSpan Timespan;
 
         /// <summary>
         /// Whether this <see cref="Ttl"/> should be considered as sliding expiration: that is, the cache item should be considered valid for a further period of duration <see cref="Timespan"/> each time the cache item is retrieved.
         /// </summary>
-        public bool SlidingExpiration;
+        public readonly bool SlidingExpiration;
 
         /// <summary>
         /// Creates a new <see cref="Ttl"/> struct.
