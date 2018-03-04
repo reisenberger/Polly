@@ -28,12 +28,6 @@ namespace Polly.Utilities
         public static Func<TimeSpan, CancellationToken, Task> SleepAsync = Task.Delay;
 #endif
         /// <summary>
-        /// Allows the setting of a custom DateTime.UtcNow implementation for testing.
-        /// By default this will be a call to <see cref="DateTime.UtcNow"/>
-        /// </summary>
-        public static Func<DateTime> UtcNow = () => DateTime.UtcNow;
-
-        /// <summary>
         /// Allows the setting of a custom DateTimeOffset.UtcNow implementation for testing.
         /// By default this will be a call to <see cref="DateTime.UtcNow"/>
         /// </summary>
@@ -61,8 +55,6 @@ namespace Polly.Utilities
 #else
             SleepAsync = Task.Delay;
 #endif
-            UtcNow = () => DateTime.UtcNow;
-
             DateTimeOffsetUtcNow = () => DateTimeOffset.UtcNow;
 
             CancelTokenAfter = (tokenSource, timespan) => tokenSource.CancelAfter(timespan);

@@ -25,7 +25,7 @@ namespace Polly.Specs.Timeout
         {
             // Override the SystemClock, to return time stored in variables we manipulate.
             SystemClock.DateTimeOffsetUtcNow = () => _offsetUtcNow;
-            SystemClock.UtcNow = () => _utcNow;
+            SystemClock.DateTimeOffsetUtcNow = () => _utcNow;
 
             // Override SystemClock.CancelTokenAfter to record when the policy wants the token to cancel.
             SystemClock.CancelTokenAfter = (tokenSource, timespan) =>
