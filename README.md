@@ -955,6 +955,7 @@ For details of changes by release see the [change log](https://github.com/App-vN
 * [@benagain](https://github.com/benagain) - Bug fix: RelativeTtl in CachePolicy now always returns a ttl relative to time item is cached.
 * [@reisenberger](https://github.com/reisenberger) - Performance improvements to reduce heap allocations, big thanks to [@markrendle](https://github.com/markrendle) for the inspiration in [#271](https://github.com/App-vNext/Polly/issues/271).
 * [@reisenberger](https://github.com/reisenberger) - Other performance improvements for v6.0: reducing async state machines; optimising hotpath of retry policies.
+* [@reisenberger](https://github.com/reisenberger) - Use C#7.2 structs features.
 
 # Sample Projects
 

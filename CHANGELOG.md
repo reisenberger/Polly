@@ -1,3 +1,6 @@
+## 6.0.1-alpha
+- Performance improvements: Use C#7.2 structs features.
+ 
 ## 6.0.0-alpha
 - Performance improvements: Reduce heap allocations by 2x - 6x, for all executions.
 - Retry hotpath improvement: do not allocate retry state machine if first try succeeds.
