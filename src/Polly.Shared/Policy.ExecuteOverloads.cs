@@ -27,6 +27,7 @@ namespace Polly
         /// <param name="action">The action to perform.</param>
         /// <param name="contextData">Arbitrary data that is passed to the exception policy.</param>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public void Execute(Action action, IDictionary<string, object> contextData)
         {
             ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionNoParams(action), new Context(contextData), DefaultCancellationToken);
@@ -38,6 +39,7 @@ namespace Polly
         /// <param name="action">The action to perform.</param>
         /// <param name="context">Context data that is passed to the exception policy.</param>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public void Execute(Action action, Context context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -88,6 +90,7 @@ namespace Polly
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public void Execute(Action<CancellationToken> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
             ExecuteSyncExecutableThroughPolicy(new SyncPollyExecutableActionOnCancellationToken(action), new Context(contextData), cancellationToken);
@@ -100,6 +103,7 @@ namespace Polly
         /// <param name="context">Context data that is passed to the exception policy.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public void Execute(Action<CancellationToken> action, Context context, CancellationToken cancellationToken)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -160,6 +164,7 @@ namespace Polly
         /// </returns>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public TResult Execute<TResult>(Func<TResult> func, IDictionary<string, object> contextData)
         {
             return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncNoParams<TResult>, TResult>(new SyncPollyExecutableFuncNoParams<TResult>(func), new Context(contextData), DefaultCancellationToken);
@@ -177,6 +182,7 @@ namespace Polly
         /// </returns>
         /// <exception cref="System.ArgumentNullException">context</exception>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public TResult Execute<TResult>(Func<TResult> func, Context context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -243,6 +249,7 @@ namespace Polly
         /// <returns>The value returned by the action</returns>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public TResult Execute<TResult>(Func<CancellationToken, TResult> func, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
             return ExecuteSyncExecutableThroughPolicy<SyncPollyExecutableFuncOnCancellationToken<TResult>, TResult>(new SyncPollyExecutableFuncOnCancellationToken<TResult>(func), new Context(contextData), cancellationToken);
@@ -258,6 +265,7 @@ namespace Polly
         /// <returns>The value returned by the action</returns>
         /// <exception cref="System.ArgumentNullException">context</exception>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public TResult Execute<TResult>(Func<CancellationToken, TResult> func, Context context, CancellationToken cancellationToken)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -311,7 +319,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action action)
         {
-            return ExecuteAndCapture(action, new Context());
+            return ExecuteAndCapture(ctx => action(), new Context());
         }
 
         /// <summary>
@@ -322,6 +330,7 @@ namespace Polly
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         /// <returns>The captured result</returns>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult ExecuteAndCapture(Action action, IDictionary<string, object> contextData)
         {
             return ExecuteAndCapture(action, new Context(contextData));
@@ -334,6 +343,7 @@ namespace Polly
         /// <param name="context">Context data that is passed to the exception policy.</param>
         /// <returns>The captured result</returns>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult ExecuteAndCapture(Action action, Context context)
         {
             if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
@@ -395,7 +405,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult ExecuteAndCapture(Action<CancellationToken> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture(action, new Context(), cancellationToken);
+            return ExecuteAndCapture((ctx, ct) => action(ct), new Context(), cancellationToken);
         }
 
         /// <summary>
@@ -407,6 +417,7 @@ namespace Polly
         /// <returns>The captured result</returns>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult ExecuteAndCapture(Action<CancellationToken> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
             return ExecuteAndCapture(action, new Context(contextData), cancellationToken);
@@ -420,6 +431,7 @@ namespace Polly
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The captured result</returns>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult ExecuteAndCapture(Action<CancellationToken> action, Context context, CancellationToken cancellationToken)
         {
             if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
@@ -484,7 +496,7 @@ namespace Polly
         [DebuggerStepThrough]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<TResult> action)
         {
-            return ExecuteAndCapture(action, new Context());
+            return ExecuteAndCapture(ctx => action(), new Context());
         }
 
         /// <summary>
@@ -495,6 +507,7 @@ namespace Polly
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         /// <returns>The captured result</returns>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<TResult> action, IDictionary<string, object> contextData)
         {
             return ExecuteAndCapture(action, new Context(contextData));
@@ -509,6 +522,7 @@ namespace Polly
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         /// <returns>The captured result</returns>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<TResult> action, Context context)
         {
             if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
@@ -570,7 +584,7 @@ namespace Polly
         /// <returns>The captured result</returns>
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<CancellationToken, TResult> action, CancellationToken cancellationToken)
         {
-            return ExecuteAndCapture(action, new Context(), cancellationToken);
+            return ExecuteAndCapture((ctx, ct) => action(ct), new Context(), cancellationToken);
         }
 
 
@@ -584,6 +598,7 @@ namespace Polly
         /// <returns>The captured result</returns>
         /// <exception cref="System.ArgumentNullException">contextData</exception>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<CancellationToken, TResult> action, IDictionary<string, object> contextData, CancellationToken cancellationToken)
         {
             return ExecuteAndCapture(action, new Context(contextData), cancellationToken);
@@ -597,6 +612,7 @@ namespace Polly
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The captured result</returns>
         [DebuggerStepThrough]
+        [Obsolete("This overload is deprecated and scheduled for removal in Polly v6.")]
         public PolicyResult<TResult> ExecuteAndCapture<TResult>(Func<CancellationToken, TResult> action, Context context, CancellationToken cancellationToken)
         {
             if (_nonGenericSyncImplementation == null) throw NotConfiguredForSyncExecution();
