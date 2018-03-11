@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Polly.Utilities
 {
     /// <summary>
-    /// Time related delegates used to support different compilation targets and to improve testability of the code.
+    /// Time related delegates used to improve testability of the code.
     /// </summary>
     public static class SystemClock
     {
@@ -31,7 +31,7 @@ namespace Polly.Utilities
 
         /// <summary>
         /// Allows the setting of a custom DateTimeOffset.UtcNow implementation for testing.
-        /// By default this will be a call to <see cref="DateTime.UtcNow"/>
+        /// By default this will be a call to <see cref="DateTimeOffset.UtcNow"/>
         /// </summary>
         public static Func<DateTimeOffset> DateTimeOffsetUtcNow;
 
