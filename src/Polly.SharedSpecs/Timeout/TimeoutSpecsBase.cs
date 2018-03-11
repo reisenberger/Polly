@@ -20,13 +20,11 @@ namespace Polly.Specs.Timeout
         private DateTimeOffset _cancelAt = DateTimeOffset.MaxValue;
 
         private DateTimeOffset _offsetUtcNow = DateTimeOffset.UtcNow;
-        private DateTime _utcNow = DateTime.UtcNow;
         
         protected TimeoutSpecsBase()
         {
             // Override the SystemClock, to return time stored in variables we manipulate.
             SystemClock.DateTimeOffsetUtcNow = () => _offsetUtcNow;
-            SystemClock.DateTimeOffsetUtcNow = () => _utcNow;
 
             // Override SystemClock.CancelTokenAfter to record when the policy wants the token to cancel.
             SystemClock.CancelTokenAfter = (tokenSource, timespan) =>
@@ -49,7 +47,6 @@ namespace Polly.Specs.Timeout
                 if (_trackedTokenSource == null || _trackedTokenSource.IsCancellationRequested)
                 {
                     // Not tracking any CancellationToken (or already cancelled) - just advance time.
-                    _utcNow += sleepTimespan;
                     _offsetUtcNow += sleepTimespan;
                 }
                 else
@@ -60,7 +57,6 @@ namespace Polly.Specs.Timeout
                     {
                         // Cancel!  (And advance time only to the instant of cancellation)
                         _offsetUtcNow += timeToCancellation;
-                        _utcNow += timeToCancellation;
 
                         // (and stop tracking it after cancelling; it can't be cancelled twice, so there is no need, and the owner may dispose it)
                         CancellationTokenSource copySource = _trackedTokenSource;
@@ -71,7 +67,6 @@ namespace Polly.Specs.Timeout
                     else
                     {
                         // (not yet time to cancel - just advance time)
-                        _utcNow += sleepTimespan;
                         _offsetUtcNow += sleepTimespan;
                     }
                 }
