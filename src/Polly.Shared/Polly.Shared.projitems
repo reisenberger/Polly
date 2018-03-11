@@ -76,6 +76,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\SingleHealthMetrics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\AdvancedCircuitController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\UnhandledCircuitStateException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IExecutionContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Context.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Context.Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionPredicate.cs" />
