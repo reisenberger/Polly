@@ -473,6 +473,11 @@ The general resilience policies add resilience strategies that are not explicitl
 
 ### Timeout
 
+#### Optimistic timeout
+
+Optimistic timeout [operates via CancellationToken](https://github.com/App-vNext/Polly/wiki/Timeout#optimistic-timeout) and assumes delegates you execute support [co-operative cancellation](https://msdn.microsoft.com/en-us/library/dd997364.aspx).  You must use `Execute/Async(...)` overloads taking a `CancellationToken`, and the executed delegate must honor that `CancellationToken`.
+
+
 ```csharp
 // Timeout and return to the caller after 30 seconds, if the executed delegate has not completed.  Optimistic timeout: Delegates should take and honour a CancellationToken.
 Policy
@@ -485,11 +490,6 @@ Policy
 // Configure variable timeout via a func provider.
 Policy
   .Timeout(() => myTimeoutProvider)) // Func<TimeSpan> myTimeoutProvider
-
-// Timeout after 30 seconds, if the executed delegate has not completed.  Enforces a timeout on delegates which have no in-built timeout and do not honour CancellationToken, at the expense (in synchronous executions) of an extra thread.
-// (for more detail, see deep documentation)
-Policy
-  .Timeout(30, TimeoutStrategy.Pessimistic)
 
 // Timeout, calling an action if the action times out
 Policy
@@ -513,6 +513,39 @@ Policy
             if (t.IsFaulted) logger.Error($"{context.PolicyKey} at {context.ExecutionKey}: execution timed out after {timespan.TotalSeconds} seconds, with: {t.Exception}.");
         });
     });
+```
+
+Example execution:
+
+```csharp
+Policy timeoutPolicy = Policy.TimeoutAsync(30);
+HttpResponseMessage httpResponse = await timeoutPolicy
+    .ExecuteAsync(
+      async ct => await httpClient.GetAsync(endpoint, ct), // Execute a delegate which responds to a CancellationToken input parameter.
+      CancellationToken.None // In this case, CancellationToken.None is passed into the execution, indicating you have no independent cancellation control you wish to add to the cancellation provided by TimeoutPolicy.  Your own indepdent CancellationToken can also be passed - see wiki for examples.
+      );
+```
+
+#### Pessimistic timeout
+
+Pessimistic timeout allows calling code to 'walk away' from waiting for an executed delegate to complete, even if it does not support cancellation.  In synchronous executions this is at the expense of an extra thread; see [deep doco on wiki](https://github.com/App-vNext/Polly/wiki/Timeout#pessimistic-timeout) for more detail.
+
+```csharp
+// Timeout after 30 seconds, if the executed delegate has not completed.  Enforces this timeout even if the executed code has no cancellation mechanism. 
+Policy
+  .Timeout(30, TimeoutStrategy.Pessimistic)
+
+// (All syntax variants outlined for optimistic timeout above also exist for pessimistic timeout.)
+```
+
+Example execution:
+
+```csharp
+Policy timeoutPolicy = Policy.TimeoutAsync(30, TimeoutStrategy.Pessimistic);
+var response = await timeoutPolicy
+    .ExecuteAsync(
+      async () => await FooNotHonoringCancellationAsync(), // Execute a delegate which takes no CancellationToken and does not respond to cancellation.
+      );
 ```
 
 For more detail see: [Timeout policy documentation](https://github.com/App-vNext/Polly/wiki/Timeout) on wiki.
@@ -952,6 +985,7 @@ For details of changes by release see the [change log](https://github.com/App-vN
 * [@awarrenlove](https://github.com/awarrenlove) - Add ability to calculate cache Ttl based on item to cache.
 * [@erickhouse](https://github.com/erickhouse) - Add a new onBreak overload that provides the prior state on a transition to an open state.
 * [@benagain](https://github.com/benagain) - Bug fix: RelativeTtl in CachePolicy now always returns a ttl relative to time item is cached.
+* [@urig](https://github.com/urig) - Allow TimeoutPolicy to be configured with Timeout.InfiniteTimeSpan.
 * [@reisenberger](https://github.com/reisenberger) - Performance improvements to reduce heap allocations, big thanks to [@markrendle](https://github.com/markrendle) for the inspiration in [#271](https://github.com/App-vNext/Polly/issues/271).
 * [@reisenberger](https://github.com/reisenberger) - Other performance improvements for v6.0: reducing async state machines; optimising hotpath of retry policies.
 * [@reisenberger](https://github.com/reisenberger) - Use C#7.2 structs features.

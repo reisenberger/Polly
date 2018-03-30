@@ -11,7 +11,7 @@
     <iconUrl>https://raw.github.com/App-vNext/Polly/master/Polly.png</iconUrl>
     <projectUrl>https://github.com/App-vNext/Polly</projectUrl>
     <tags>Exception Handling Resilience Transient Fault Policy Circuit Breaker CircuitBreaker Retry Wait Cache Cache-aside Bulkhead Fallback Timeout Throttle Parallelization</tags>
-    <copyright>Copyright © 2017, App vNext</copyright>
+    <copyright>Copyright © 2018, App vNext</copyright>
     <releaseNotes>
      v6.0 is a major performance release, and further builds towards adding telemetry and metrics to Polly.
 
@@ -37,7 +37,7 @@
 
      5.9.0
      ---------------------
-     - No functional changes.  
+     - Allow Timeout.InfiniteTimeSpan (no timeout) for TimeoutPolicy. 
      - Per Semver, indicates deprecation of overloads and properties intended to be removed or renamed in Polly v6.
 
      5.8.0

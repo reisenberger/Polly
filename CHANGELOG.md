@@ -16,7 +16,7 @@
 - Rename keys on Context, in preparation for telemetry (breaking change). 
 
 ## 5.9.0
-- No functional changes. 
+- Allow Timeout.InfiniteTimeSpan (no timeout) for TimeoutPolicy. 
 - Per Semver, indicates deprecation of overloads and properties intended to be removed or renamed in Polly v6.
 
 ## 5.8.0
