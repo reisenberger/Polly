@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Polly.Specs.Caching
 {
-    [Collection(Polly.Specs.Helpers.Constants.SystemClockDependentTestCollection)]
+    [Collection(Polly.Specs.Helpers.Constants.AbstractedTimeDependentTestCollection)]
     public class AbsoluteTtlSpecs : IDisposable
     {
         [Fact]
