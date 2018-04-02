@@ -4,12 +4,7 @@ namespace Polly.Timeout
 {
     internal static class TimeoutValidator
     {
-
-#if NET40
-        internal static readonly TimeSpan InfiniteTimeSpan = new TimeSpan(0, 0, 0, 0, -1);
-#else
         internal static readonly TimeSpan InfiniteTimeSpan = System.Threading.Timeout.InfiniteTimeSpan;
-#endif
 
         internal static void ValidateSecondsTimeout(int seconds)
         {
