@@ -78,6 +78,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\UnhandledCircuitStateException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Context.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Context.Dictionary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\IPolicyEventSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\TimingPolicyEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\IPolicyEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\PolicyEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionPredicate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DelegateResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExecutionRejectedException.cs" />
@@ -121,6 +125,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Policy.Async.TResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policy.TResult.ExecuteOverloads.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PolicyBase.Events.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyBuilder.OrSyntax.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PolicyResult.cs" />
