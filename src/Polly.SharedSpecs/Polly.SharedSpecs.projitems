@@ -93,6 +93,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutSpecsBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutTResultAsyncSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timeout\TimeoutTResultSpecs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SystemStopwatchSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\IPolicyWrapExtensionSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapSpecs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\PolicyWrapContextAndKeySpecs.cs" />

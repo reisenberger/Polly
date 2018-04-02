@@ -76,7 +76,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\SingleHealthMetrics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\AdvancedCircuitController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CircuitBreaker\UnhandledCircuitStateException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IExecutionContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Context.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Context.Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionPredicate.cs" />
@@ -98,6 +97,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncPolicyImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncPolicy.TResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IExecutionContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicyImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISyncPolicy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IsPolicy.cs" />
@@ -159,6 +159,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\KeyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\PredicateHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SystemClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SystemStopwatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\TaskHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\TimedLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wrap\IPolicyWrap.cs" />
