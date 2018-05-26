@@ -1,3 +1,18 @@
+## 6.0.1
+- Version 6 RTM, for integration to ASPNET Core 2.1 IHttpClientFactory
+
+## 6.0.0-v6alpha
+- Publish as strong-named package only (discontinue non-strong-named versions)
+- Add .NetStandard 2.0 tfm
+- Provide .NET4.5 support via .NetStandard 1.1 tfm
+- Discontinue .NET4.0 support
+- Remove methods marked as deprecated in v5.9.0
+
+## 5.9.0
+- Allow Timeout.InfiniteTimeSpan (no timeout) for TimeoutPolicy. 
+- Add .AsPolicy&lt;TResult&gt; and .AsAsyncPolicy&lt;TResult&gt; methods for converting non-generic policies to generic policies.
+- Per Semver, indicates deprecation of overloads and properties intended to be removed or renamed in Polly v6.
+
 ## 5.8.0
 - Add a new onBreak overload that provides the prior state on a transition to an open state
 - Bug fix: RelativeTtl in CachePolicy now always returns a ttl relative to time item is cached
