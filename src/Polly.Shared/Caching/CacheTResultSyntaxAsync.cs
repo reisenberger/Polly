@@ -833,9 +833,49 @@ namespace Polly
             Action<Context, string, Exception> onCacheGetError,
             Action<Context, string, Exception> onCachePutError)
         {
+            return CacheAsync<TResult>(cacheProvider, ttlStrategy, cacheKeyStrategy, (_, __) => true, onCacheGet, onCacheMiss, onCachePut, onCacheGetError, onCachePutError);
+        }
+
+        /// <summary>
+        /// <para>Builds a <see cref="Policy" /> that will function like a result cache for delegate executions returning a <typeparamref name="TResult"/>.</para>
+        /// <para>Before executing a delegate, checks whether the <paramref name="cacheProvider" /> holds a value for the cache key determined by applying the <paramref name="cacheKeyStrategy"/> to the execution <see cref="Context"/>.
+        /// If the <paramref name="cacheProvider" /> provides a value from cache, returns that value and does not execute the governed delegate.  If the <paramref name="cacheProvider" /> does not provide a value, executes the governed delegate, stores the value with the <paramref name="cacheProvider" />, then returns the value.
+        /// </para>
+        /// </summary>
+        /// <param name="cacheProvider">The cache provider.</param>
+        /// <param name="ttlStrategy">A strategy for specifying ttl for values to be cached.</param>
+        /// <param name="cacheKeyStrategy">The cache key strategy.</param>
+        /// <param name="cacheWhen">A filter specifying when and when not to cache results returned by the executed delegate.</param>
+        /// <param name="onCacheGet">Delegate to call on a cache hit, when value is returned from cache.</param>
+        /// <param name="onCacheMiss">Delegate to call on a cache miss.</param>
+        /// <param name="onCachePut">Delegate to call on cache put.</param>
+        /// <param name="onCacheGetError">Delegate to call if an exception is thrown when attempting to get a value from the cache, passing the execution context, the cache key, and the exception.</param>
+        /// <param name="onCachePutError">Delegate to call if an exception is thrown when attempting to put a value in the cache, passing the execution context, the cache key, and the exception.</param>
+        /// <returns>The policy instance.</returns>
+        /// <exception cref="ArgumentNullException">cacheProvider</exception>
+        /// <exception cref="ArgumentNullException">ttlStrategy</exception>
+        /// <exception cref="ArgumentNullException">cacheKeyStrategy</exception>
+        /// <exception cref="ArgumentNullException">cacheWhen</exception>
+        /// <exception cref="ArgumentNullException">onCacheGet</exception>
+        /// <exception cref="ArgumentNullException">onCacheMiss</exception>
+        /// <exception cref="ArgumentNullException">onCachePut</exception>
+        /// <exception cref="ArgumentNullException">onCacheGetError</exception>
+        /// <exception cref="ArgumentNullException">onCachePutError</exception>
+        public static CachePolicy<TResult> CacheAsync<TResult>(
+            IAsyncCacheProvider<TResult> cacheProvider,
+            ITtlStrategy<TResult> ttlStrategy,
+            Func<Context, string> cacheKeyStrategy,
+            Func<Context, TResult, bool> cacheWhen,
+            Action<Context, string> onCacheGet,
+            Action<Context, string> onCacheMiss,
+            Action<Context, string> onCachePut,
+            Action<Context, string, Exception> onCacheGetError,
+            Action<Context, string, Exception> onCachePutError)
+        {
             if (cacheProvider == null) throw new ArgumentNullException(nameof(cacheProvider));
             if (ttlStrategy == null) throw new ArgumentNullException(nameof(ttlStrategy));
             if (cacheKeyStrategy == null) throw new ArgumentNullException(nameof(cacheKeyStrategy));
+            if (cacheWhen == null) throw new ArgumentNullException(nameof(cacheWhen));
 
             if (onCacheGet == null) throw new ArgumentNullException(nameof(onCacheGet));
             if (onCacheMiss == null) throw new ArgumentNullException(nameof(onCacheMiss));
@@ -843,7 +883,7 @@ namespace Polly
             if (onCachePutError == null) throw new ArgumentNullException(nameof(onCachePutError));
             if (onCachePutError == null) throw new ArgumentNullException(nameof(onCachePutError));
 
-            return new CachePolicy<TResult>(cacheProvider, ttlStrategy, cacheKeyStrategy, onCacheGet, onCacheMiss, onCachePut, onCacheGetError, onCachePutError);
+            return new CachePolicy<TResult>(cacheProvider, ttlStrategy, cacheKeyStrategy, cacheWhen, onCacheGet, onCacheMiss, onCachePut, onCacheGetError, onCachePutError);
         }
     }
 }
