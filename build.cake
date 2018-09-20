@@ -11,7 +11,6 @@ var configuration = Argument<string>("configuration", "Release");
 
 #Tool "xunit.runner.console"
 #Tool "GitVersion.CommandLine"
-#Tool "Brutal.Dev.StrongNameSigner"
 
 //////////////////////////////////////////////////////////////////////
 // EXTERNAL NUGET LIBRARIES
@@ -57,10 +56,6 @@ string nugetVersion;
 string appveyorBuildNumber;
 string assemblyVersion;
 string assemblySemver;
-
-// StrongNameSigner
-var strongNameSignerPath = ToolsExePath("StrongNameSigner.Console.exe");
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -237,22 +232,6 @@ Task("__CopyOutputToNugetFolder")
     CopyFile(nuspecSrcFile, nuspecDestFile);
 });
 
-Task("__StronglySignAssemblies")
-    .Does(() =>
-{
-    //see: https://github.com/brutaldev/StrongNameSigner
-    var strongNameSignerSettings = new ProcessSettings()
-        .WithArguments(args => args
-            .Append("-in")
-            .AppendQuoted(buildDir)
-            .Append("-k")
-            .AppendQuoted(snkFile)
-            .Append("-l")
-            .AppendQuoted("Changes"));
-
-    StartProcess(strongNameSignerPath, strongNameSignerSettings);
-});
-
 Task("__CreateSignedNugetPackage")
     .Does(() =>
 {
@@ -283,7 +262,6 @@ Task("Build")
     .IsDependentOn("__BuildSolutions")
     .IsDependentOn("__RunTests")
     .IsDependentOn("__CopyOutputToNugetFolder")
-    .IsDependentOn("__StronglySignAssemblies")
     .IsDependentOn("__CreateSignedNugetPackage");
 
 ///////////////////////////////////////////////////////////////////////////////
